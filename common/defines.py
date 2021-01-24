@@ -1,0 +1,19 @@
+# output.yml keys
+PARAMS_SECT_KEY = "parameters"
+GPS_KEY = "gps"
+TARGET_CH_KEY = "target_channel"
+CH_LIST_KEY = "channels_list"
+OUT_PATH_KEY = "opath"
+SAMP_FREQ_KEY = "samp_freq"
+LOWPASS_FREQ_KEY = "lowpass_freq"
+SCATTERING_KEY = "scattering"
+SMOOTH_WIN_KEY = "smooth_win"
+MAX_CORR_SECT_KEY = "max_correlation"
+CORR_SECT_KEY = "correlations"
+IMF_KEY = "imf"
+CHANNEL_KEY = "channel"
+CORR_KEY = "corr"
+MEAN_FREQ_KEY = "mean_freq"
+
+# common parameters
+EXTRA_SECONDS = 1
