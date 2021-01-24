@@ -1,3 +1,20 @@
+#  scattered_light_page.py - this file is part of the asr pagkage,
+#  also known as "adaptive scattering recognizer".
+#  Copyright (C) 2020- Stefano Bianchi
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 from gwdetchar.io import html as htmlio
 import os
 from ..common import defines
@@ -37,8 +54,17 @@ class ScatteredLightPage(object):
         
     def addLink(self, text, **kwargs):
         self.page.a(text, **kwargs)
+    
+
+    def getFormattedLink(self, text, **kwargs):
+        link = "<a"
+        for k in kwargs.keys():
+            link += " {}=\"{}\"".format(k, kwargs[k])
+        link += ">{}</a>".format(text)
         
-        
+        return link
+    
+
     def openDiv(self, **kwargs):
         self.page.div(**kwargs)
         
@@ -48,15 +74,18 @@ class ScatteredLightPage(object):
         
         
     def addSection(self, title, **kwargs):
-        self.page.h2(title, class_="mt-2 mb-2", **kwargs)
+        self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:180%;",
+                                                               "class": "mt-2 mb-2"})
         
         
     def addSubsection(self, title, **kwargs):
-        self.page.h4(title, class_="mt-2 mb-2", **kwargs)
+        self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:150%;",
+                                                               "class": "mt-2 mb-2"})
         
         
     def addSubsubsection(self, title, **kwargs):
-        self.page.h5(title, class_="mt-2 mb-2", **kwargs)
+        self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:120%;",
+                                                               "class": "mt-2 mb-2"})
         
         
     def addBulletList(self, items):
@@ -94,7 +123,6 @@ class ScatteredLightPage(object):
         
         
     def addCommandLine(self, code):
-        #self.addParagraph(htmlio.render_code(code, "bash"), class_="mb-2")
         self.openDiv(class_="highlight", style_="background: #f8f8f8")
         self.page.pre(**{"style": "line-height: 125%;"})
         self.page.span(code)
@@ -118,4 +146,4 @@ class ScatteredLightPage(object):
     
     def savePage(self, path):
         htmlio.close_page(self.page, path)
-            
+

@@ -1,3 +1,20 @@
+#  asr_html.py - this file is part of the asr pagkage,
+#  also known as "adaptive scattering recognizer".
+#  Copyright (C) 2020- Stefano Bianchi
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program. If not, see <https://www.gnu.org/licenses/>.
+
 import os
 import sys
 import argparse
@@ -10,10 +27,9 @@ from .html import scattered_light_page as slp
 from .common import defines
 
 
-PYTHON_EXEC = "python3"
-SCRIPT_NAME = "scattered_light_tool.py"
-PLOTS_SCRIPT_NAME = "scattered_light_plots.py"
-HTML_SCRIPT_NAME = "scattered_light_html.py"
+SCRIPT_NAME = "./scattered_light_tool.py"
+PLOTS_SCRIPT_NAME = "./scattered_light_plots.py"
+HTML_SCRIPT_NAME = "./scattered_light_html.py"
 SUMMARY_IMFS = 2
 OMEGAGRAM_THR = 0.5
 
@@ -35,7 +51,7 @@ def generate_html(res_path):
     page.openDiv(id_="page-command-line-section")
     page.addParagraph("This page can be reproduced with the following command line:", class_="mb-2")
     page.openDiv(id_="page-command-line")
-    code = [PYTHON_EXEC, HTML_SCRIPT_NAME]
+    code = [HTML_SCRIPT_NAME]
     code.append("--ipath {}".format(res_path))
     page.addCommandLine(" ".join(code))
     page.closeDiv()
@@ -47,16 +63,19 @@ def generate_html(res_path):
     
     if len(res_folders) > 0:
         tc_name = file_utils.load_yml(os.path.join(res_path, res_folders[0]))[defines.PARAMS_SECT_KEY][defines.TARGET_CH_KEY]
+        chl_name = file_utils.load_yml(os.path.join(res_path, res_folders[0]))[defines.PARAMS_SECT_KEY][defines.CH_LIST_KEY]
     else:
         tc_name = ""
+        chl_name = ""
     
     info_dict = {"Target channel": tc_name,
                  "Flags": "",
                  "GPS list": "",
-                 "Channels list": ""}
+                 "Channels list": page.getFormattedLink(os.path.basename(chl_name), **{"href": chl_name,
+                                                                                       "download": chl_name})}
     page.addBulletList(info_dict)
     page.closeDiv()
-    
+
     # results   
     page.addSection("Results", id_="results-section") 
     page.openDiv(id_="results")
@@ -114,7 +133,7 @@ def generate_html(res_path):
         
         page.openDiv(id_="command-line-{}".format(res_id))
         page.addParagraph("This analysis can be reproduced with the following command line:", class_="mb-2")
-        code = [PYTHON_EXEC, SCRIPT_NAME]
+        code = [SCRIPT_NAME]
         for key in parameters.keys():
             code.append("--" + key)
             code.append(str(parameters[key]))
@@ -123,7 +142,7 @@ def generate_html(res_path):
         
         page.openDiv(id_="plots-command-line-{}".format(res_id))
         page.addParagraph("Plots can be reproduced with the following command line:", class_="mb-2")
-        code = [PYTHON_EXEC, PLOTS_SCRIPT_NAME]
+        code = [PLOTS_SCRIPT_NAME]
         code.append("--ipath {}".format(gps_path))
         code.append("--imfs_to_plot {}".format(",".join([str(i) for i in range(1, SUMMARY_IMFS + 1)])))
         code.append("--omegagram_thr {:.2f}".format(OMEGAGRAM_THR))
@@ -174,7 +193,7 @@ def generate_html(res_path):
         page.openDiv(id_="command-line-summary")
         page.addParagraph("This summary can be reproduced with the following command line:", class_="mb-2")
         
-        code = [PYTHON_EXEC, PLOTS_SCRIPT_NAME]
+        code = [PLOTS_SCRIPT_NAME]
         code.append("--ipath {}".format(res_path))
         code.append("--imfs_to_plot {}".format(",".join([str(i) for i in range(1, SUMMARY_IMFS + 1)])))
         code.append("--comparison True")
