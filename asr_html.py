@@ -101,7 +101,8 @@ def generate_html(res_path):
                 imfs_data[i]["combo"] = ""
                 
                 regex = "[_+]{:d}[_+]".format(i)
-                for cf in glob.glob(os.path.join(gps_path, "combo_imf_*_culprit.png")):
+                #for cf in glob.glob(os.path.join(gps_path, "combo_imf_*_culprit.png")):
+                for cf in glob.glob(os.path.join(gps_folder, "combo_imf_*_culprit.png")):
                     if re.search(regex, cf):
                         imfs_data[i]["combo"] = cf
                 if res_file[defines.CORR_SECT_KEY][i - 1][defines.CORR_KEY] >= 0.5:
@@ -167,7 +168,8 @@ def generate_html(res_path):
                 page.addBulletList(imfs_data[i])
                 page.closeDiv()
             
-                imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
+                #imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
+                imf_plot_name = os.path.join(gps_folder, "imf_{}_culprit.png".format(i))
                 page.openDiv(id_="imf-{}-{}-plot".format(i, res_id))
                 page.addPlot(imf_plot_name, "imf-{}-{}".format(i, res_id))
                 page.closeDiv()
@@ -178,7 +180,8 @@ def generate_html(res_path):
                     page.closeDiv()
                 
                 if omegagram:
-                    omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
+                    #omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
+                    omegagram_plot_name = os.path.join(gps_folder, "imf_{}_omegagram.png".format(i))
                     page.openDiv(id_="omegagram-{}-{}-plot".format(i, res_id))
                     page.addPlot(omegagram_plot_name, "omegagram-{}-{}".format(i, res_id))
                     page.closeDiv()
@@ -211,8 +214,10 @@ def generate_html(res_path):
         for i in range(1, SUMMARY_IMFS + 1):
             page.openDiv(id_="imf-{}-summary".format(i))
             page.addSubsubsection("Imf {}".format(i), id_="imf-{}-section-summary".format(i))
-            summary_name = os.path.join(res_path, "comparison", "imf_{}_summary_{}.png".format(i, tc_name))
-            corr_summary_name = os.path.join(res_path, "comparison", "imf_{}_corr_summary_{}.png".format(i, tc_name))
+            #summary_name = os.path.join(res_path, "comparison", "imf_{}_summary_{}.png".format(i, tc_name))
+            #corr_summary_name = os.path.join(res_path, "comparison", "imf_{}_corr_summary_{}.png".format(i, tc_name))
+            summary_name = os.path.join("comparison", "imf_{}_summary_{}.png".format(i, tc_name))
+            corr_summary_name = os.path.join("comparison", "imf_{}_corr_summary_{}.png".format(i, tc_name))
             page.addPlot(summary_name, "imf-{}-summary".format(i))
             page.addPlot(corr_summary_name, "imf-{}-corr-summary".format(i))
             page.closeDiv()
