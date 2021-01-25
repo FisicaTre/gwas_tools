@@ -24,6 +24,12 @@ from .common import defines
 
 
 def plot_imfs_arg(arg):
+    """Check on imfs to plot.
+    Parameters:
+    -----------                                            
+    arg : str
+        imfs to plot arg
+    """
     if arg in ["all", "max_corr"]:
         return arg
     else:
@@ -33,6 +39,12 @@ def plot_imfs_arg(arg):
             return None
         
 def comparison_arg(arg):
+    """Check on comparison.
+    Parameters:
+    -----------                                            
+    arg : str
+        comparison arg
+    """
     if arg == "max_corr":
         return arg
     else:
@@ -43,6 +55,12 @@ def comparison_arg(arg):
         
         
 def corr_thr(arg):
+    """Check on correlation threshold.
+    Parameters:
+    -----------                                            
+    arg : float
+        correlation threshold
+    """
     arg = float(arg)
     if arg >= -1.0 and arg <= 1.0:
         return arg
@@ -55,6 +73,24 @@ def corr_thr(arg):
 
 def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
           omegagram_thr=None, comparison=None, comparison_thr=None):
+    """Plot analysis results.
+    Parameters:
+    -----------                                            
+    ipath : str
+        path to results folder
+    single_folder : bool
+        whether or not `ipath` points to a single folder or a group of folders
+    imfs_to_plot : str
+        imfs to plot, can be "all", "max_corr", or comma-separated numbers
+    imf_thr : float
+        imfs threshold
+    omegagram_thr : float
+        omegagram threshold
+    comparison : str
+        imfs fo comparison, can be "all", "max_corr", or comma-separated numbers
+    comparison_thr : float
+        comparison imfs threshold
+    """
     imfs_to_plot = plot_imfs_arg(imfs_to_plot)
     if imf_thr is not None:
         imf_thr = corr_thr(imf_thr)

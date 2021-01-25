@@ -30,6 +30,26 @@ from .common import defines
 
 def run_tool(gps, target_channel_name, channels_file, out_path,
              fs, f_lowpass, n_scattering=1, smooth_win=50):
+    """Run the analysis.
+    Parameters:
+    -----------
+    gps : str
+        comma-separated starting and ending GPS
+    target_channel_name : str
+        target channel name
+    channels_file : str
+        path to channels list file
+    out_path : str
+        path where to save analysis
+    fs : float
+        sampling frequency
+    f_lowpass : float
+        lowpass frequency
+    n_scattering : int
+        number of scattering reflections
+    smooth_win : int
+        smoothing window
+    """
     # initialize variables
     LAMBDA = 1.064
     ch_f = open(channels_file, "r")

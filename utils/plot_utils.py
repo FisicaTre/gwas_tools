@@ -27,13 +27,18 @@ from gwdetchar.scattering import get_fringe_frequency
 
 
 def normalize(vec):
+    """Normalize a vector to zero mean and unit standard deviation.
+    Parameters:
+    -----------
+    vec : numpy array
+    """
     norm_vec = (vec - np.nanmean(vec)) / np.nanstd(vec)
     
     return norm_vec
 
 
 def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_name, save_path):
-    """
+    """Plot of the instantaneous amplitude and predictor.
     Parameters:
     -----------
     pred : numpy array
@@ -92,7 +97,7 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
     
     
 def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1, samp_freq, out_path, thr=-1.0):
-    """
+    """Plot sum of more instantaneous amplitudes and the predictor.
     Parameters:
     -----------
     plot_channels : list of str
@@ -127,7 +132,7 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
             
             
 def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5]):
-    """
+    """Omegagram plot with download of the target channel.
     Parameters:
     -----------
     pred : numpy array
@@ -142,6 +147,10 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path,
         plot name
     save_path : str
         save path
+    norm : bool
+        normalize predictor to 10 Hz
+    harmonics : list of int
+        predictor harmonics to be plotted
     """
     if gps1 is not None and gps2 is not None:
         epoch = (gps1 + gps2) // 2
@@ -199,7 +208,7 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path,
         
         
 def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5]):
-    """
+    """Omegagram plot.
     Parameters:
     -----------
     pred : numpy array
@@ -214,6 +223,10 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
         plot name
     save_path : str
         save path
+    norm : bool
+        normalize predictor to 10 Hz
+    harmonics : list of int
+        predictor harmonics to be plotted
     """
     if gps1 is not None and gps2 is not None:
         epoch = (gps1 + gps2) // 2
@@ -272,7 +285,7 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
         
 
 def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=10):
-    """
+    """Summary histogram of culprits found for a certain imf.
     Parameters:
     -----------
     culprits : list of str
@@ -283,6 +296,10 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
         plot name
     save_path : str
         save path
+    dsort : bool
+        descending order sort
+    batch : int
+        maximum number of points per plot
     """
     culprits = np.array(culprits)
     seen = set()
@@ -323,7 +340,7 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
     
     
 def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, batch=10):
-    """
+    """Summary of correlations for each GPS for a certain imf.
     Parameters:
     -----------
     gps_list : list of str
@@ -336,6 +353,8 @@ def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, batch=10
         plot name
     save_path : str
         save path
+    batch : int
+        maximum number of points per plot
     """
     if len(gps_list) <= batch:
         plt.figure()

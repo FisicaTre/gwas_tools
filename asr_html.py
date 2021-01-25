@@ -33,7 +33,13 @@ HTML_SCRIPT_NAME = "./scattered_light_html.py"
 SUMMARY_IMFS = 2
 OMEGAGRAM_THR = 0.5
 
-def generate_html(res_path):    
+def generate_html(res_path):
+    """Generate HTML page.
+    Parameters:
+    -----------                                            
+    res_path : str
+        path to the analysis folders
+    """ 
     res_folders = []
     for folder in os.listdir(res_path):
         curr_dir = os.path.join(res_path, folder)

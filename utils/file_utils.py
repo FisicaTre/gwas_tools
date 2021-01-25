@@ -23,6 +23,18 @@ import pickle
 
 
 def from_mat(mat_file, mat_col):
+    """Get array from .mat file.
+    Parameters:
+    -----------
+    mat_file : str
+        path to the .mat file
+    mat_col : int
+        column of the array to get
+    Returns:
+    --------
+    numpy array
+        array from .mat
+    """
     mat = scipy.io.loadmat(mat_file)
     mat_data = mat[mat_col]
     
@@ -30,6 +42,16 @@ def from_mat(mat_file, mat_col):
 
 
 def yml_exists(yml_path):
+    """Check if yml file exists.
+    Parameters:
+    -----------
+    yml_path : str
+        path to yml file
+    Returns:
+    --------
+    bool
+        yml existence
+    """
     yml_file = os.path.join(yml_path, "output.yml")
     if not os.path.exists(yml_file):
         print("File {} not found.".format(yml_file))
@@ -39,6 +61,16 @@ def yml_exists(yml_path):
 
 
 def imfs_exists(imfs_path):
+    """Check if imfs file exists.
+    Parameters:
+    -----------
+    imfs_path : str
+        path to imfs file
+    Returns:
+    --------
+    bool
+        imfs existence
+    """
     imfs_file = glob.glob(os.path.join(imfs_path, "*.imf"))
     if len(imfs_file) != 1:
         print("File {} not found or more than one `.imf` found.".format(imfs_file))
@@ -48,6 +80,16 @@ def imfs_exists(imfs_path):
 
 
 def predictors_exists(predictors_path):
+    """Check if predictors file exists.
+    Parameters:
+    -----------
+    predictors_path : str
+        path to predictors file
+    Returns:
+    --------
+    bool
+        predictors existence
+    """
     predictors_file = glob.glob(os.path.join(predictors_path, "*.predictors"))
     if len(predictors_file) != 1:
         print("File {} not found or more than one `.predictors` found.".format(predictors_file))
@@ -57,6 +99,16 @@ def predictors_exists(predictors_path):
 
 
 def load_yml(yml_path):
+    """Load yml file.
+    Parameters:
+    -----------
+    yml_path : str
+        path to yml file
+    Returns:
+    --------
+    dict
+        yml file
+    """
     yml_file = os.path.join(yml_path, "output.yml")
     with open(yml_file, "r") as f:
         yml = yaml.safe_load(f)
@@ -65,6 +117,16 @@ def load_yml(yml_path):
 
 
 def load_imfs(imfs_path):
+    """Load imfs file.
+    Parameters:
+    -----------
+    imfs_path : str
+        path to imfs file
+    Returns:
+    --------
+    numpy ndarray
+        imfs file
+    """
     imfs_file = glob.glob(os.path.join(imfs_path, "*.imf"))
     f = open(imfs_file[0], "rb")
     imfs = pickle.load(f)
@@ -74,6 +136,16 @@ def load_imfs(imfs_path):
 
 
 def load_predictors(predictors_path):
+    """Load predictors file.
+    Parameters: 
+    -----------
+    predictors_path : str
+        path to predictors file
+    Returns:
+    --------
+    numpy ndarray
+        predictors file
+    """
     predictors_file = glob.glob(os.path.join(predictors_path, "*.predictors"))
     f = open(predictors_file[0], "rb")
     predictors = pickle.load(f)

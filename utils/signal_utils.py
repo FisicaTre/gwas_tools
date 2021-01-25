@@ -21,6 +21,18 @@ from scipy.signal import kaiserord, lfilter, firwin, butter, freqz
 
 
 def smooth(arr, win):
+    """Smooth array.
+    Parameters:
+    -----------
+    arr : numpy array
+        input array
+    win : int
+        smoothing window
+    Returns:
+    --------
+    numpy array
+        smoothed array
+    """
     if win % 2 == 0:
         win += 1
     out = np.convolve(arr, np.ones(win, dtype=int), "valid") / win
@@ -32,6 +44,18 @@ def smooth(arr, win):
 
 
 def lowpass(x, cutoff):
+    """Lowpass filter.
+    Parameters:
+    -----------
+    x : numpy array
+        input array
+    cutoff : float
+        cutoff frequency
+    Returns:
+    --------
+    numpy array
+        lowpassed array
+    """
     x = TimeSeries(x - np.nanmean(x))
     x_low = x.lowpass(1 / cutoff).value
 
@@ -48,6 +72,20 @@ def lowpass(x, cutoff):
     #return filtered_x
     
 def butter_lowpass(cutoff, f_samp, order=3):
+    """Butter filter.
+    Parameters:
+    -----------
+    cutoff : float
+        cutoff frequency
+    f_samp : float
+        sampling frequency
+    order : int
+        filter order
+    Returns:
+    --------
+    tuple of float
+        filter coefficients
+    """
     nyq = 0.5 * f_samp
     normal_cutoff = cutoff / nyq
     response = butter(order, normal_cutoff, btype="lowpass", output="ba", analog=False)
@@ -56,6 +94,22 @@ def butter_lowpass(cutoff, f_samp, order=3):
 
 
 def butter_lowpass_filter(x, cutoff, f_samp, order=3):
+    """Butter filter.
+    Parameters:
+    -----------
+    x : numpy array
+        input array
+    cutoff : float
+        cutoff frequency
+    f_samp : float
+        sampling frequency
+    order : int
+        filter order
+    Returns:
+    --------
+    numpy array
+        filtered array
+    """
     b, a = butter_lowpass(cutoff, f_samp, order=order)
     y = lfilter(b, a, x)
 
@@ -63,6 +117,18 @@ def butter_lowpass_filter(x, cutoff, f_samp, order=3):
 
 
 def mean_frequency(x, f):
+    """Array mean frequency.
+    Parameters:
+    -----------
+    x : numpy array
+        input array
+    f : float
+        sampling frequency
+    Returns:
+    --------
+    float
+        mean frequency
+    """
     spec = np.abs(np.fft.rfft(x))
     freq = np.fft.rfftfreq(len(x), d=1 / f)
     amp = spec / spec.sum()
@@ -72,6 +138,18 @@ def mean_frequency(x, f):
 
 
 def mean_amplitude(x, f):
+    """Array mean amplitude.
+    Parameters:
+    -----------
+    x : numpy array
+        input array
+    f : float
+        sampling frequency
+    Returns:
+    --------
+    float
+        mean amplitude
+    """
     dft = (2 / len(x)) * np.fft.rfft(x)
     freq = np.fft.rfftfreq(len(x), d=1 / f)
     mean_f_idx = np.argmin(np.abs(freq - mean_frequency(x, f)))
@@ -80,6 +158,24 @@ def mean_amplitude(x, f):
 
 
 def predictor(time, ts, N=1, LAMBDA=1.064, smooth_win=None):
+    """Time series predictor.
+    Parameters:
+    -----------
+    time : numpy array
+        time array
+    ts : numpy array
+        time series
+    N : int
+        scattering factor
+    LAMBDA : float
+        interferometer wavelenght
+    smooth_win : int
+        smoothing window
+    Returns:
+    --------
+    numpy array
+        predictor
+    """
     v_mat = np.diff(ts) / np.diff(time)
     if smooth_win is not None:
         v_mat = smooth(v_mat, smooth_win)

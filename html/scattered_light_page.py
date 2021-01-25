@@ -43,20 +43,54 @@ JS_FILES = ["https://code.jquery.com/jquery-3.5.1.min.js",
 class ScatteredLightPage(object):
     
     def __init__(self, title=""):
+        """Constructor.
+        Parameters:
+        -----------
+        title : str
+            page title
+        """
         self.page = htmlio.new_bootstrap_page(title=title, script=JS_FILES, css=CSS_FILES)#base=path, path=path,
         if title != "":
             self.page.h1(title, class_="mt-2 mb-2")
             
     
     def addParagraph(self, text, **kwargs):
+        """Add <p>.
+        Parameters:
+        -----------
+        text : str
+            <p> text
+        kwargs : dict
+            <p> attributes
+        """
         self.page.p(text, **kwargs)
         
         
     def addLink(self, text, **kwargs):
+        """Add <a>.
+        Parameters:
+        -----------
+        text : str
+            <a> text
+        kwargs : dict
+            <a> attributes
+        """
         self.page.a(text, **kwargs)
     
 
     def getFormattedLink(self, text, **kwargs):
+        """Return <a> with formatted text.
+        Parameters:
+        -----------
+        text : str
+            <a> text
+        kwargs : dict
+            <a> attributes
+        Returns:
+        --------
+        str
+            <a **kwargs>text</a>
+        """
         link = "<a"
         for k in kwargs.keys():
             link += " {}=\"{}\"".format(k, kwargs[k])
@@ -66,29 +100,67 @@ class ScatteredLightPage(object):
     
 
     def openDiv(self, **kwargs):
+        """Add <div>.
+        Parameters:
+        -----------
+        kwargs : dict
+            <div> attributes
+        """
         self.page.div(**kwargs)
         
         
     def closeDiv(self):
+        """Add </div>.
+        """
         self.page.div.close()
         
         
     def addSection(self, title, **kwargs):
+        """Add <p> with bold text magnified to 180%.
+        Parameters:
+        -----------
+        title : str
+            <p> text
+        kwargs : dict
+            <p> attributes
+        """
         self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:180%;",
                                                                "class": "mt-2 mb-2"})
         
         
     def addSubsection(self, title, **kwargs):
+        """Add <p> with bold text magnified to 150%.
+        Parameters:
+        -----------                                            
+        title : str
+            <p> text
+        kwargs : dict
+            <p> attributes
+        """
         self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:150%;",
                                                                "class": "mt-2 mb-2"})
         
         
     def addSubsubsection(self, title, **kwargs):
+        """Add <p> with bold text magnified to 120%.
+        Parameters:
+        -----------                                            
+        title : str
+            <p> text
+        kwargs : dict
+            <p> attributes
+        """
         self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:120%;",
                                                                "class": "mt-2 mb-2"})
         
         
     def addBulletList(self, items):
+        """Add bullet list.
+        Parameters:
+        -----------                                            
+        items : dict
+            list items
+        """
         items_list = ("<strong>" + str(k) + "</strong>: " + str(items[k]) for k in items.keys())
         self.page.ul()
         self.page.li(items_list)
@@ -96,6 +168,16 @@ class ScatteredLightPage(object):
         
         
     def parametersTable(self, parameters, start, end):
+        """Add parameters analysis table.
+        Parameters:
+        -----------                        
+        parameters : dict
+            analysis parameters
+        start : int
+            start GPS
+        end : int
+            end GPS
+        """
         content = []
         content.append(("GPS (<code>--{}</code>)".format(defines.GPS_KEY),
                         parameters[defines.GPS_KEY]))
@@ -123,6 +205,12 @@ class ScatteredLightPage(object):
         
         
     def addCommandLine(self, code):
+        """Add box with command line.
+        Parameters:
+        -----------                                            
+        code : str
+            command line
+        """
         self.openDiv(class_="highlight", style_="background: #f8f8f8")
         self.page.pre(**{"style": "line-height: 125%;"})
         self.page.span(code)
@@ -131,6 +219,14 @@ class ScatteredLightPage(object):
         
         
     def addPlot(self, plot_name, plot_id):
+        """Add plot.
+        Parameters:
+        -----------                                            
+        plot_name : str
+            path to plot
+        plot_id : str
+            plot identifier
+        """
         aparams = {
             "class_": "fancybox",
             "target": "_blank",
@@ -145,5 +241,11 @@ class ScatteredLightPage(object):
     
     
     def savePage(self, path):
+        """Save page.
+        Parameters:
+        -----------                                            
+        path : str
+            save path
+        """
         htmlio.close_page(self.page, path)
 
