@@ -42,14 +42,14 @@ JS_FILES = ["https://code.jquery.com/jquery-3.5.1.min.js",
 
 class ScatteredLightPage(object):
     
-    def __init__(self, title=""):
+    def __init__(self, title="", **kwargs):
         """Constructor.
         Parameters:
         -----------
         title : str
             page title
         """
-        self.page = htmlio.new_bootstrap_page(title=title, script=JS_FILES, css=CSS_FILES)#base=path, path=path,
+        self.page = htmlio.new_bootstrap_page(title=title, script=JS_FILES, css=CSS_FILES, **kwargs)
         if title != "":
             self.page.h1(title, class_="mt-2 mb-2")
             
@@ -236,7 +236,7 @@ class ScatteredLightPage(object):
         self.page.a(href=plot_name, id_="a-{}".format(plot_id), **aparams)
         self.page.img(id_="img-{}".format(plot_id),
                       **{"src": plot_name, "alt": os.path.basename(plot_name),
-                         "height": "400", "width": "500"})
+                         "style": "height: 70%; width: 70%; object-fit: contain"})
         self.page.a.close()
     
     

@@ -27,6 +27,8 @@ from .html import scattered_light_page as slp
 from .common import defines
 
 
+SAVE_PATH = os.path.expandvars("$HOME/public_html/daily/")
+SAVE_PLOTS_FOLDER = "plots"
 SCRIPT_NAME = "./scattered_light_tool.py"
 PLOTS_SCRIPT_NAME = "./scattered_light_plots.py"
 HTML_SCRIPT_NAME = "./scattered_light_html.py"
@@ -49,9 +51,12 @@ def generate_html(res_path):
     res_folders.sort()
     
     # title
-    curr_date = datetime.today().strftime('%d-%m-%Y')
-    title = "Scattered light analysis ({})".format(curr_date)
-    page = slp.ScatteredLightPage(title=title)
+    curr_date = datetime.today().strftime('%Y%m%d')
+    curr_folder = os.path.join(SAVE_PATH, curr_date)
+    curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
+    os.system("mkdir -p {}".format(curr_plots_folder))
+    title = "Scattered light analysis ({})".format(datetime.today().strftime('%Y-%m-%d'))
+    page = slp.ScatteredLightPage(title=title, **{"style": "body { background-color: white; }"})
     
     # code
     page.openDiv(id_="page-command-line-section")
@@ -101,8 +106,7 @@ def generate_html(res_path):
                 imfs_data[i]["combo"] = ""
                 
                 regex = "[_+]{:d}[_+]".format(i)
-                #for cf in glob.glob(os.path.join(gps_path, "combo_imf_*_culprit.png")):
-                for cf in glob.glob(os.path.join(gps_folder, "combo_imf_*_culprit.png")):
+                for cf in glob.glob(os.path.join(gps_path, "combo_imf_*_culprit.png")):
                     if re.search(regex, cf):
                         imfs_data[i]["combo"] = cf
                 if res_file[defines.CORR_SECT_KEY][i - 1][defines.CORR_KEY] >= 0.5:
@@ -133,8 +137,7 @@ def generate_html(res_path):
         page.closeDiv()
         
         # body
-        page.openDiv(id_=res_id, class_="collapse")#,
-                     #**{"data-parent": "#{}".format(parent_id)})
+        page.openDiv(id_=res_id, class_="collapse")
         page.openDiv(class_="card-body")
         page.parametersTable(parameters, int(gps_start), int(gps_end))
         
@@ -159,7 +162,7 @@ def generate_html(res_path):
         for i in range(1, SUMMARY_IMFS + 1):
             if i in imfs_data.keys():
                 page.openDiv(id_="imf-{}-{}".format(i, res_id))
-                page.addSubsubsection("Imf {}".format(i), id_="imf-{}-{}-section".format(i, res_id))
+                page.addSubsection("Imf {}".format(i), id_="imf-{}-{}-section".format(i, res_id))
                 
                 omegagram = imfs_data[i].pop("omegagram")
                 combo_file = imfs_data[i].pop("combo")
@@ -168,22 +171,26 @@ def generate_html(res_path):
                 page.addBulletList(imfs_data[i])
                 page.closeDiv()
             
-                #imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
-                imf_plot_name = os.path.join(gps_folder, "imf_{}_culprit.png".format(i))
+                imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
+                imf_to_save = os.path.join(curr_plots_folder, "imf-{}-{}.png".format(i, res_id))
+                os.system("cp {} {}".format(imf_plot_name, imf_to_save))
                 page.openDiv(id_="imf-{}-{}-plot".format(i, res_id))
-                page.addPlot(imf_plot_name, "imf-{}-{}".format(i, res_id))
+                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)), "imf-{}-{}".format(i, res_id))
                 page.closeDiv()
                 
                 if combo_file != "":
+                    combo_to_save = os.path.join(curr_plots_folder, "combo-{}-{}.png".format(i, res_id))
+                    os.system("cp {} {}".format(combo_file, combo_to_save))
                     page.openDiv(id_="combo-{}-{}-plot".format(i, res_id))
-                    page.addPlot(combo_file, "combo-{}-{}".format(i, res_id))
+                    page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "combo-{}-{}.png".format(i, res_id)), "combo-{}-{}".format(i, res_id))
                     page.closeDiv()
                 
                 if omegagram:
-                    #omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
-                    omegagram_plot_name = os.path.join(gps_folder, "imf_{}_omegagram.png".format(i))
+                    omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
+                    omegagram_to_save = os.path.join(curr_plots_folder, "omegagram-{}-{}.png".format(i, res_id))
+                    os.system("cp {} {}".format(omegagram_plot_name, omegagram_to_save))
                     page.openDiv(id_="omegagram-{}-{}-plot".format(i, res_id))
-                    page.addPlot(omegagram_plot_name, "omegagram-{}-{}".format(i, res_id))
+                    page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)), "omegagram-{}-{}".format(i, res_id))
                     page.closeDiv()
             
                 page.closeDiv()
@@ -213,16 +220,17 @@ def generate_html(res_path):
         # imfs
         for i in range(1, SUMMARY_IMFS + 1):
             page.openDiv(id_="imf-{}-summary".format(i))
-            page.addSubsubsection("Imf {}".format(i), id_="imf-{}-section-summary".format(i))
-            #summary_name = os.path.join(res_path, "comparison", "imf_{}_summary_{}.png".format(i, tc_name))
-            #corr_summary_name = os.path.join(res_path, "comparison", "imf_{}_corr_summary_{}.png".format(i, tc_name))
-            summary_name = os.path.join("comparison", "imf_{}_summary_{}.png".format(i, tc_name))
-            corr_summary_name = os.path.join("comparison", "imf_{}_corr_summary_{}.png".format(i, tc_name))
-            page.addPlot(summary_name, "imf-{}-summary".format(i))
-            page.addPlot(corr_summary_name, "imf-{}-corr-summary".format(i))
+            page.addSubsection("Imf {}".format(i), id_="imf-{}-section-summary".format(i))
+            summary_name = os.path.join(res_path, "comparison", "imf_{}_summary_{}.png".format(i, tc_name))
+            corr_summary_name = os.path.join(res_path, "comparison", "imf_{}_corr_summary_{}.png".format(i, tc_name))
+            summary_to_save = os.path.join(curr_plots_folder, "imf-{}-summary-{}.png".format(i, res_id))
+            corr_summary_to_save = os.path.join(curr_plots_folder, "imf-{}-corr-summary-{}.png".format(i, res_id))
+            os.system("cp {} {}".format(summary_name, summary_to_save))
+            os.system("cp {} {}".format(corr_summary_name, corr_summary_to_save))
+            page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-summary-{}.png".format(i, res_id)), "imf-{}-summary".format(i))
+            page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-corr-summary-{}.png".format(i, res_id)), "imf-{}-corr-summary".format(i))
             page.closeDiv()
     
-    curr_date = datetime.today().strftime('%Y%m%d')
-    html_file = os.path.join(res_path, "scattered_light_{}.html".format(curr_date))
+    html_file = os.path.join(curr_folder, "index.html")
     page.savePage(html_file)
     
