@@ -75,6 +75,7 @@ def generate_html(res_path):
     if len(res_folders) > 0:
         tc_name = file_utils.load_yml(os.path.join(res_path, res_folders[0]))[defines.PARAMS_SECT_KEY][defines.TARGET_CH_KEY]
         chl_name = file_utils.load_yml(os.path.join(res_path, res_folders[0]))[defines.PARAMS_SECT_KEY][defines.CH_LIST_KEY]
+        os.system("cp {} {}".format(chl_name, curr_folder))
     else:
         tc_name = ""
         chl_name = ""
@@ -82,8 +83,8 @@ def generate_html(res_path):
     info_dict = {"Target channel": tc_name,
                  "Flags": "",
                  "GPS list": "",
-                 "Channels list": page.getFormattedLink(os.path.basename(chl_name), **{"href": chl_name,
-                                                                                       "download": chl_name})}
+                 "Channels list": page.getFormattedLink(os.path.basename(chl_name), **{"href": os.path.basename(chl_name),
+                                                                                       "download": os.path.basename(chl_name)})}
     page.addBulletList(info_dict)
     page.closeDiv()
 
