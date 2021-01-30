@@ -127,6 +127,7 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
         fs = yf[defines.PARAMS_SECT_KEY][defines.SAMP_FREQ_KEY]
         gps_start = int(gps.split(",")[0]) + defines.EXTRA_SECONDS
         gps_end = int(gps.split(",")[1]) - defines.EXTRA_SECONDS
+        gps_event = (gps_start + gps_end) // 2
 
         if imfs_to_plot is not None:
             if imfs_to_plot == "max_corr":
@@ -134,7 +135,7 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                 predictor_name = yf[defines.MAX_CORR_SECT_KEY][defines.CHANNEL_KEY]
                 if yf[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY] >= imf_thr:
                     plot_utils.plot_imf(preds[:, n_imf], predictor_name, ia[:, n_imf], target_channel,
-                                        gps_start, fs, "$\\rho$ = {:.4f}".format(yf[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY]),
+                                        gps_event, fs, "$\\rho$ = {:.4f}".format(yf[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY]),
                                         "max_corr_culprit", res_folder)
                 if omegagram_thr is not None and yf[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY] >= omegagram_thr:
                     plot_utils.plot_omegagram_download(preds[:, n_imf], target_channel, gps_start, gps_end,
@@ -143,21 +144,21 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                 for n_imf, imf_pred in enumerate(yf[defines.CORR_SECT_KEY]):
                     if imf_pred[defines.CORR_KEY] >= imf_thr:
                         plot_utils.plot_imf(preds[:, n_imf], imf_pred[defines.CHANNEL_KEY], ia[:, n_imf], target_channel,
-                                            gps_start, fs, "$\\rho$ = {:.4f}".format(imf_pred[defines.CORR_KEY]),
+                                            gps_event, fs, "$\\rho$ = {:.4f}".format(imf_pred[defines.CORR_KEY]),
                                             "imf_{}_culprit".format(imf_pred[defines.IMF_KEY]), res_folder)
                     if omegagram_thr is not None and imf_pred[defines.CORR_KEY] >= omegagram_thr:
                         plot_utils.plot_omegagram_download(preds[:, n_imf], target_channel, gps_start, gps_end,
                                                            "imf_{}_omegagram".format(imf_pred[defines.IMF_KEY]), res_folder)
 
                 ch_list = np.array([el[defines.CHANNEL_KEY] for el in yf[defines.CORR_SECT_KEY]])
-                plot_utils.plot_combinations(ch_list, ia, preds, target_channel, gps_start,
+                plot_utils.plot_combinations(ch_list, ia, preds, target_channel, gps_event,
                                              fs, res_folder, imf_thr)
             elif isinstance(imfs_to_plot, list):
                 for n_imf, imf_pred in enumerate(yf[defines.CORR_SECT_KEY]):
                     if imf_pred[defines.IMF_KEY] in imfs_to_plot:
                         if imf_pred[defines.CORR_KEY] >= imf_thr:
                             plot_utils.plot_imf(preds[:, n_imf], imf_pred[defines.CHANNEL_KEY], ia[:, n_imf], target_channel,
-                                                gps_start, fs, "$\\rho$ = {:.4f}".format(imf_pred[defines.CORR_KEY]),
+                                                gps_event, fs, "$\\rho$ = {:.4f}".format(imf_pred[defines.CORR_KEY]),
                                                 "imf_{}_culprit".format(imf_pred[defines.IMF_KEY]), res_folder)
                         if omegagram_thr is not None and imf_pred["corr"] >= omegagram_thr:
                             plot_utils.plot_omegagram_download(preds[:, n_imf], target_channel, gps_start, gps_end,
@@ -167,7 +168,7 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                 if len(ch_list) != 0:
                     imfs_list = [imf - 1 for imf in imfs_to_plot if imf <= len(yf[defines.CORR_SECT_KEY])]
                     plot_utils.plot_combinations(ch_list, ia[:, imfs_list], preds[:, imfs_list],
-                                                 target_channel, gps_start, fs, res_folder, imf_thr)
+                                                 target_channel, gps_event, fs, res_folder, imf_thr)
 
     if comparison is not None:
         cpath = os.path.join(ipath, "comparison")
@@ -185,7 +186,8 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                 yf = file_utils.load_yml(res_folder)
                 if yf[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY] >= comparison_thr:
                     culprits_list.append(yf[defines.MAX_CORR_SECT_KEY][defines.CHANNEL_KEY])
-                    gps_list.append(str(int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[0]) + defines.EXTRA_SECONDS))
+                    gps_times = yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")
+                    gps_list.append(str((int(gps_times[0]) + int(gps_times[1])) // 2))
                     corr_list.append(yf[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY])
                     f.write("{:d},{:d},{},{}\n".format(int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[0]) + defines.EXTRA_SECONDS,
                                                        int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[1]) - defines.EXTRA_SECONDS,
@@ -210,7 +212,9 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
             for res_folder in res_folders:
                 yf = file_utils.load_yml(res_folder)
                 for n_imf in comparison:
-                    corr_dict[n_imf][defines.GPS_KEY].append(str(int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[0]) + defines.EXTRA_SECONDS))
+                    gps_times = yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")
+                    gps_mid_time = str((int(gps_times[0]) + int(gps_times[1])) // 2)
+                    corr_dict[n_imf][defines.GPS_KEY].append(gps_mid_time)
                     if len(yf[defines.CORR_SECT_KEY]) >= n_imf:
                         if yf[defines.CORR_SECT_KEY][n_imf - 1][defines.CORR_KEY] >= comparison_thr:
                             culprits_dict[n_imf].append(yf[defines.CORR_SECT_KEY][n_imf - 1][defines.CHANNEL_KEY])

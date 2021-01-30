@@ -41,14 +41,16 @@ JS_FILES = ["https://code.jquery.com/jquery-3.5.1.min.js",
 
 
 class ScatteredLightPage(object):
-    
-    def __init__(self, title="", **kwargs):
-        """Constructor.
+    """Class to construct HTML output page of the `asr` package analysis.
         Parameters:
         -----------
         title : str
             page title
+        kwargs : dict
+            general page attributes
         """
+    
+    def __init__(self, title="", **kwargs):
         self.page = htmlio.new_bootstrap_page(title=title, script=JS_FILES, css=CSS_FILES, **kwargs)
         if title != "":
             self.page.h1(title, class_="mt-2 mb-2")

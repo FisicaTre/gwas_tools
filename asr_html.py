@@ -32,15 +32,24 @@ SAVE_PLOTS_FOLDER = "plots"
 SCRIPT_NAME = "./scattered_light_tool.py"
 PLOTS_SCRIPT_NAME = "./scattered_light_plots.py"
 HTML_SCRIPT_NAME = "./scattered_light_html.py"
+PIPELINE_SCRIPT_NAME = "./asr_pipeline.py"
 SUMMARY_IMFS = 2
 OMEGAGRAM_THR = 0.5
 
-def generate_html(res_path):
+def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     """Generate HTML page.
     Parameters:
     -----------                                            
     res_path : str
         path to the analysis folders
+    tc_name : str
+        target channel name
+    ch_list_file : str
+        path to the channels list file
+    gspy_file : str
+        path to the gravity spy output file
+    flags : list
+        list of flags used for the analysis (default : [])
     """ 
     res_folders = []
     for folder in os.listdir(res_path):
@@ -49,16 +58,27 @@ def generate_html(res_path):
             if file_utils.yml_exists(curr_dir):
                 res_folders.append(folder)
     res_folders.sort()
-    
+
     # title
     curr_date = datetime.today().strftime('%Y%m%d')
-    curr_folder = os.path.join(SAVE_PATH, curr_date)
+    curr_folder = os.path.join(SAVE_PATH, curr_date, "_".join(tc_name.split(":")))
     curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
     os.system("mkdir -p {}".format(curr_plots_folder))
     title = "Scattered light analysis ({})".format(datetime.today().strftime('%Y-%m-%d'))
     page = slp.ScatteredLightPage(title=title, **{"style": "body { background-color: white; }"})
     
-    # code
+    # pipeline code
+    page.openDiv(id_="pipeline-command-line-section")
+    page.addParagraph("The entire pipeline (analysis, plots, and summary page) can be reproduced with the following command line:", class_="mb-2")
+    page.openDiv(id_="pipeline-command-line")
+    code = [PIPELINE_SCRIPT_NAME]
+    code.append("--target_channel {}".format(tc_name))
+    code.append("--channels_list {}".format(ch_list_file))
+    page.addCommandLine(" ".join(code))
+    page.closeDiv()
+    page.closeDiv()
+
+    # html generation code
     page.openDiv(id_="page-command-line-section")
     page.addParagraph("This page can be reproduced with the following command line:", class_="mb-2")
     page.openDiv(id_="page-command-line")
@@ -73,18 +93,18 @@ def generate_html(res_path):
     page.openDiv(id_="info-list")
     
     if len(res_folders) > 0:
-        tc_name = file_utils.load_yml(os.path.join(res_path, res_folders[0]))[defines.PARAMS_SECT_KEY][defines.TARGET_CH_KEY]
-        chl_name = file_utils.load_yml(os.path.join(res_path, res_folders[0]))[defines.PARAMS_SECT_KEY][defines.CH_LIST_KEY]
-        os.system("cp {} {}".format(chl_name, curr_folder))
-    else:
-        tc_name = ""
-        chl_name = ""
+        os.system("cp {} {}".format(ch_list_file, curr_folder))
+        os.system("cp {} {}".format(gspy_file, curr_folder))
     
     info_dict = {"Target channel": tc_name,
-                 "Flags": "",
-                 "GPS list": "",
-                 "Channels list": page.getFormattedLink(os.path.basename(chl_name), **{"href": os.path.basename(chl_name),
-                                                                                       "download": os.path.basename(chl_name)})}
+                 "Flags": " | ".join(flags),
+                 "GPS list": page.getFormattedLink(os.path.basename(gspy_file),
+                                                   **{"href": os.path.basename(gspy_file),
+                                                      "download": os.path.basename(gspy_file)}),
+                 "Channels list": page.getFormattedLink(os.path.basename(ch_list_file),
+                                                        **{"href": os.path.basename(ch_list_file),
+                                                           "download": os.path.basename(ch_list_file)})
+                }
     page.addBulletList(info_dict)
     page.closeDiv()
 
@@ -117,10 +137,11 @@ def generate_html(res_path):
         
         gps_start = gps_folder.split("_")[0]
         gps_end = gps_folder.split("_")[1]
+        gps_event = str((int(gps_start) + int(gps_end)) // 2)
         res_id = "{}-{}".format(gps_start, gps_end)
-        t1 = Time(gps_start, format="gps")
+        t1 = Time(gps_event, format="gps")
         t2 = Time(t1, format="iso", scale="utc")
-        gps_date = "{} UTC (GPS: {})\n".format(t2, gps_start)
+        gps_date = "{} UTC (GPS: {})\n".format(t2, gps_event)
         
         if above_thr:
             color_key = "danger"
@@ -212,8 +233,7 @@ def generate_html(res_path):
         
         code = [PLOTS_SCRIPT_NAME]
         code.append("--ipath {}".format(res_path))
-        code.append("--imfs_to_plot {}".format(",".join([str(i) for i in range(1, SUMMARY_IMFS + 1)])))
-        code.append("--comparison True")
+        code.append("--comparison {}".format(",".join([str(i) for i in range(1, SUMMARY_IMFS + 1)])))
         page.addCommandLine(" ".join(code))
         
         page.closeDiv()

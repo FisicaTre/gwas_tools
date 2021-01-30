@@ -50,7 +50,7 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
     imf_ia_name : str
         imf instantaneous amplitude name
     gps1 : int
-        gps start
+        gps of the event
     samp_freq : int
         sampling frequency
     title : str
@@ -66,7 +66,8 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
         gps_date = "GPS: {:d} | t$_0$: {} UTC\n".format(gps1, t2)
     else:
         gps_date = ""
-    x = np.arange(0, len(pred) / samp_freq, 1 / samp_freq, dtype=float)
+    #x = np.arange(0, len(pred) / samp_freq, 1 / samp_freq, dtype=float)
+    x = np.arange(-len(pred) / (2.0 * samp_freq), len(pred) / (2.0 * samp_freq), 1 / samp_freq, dtype=float)
     font_size = 16
 
     fig, ax1 = plt.subplots()
@@ -109,7 +110,7 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
     target_channel_name : str
         name of the channel from which `ias` are computed
     gps1 : int
-        gps start
+        gps of the event
     samp_freq : int
         sampling frequency
     out_path : str
@@ -128,7 +129,6 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
                 plot_imf(predictors[:, plot_idxs[0]], u, sum_envelope, target_channel_name + " (combo)",
                          gps1, samp_freq, "$\\rho$ = {:.4f}".format(c),
                          "combo_imf_{}_culprit".format("+".join([str(i + 1) for i in plot_idxs])), out_path)
-                         #gps1, samp_freq, "$\\rho$ = {:.4f}".format(c), "combo_{}".format(u), out_path)
             
             
 def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5]):
@@ -197,8 +197,8 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path,
         #ax.set_xticklabels(["{:d}".format(val) for val in np.arange(plot_t_min, plot_t_max + plot_t_step, plot_t_step)])
         #ax.set_yticks(list(np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)))
         #ax.set_yticklabels(["{:d}".format(val) for val in np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)])
-        ax.set_xlabel("t - t$_0$ [s]", fontsize=16)
-        ax.set_title(gps_date, fontsize=16)
+        ax.set_xlabel("t - t$_0$ [s]\n" + gps_date, fontsize=16)
+        #ax.set_title(gps_date, fontsize=16)
         cbar = ax.colorbar(clim=(0, 15), location="right")
         cbar.set_label("Normalized energy", fontsize=16)
         plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
@@ -274,8 +274,8 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
         #ax.set_xticklabels(["{:d}".format(val) for val in np.arange(plot_t_min, plot_t_max + plot_t_step, plot_t_step)])
         #ax.set_yticks(list(np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)))
         #ax.set_yticklabels(["{:d}".format(val) for val in np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)])
-        ax.set_xlabel("t - t$_0$ [s]", fontsize=16)
-        ax.set_title(gps_date, fontsize=16)
+        ax.set_xlabel("t - t$_0$ [s]\n" + gps_date, fontsize=16)
+        #ax.set_title(gps_date, fontsize=16)
         cbar = ax.colorbar(clim=(0, 15), location="right")
         cbar.set_label("Normalized energy", fontsize=16)
         plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
