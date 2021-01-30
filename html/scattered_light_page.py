@@ -1,4 +1,4 @@
-#  scattered_light_page.py - this file is part of the asr pagkage,
+#  scattered_light_page.py - this file is part of the asr package,
 #  also known as "adaptive scattering recognizer".
 #  Copyright (C) 2020- Stefano Bianchi
 #

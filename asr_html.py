@@ -1,4 +1,4 @@
-#  asr_html.py - this file is part of the asr pagkage,
+#  asr_html.py - this file is part of the asr package,
 #  also known as "adaptive scattering recognizer".
 #  Copyright (C) 2020- Stefano Bianchi
 #
