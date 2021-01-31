@@ -31,8 +31,9 @@ from .common import defines
 def run_tool(gps, target_channel_name, channels_file, out_path,
              fs, f_lowpass, n_scattering=1, smooth_win=50):
     """Run the analysis.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     gps : str
         comma-separated starting and ending GPS
     target_channel_name : str

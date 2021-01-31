@@ -28,8 +28,9 @@ from gwdetchar.scattering import get_fringe_frequency
 
 def normalize(vec):
     """Normalize a vector to zero mean and unit standard deviation.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     vec : numpy array
     """
     norm_vec = (vec - np.nanmean(vec)) / np.nanstd(vec)
@@ -39,8 +40,9 @@ def normalize(vec):
 
 def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_name, save_path):
     """Plot of the instantaneous amplitude and predictor.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     pred : numpy array
         predictor
     pred_name : str
@@ -99,8 +101,9 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
     
 def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1, samp_freq, out_path, thr=-1.0):
     """Plot sum of more instantaneous amplitudes and the predictor.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     plot_channels : list of str
         channels names
     ias : numpy array
@@ -133,8 +136,9 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
             
 def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5]):
     """Omegagram plot with download of the target channel.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     pred : numpy array
         predictor
     target_name : str
@@ -209,8 +213,9 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path,
         
 def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5]):
     """Omegagram plot.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     pred : numpy array
         predictor
     target : numpy array
@@ -286,8 +291,9 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
 
 def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=10):
     """Summary histogram of culprits found for a certain imf.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     culprits : list of str
         channels names
     title : str
@@ -341,8 +347,9 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
     
 def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, batch=10):
     """Summary of correlations for each GPS for a certain imf.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     gps_list : list of str
         gps
     corr_list : list of float

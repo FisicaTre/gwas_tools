@@ -25,8 +25,9 @@ from .common import defines
 
 def plot_imfs_arg(arg):
     """Check on imfs to plot.
-    Parameters:
-    -----------                                            
+    
+    Parameters
+    ----------                                            
     arg : str
         imfs to plot arg
     """
@@ -40,8 +41,9 @@ def plot_imfs_arg(arg):
         
 def comparison_arg(arg):
     """Check on comparison.
-    Parameters:
-    -----------                                            
+    
+    Parameters
+    ----------                                            
     arg : str
         comparison arg
     """
@@ -56,8 +58,9 @@ def comparison_arg(arg):
         
 def corr_thr(arg):
     """Check on correlation threshold.
-    Parameters:
-    -----------                                            
+    
+    Parameters
+    ----------                                            
     arg : float
         correlation threshold
     """
@@ -74,8 +77,9 @@ def corr_thr(arg):
 def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
           omegagram_thr=None, comparison=None, comparison_thr=None):
     """Plot analysis results.
-    Parameters:
-    -----------                                            
+    
+    Parameters
+    ----------
     ipath : str
         path to results folder
     single_folder : bool

@@ -39,8 +39,9 @@ OMEGAGRAM_THR = 0.5
 
 def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     """Generate HTML page.
-    Parameters:
-    -----------                                            
+    
+    Parameters
+    ----------                                            
     res_path : str
         path to the analysis folders
     tc_name : str

@@ -22,9 +22,10 @@ from gwpy.table import EventTable
 
 def get_gps_and_freq(glitch_type, gps1, gps2, ifo, save_path=None):
     """Get GPS and peak frequency between `gps1`
-    and `gps2` for glitches of type `glitch_type`
-    Parameters:
-    -----------
+    and `gps2` for glitches of type `glitch_type`.
+    
+    Parameters
+    ----------
     glitch_type : str
         glitch string identifier
     gps1 : str
@@ -35,8 +36,9 @@ def get_gps_and_freq(glitch_type, gps1, gps2, ifo, save_path=None):
         interferometer identifier
     save_path : str
         where to save output in csv format (default : None)
-    Returns:
-    --------
+        
+    Returns
+    -------
     numpy array
         GPS times of the events
     numpy array

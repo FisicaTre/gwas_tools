@@ -22,14 +22,16 @@ from scipy.signal import kaiserord, lfilter, firwin, butter, freqz
 
 def smooth(arr, win):
     """Smooth array.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     arr : numpy array
         input array
     win : int
         smoothing window
-    Returns:
-    --------
+        
+    Returns
+    -------
     numpy array
         smoothed array
     """
@@ -45,14 +47,16 @@ def smooth(arr, win):
 
 def lowpass(x, cutoff):
     """Lowpass filter.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     x : numpy array
         input array
     cutoff : float
         cutoff frequency
-    Returns:
-    --------
+        
+    Returns
+    -------
     numpy array
         lowpassed array
     """
@@ -73,16 +77,18 @@ def lowpass(x, cutoff):
     
 def butter_lowpass(cutoff, f_samp, order=3):
     """Butter filter.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     cutoff : float
         cutoff frequency
     f_samp : float
         sampling frequency
     order : int
         filter order
-    Returns:
-    --------
+        
+    Returns
+    -------
     tuple of float
         filter coefficients
     """
@@ -95,8 +101,9 @@ def butter_lowpass(cutoff, f_samp, order=3):
 
 def butter_lowpass_filter(x, cutoff, f_samp, order=3):
     """Butter filter.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     x : numpy array
         input array
     cutoff : float
@@ -105,8 +112,9 @@ def butter_lowpass_filter(x, cutoff, f_samp, order=3):
         sampling frequency
     order : int
         filter order
-    Returns:
-    --------
+        
+    Returns
+    -------
     numpy array
         filtered array
     """
@@ -118,14 +126,16 @@ def butter_lowpass_filter(x, cutoff, f_samp, order=3):
 
 def mean_frequency(x, f):
     """Array mean frequency.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     x : numpy array
         input array
     f : float
         sampling frequency
-    Returns:
-    --------
+        
+    Returns
+    -------
     float
         mean frequency
     """
@@ -139,14 +149,16 @@ def mean_frequency(x, f):
 
 def mean_amplitude(x, f):
     """Array mean amplitude.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     x : numpy array
         input array
     f : float
         sampling frequency
-    Returns:
-    --------
+        
+    Returns
+    -------
     float
         mean amplitude
     """
@@ -159,8 +171,9 @@ def mean_amplitude(x, f):
 
 def predictor(time, ts, N=1, LAMBDA=1.064, smooth_win=None):
     """Time series predictor.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     time : numpy array
         time array
     ts : numpy array
@@ -171,8 +184,9 @@ def predictor(time, ts, N=1, LAMBDA=1.064, smooth_win=None):
         interferometer wavelenght
     smooth_win : int
         smoothing window
-    Returns:
-    --------
+        
+    Returns
+    -------
     numpy array
         predictor
     """

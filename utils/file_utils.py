@@ -24,14 +24,16 @@ import pickle
 
 def from_mat(mat_file, mat_col):
     """Get array from .mat file.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     mat_file : str
         path to the .mat file
     mat_col : int
         column of the array to get
-    Returns:
-    --------
+        
+    Returns
+    -------
     numpy array
         array from .mat
     """
@@ -43,12 +45,14 @@ def from_mat(mat_file, mat_col):
 
 def yml_exists(yml_path):
     """Check if yml file exists.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     yml_path : str
         path to yml file
-    Returns:
-    --------
+        
+    Returns
+    -------
     bool
         yml existence
     """
@@ -62,12 +66,14 @@ def yml_exists(yml_path):
 
 def imfs_exists(imfs_path):
     """Check if imfs file exists.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     imfs_path : str
         path to imfs file
-    Returns:
-    --------
+        
+    Returns
+    -------
     bool
         imfs existence
     """
@@ -81,12 +87,14 @@ def imfs_exists(imfs_path):
 
 def predictors_exists(predictors_path):
     """Check if predictors file exists.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     predictors_path : str
         path to predictors file
-    Returns:
-    --------
+        
+    Returns
+    -------
     bool
         predictors existence
     """
@@ -100,12 +108,14 @@ def predictors_exists(predictors_path):
 
 def load_yml(yml_path):
     """Load yml file.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     yml_path : str
         path to yml file
-    Returns:
-    --------
+        
+    Returns
+    -------
     dict
         yml file
     """
@@ -118,12 +128,14 @@ def load_yml(yml_path):
 
 def load_imfs(imfs_path):
     """Load imfs file.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     imfs_path : str
         path to imfs file
-    Returns:
-    --------
+        
+    Returns
+    -------
     numpy ndarray
         imfs file
     """
@@ -137,12 +149,14 @@ def load_imfs(imfs_path):
 
 def load_predictors(predictors_path):
     """Load predictors file.
-    Parameters: 
-    -----------
+    
+    Parameters 
+    ----------
     predictors_path : str
         path to predictors file
-    Returns:
-    --------
+        
+    Returns
+    -------
     numpy ndarray
         predictors file
     """

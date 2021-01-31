@@ -42,8 +42,9 @@ JS_FILES = ["https://code.jquery.com/jquery-3.5.1.min.js",
 
 class ScatteredLightPage(object):
     """Class to construct HTML output page of the `asr` package analysis.
-        Parameters:
-        -----------
+    
+        Parameters
+        ----------
         title : str
             page title
         kwargs : dict
@@ -59,8 +60,9 @@ class ScatteredLightPage(object):
     
     def addParagraph(self, text, **kwargs):
         """Add <p>.
-        Parameters:
-        -----------
+        
+        Parameters
+        ----------
         text : str
             <p> text
         kwargs : dict
@@ -71,8 +73,9 @@ class ScatteredLightPage(object):
         
     def addLink(self, text, **kwargs):
         """Add <a>.
-        Parameters:
-        -----------
+        
+        Parameters
+        ----------
         text : str
             <a> text
         kwargs : dict
@@ -83,14 +86,16 @@ class ScatteredLightPage(object):
 
     def getFormattedLink(self, text, **kwargs):
         """Return <a> with formatted text.
-        Parameters:
-        -----------
+        
+        Parameters
+        ----------
         text : str
             <a> text
         kwargs : dict
             <a> attributes
-        Returns:
-        --------
+            
+        Returns
+        -------
         str
             <a **kwargs>text</a>
         """
@@ -104,8 +109,9 @@ class ScatteredLightPage(object):
 
     def openDiv(self, **kwargs):
         """Add <div>.
-        Parameters:
-        -----------
+        
+        Parameters
+        ----------
         kwargs : dict
             <div> attributes
         """
@@ -120,8 +126,9 @@ class ScatteredLightPage(object):
         
     def addSection(self, title, **kwargs):
         """Add <p> with bold text magnified to 180%.
-        Parameters:
-        -----------
+        
+        Parameters
+        ----------
         title : str
             <p> text
         kwargs : dict
@@ -133,8 +140,9 @@ class ScatteredLightPage(object):
         
     def addSubsection(self, title, **kwargs):
         """Add <p> with bold text magnified to 150%.
-        Parameters:
-        -----------                                            
+        
+        Parameters
+        ----------                                            
         title : str
             <p> text
         kwargs : dict
@@ -146,8 +154,9 @@ class ScatteredLightPage(object):
         
     def addSubsubsection(self, title, **kwargs):
         """Add <p> with bold text magnified to 120%.
-        Parameters:
-        -----------                                            
+        
+        Parameters
+        ----------                                            
         title : str
             <p> text
         kwargs : dict
@@ -159,8 +168,9 @@ class ScatteredLightPage(object):
         
     def addBulletList(self, items):
         """Add bullet list.
-        Parameters:
-        -----------                                            
+        
+        Parameters
+        ----------                                            
         items : dict
             list items
         """
@@ -172,8 +182,9 @@ class ScatteredLightPage(object):
         
     def parametersTable(self, parameters, start, end):
         """Add parameters analysis table.
-        Parameters:
-        -----------                        
+        
+        Parameters
+        ----------                        
         parameters : dict
             analysis parameters
         start : int
@@ -209,8 +220,9 @@ class ScatteredLightPage(object):
         
     def addCommandLine(self, code):
         """Add box with command line.
-        Parameters:
-        -----------                                            
+        
+        Parameters
+        ----------                                            
         code : str
             command line
         """
@@ -223,8 +235,9 @@ class ScatteredLightPage(object):
         
     def addPlot(self, plot_name, plot_id):
         """Add plot.
-        Parameters:
-        -----------                                            
+        
+        Parameters
+        ----------                                            
         plot_name : str
             path to plot
         plot_id : str
@@ -245,8 +258,9 @@ class ScatteredLightPage(object):
     
     def savePage(self, path):
         """Save page.
-        Parameters:
-        -----------                                            
+        
+        Parameters
+        ----------                                            
         path : str
             save path
         """

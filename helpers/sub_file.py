@@ -22,8 +22,9 @@ import os
 class SubFile(object):
     """Class to create a .sub file to be
     submitted with `condor_submit`.
-    Parameters:
-    -----------
+    
+    Parameters
+    ----------
     name : str
         name of the .sub file
     universe : str
@@ -53,8 +54,9 @@ class SubFile(object):
 
     def addExecutable(self, exec_name):
         """Add `executable` to .sub file.
-        Parameters:
-        -----------
+        
+        Parameters
+        ----------
         exec_name : str
             executable name
         """
@@ -64,8 +66,9 @@ class SubFile(object):
 
     def addArguments(self, args):
         """Add `arguments` to .sub file.
-        Parameters:
-        -----------
+        
+        Parameters
+        ----------
         args : str
             arguments as a single string
         """
@@ -75,11 +78,12 @@ class SubFile(object):
 
     def addAccountingGroupInfo(self, group, user):
         """Add `accounting_group` and `accounting_group_user` to .sub file.
-        Parameters:
-        -----------
-        accounting_group : str
+        
+        Parameters
+        ----------
+        group : str
             accounting group
-        accounting_group_user : str
+        user : str
             accounting group user
         """
         self.addBlankLine()
@@ -89,8 +93,9 @@ class SubFile(object):
 
     def addSpecs(self, ncpu, memory):
         """Add `request_cpus` and `request_memory` to .sub file.
-        Parameters:
-        -----------
+        
+        Parameters
+        ----------
         ncpu : int
             number of cpus
         memory : int
@@ -103,8 +108,9 @@ class SubFile(object):
 
     def addLogs(self, output, error, to_append=[]):
         """Add `output` and `error` to .sub file.
-        Parameters:
-        -----------
+        
+        Parameters
+        ----------
         output : str
             path to the output folder
         error : str
@@ -122,7 +128,7 @@ class SubFile(object):
 
 
     def save(self):
-        """Save .sub file to `path`.
+        """Save .sub file to `name`.
         """
         self.addBlankLine()
         self.sub_text.append("notification = never")
