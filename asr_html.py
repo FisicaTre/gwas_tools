@@ -22,6 +22,7 @@ import glob
 import re
 from .utils import file_utils
 from datetime import datetime
+from datetime import timedelta
 from astropy.time import Time
 from .html import scattered_light_page as slp
 from .common import defines
@@ -60,11 +61,12 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     res_folders.sort()
 
     # title
-    curr_date = datetime.today().strftime('%Y%m%d')
+    page_date = datetime.today() - timedelta(days=1)
+    curr_date = page_date.strftime('%Y%m%d')
     curr_folder = os.path.join(SAVE_PATH, curr_date, "_".join(tc_name.split(":")))
     curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
     os.system("mkdir -p {}".format(curr_plots_folder))
-    title = "Scattered light analysis ({})".format(datetime.today().strftime('%Y-%m-%d'))
+    title = "Scattered light analysis ({})".format(page_date.strftime('%Y-%m-%d'))
     page = slp.ScatteredLightPage(title=title, **{"style": "body { background-color: white; }"})
     
     # pipeline code

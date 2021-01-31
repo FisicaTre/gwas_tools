@@ -49,7 +49,8 @@ class ScatteredLightPage(object):
         kwargs : dict
             general page attributes
         """
-    
+   
+ 
     def __init__(self, title="", **kwargs):
         self.page = htmlio.new_bootstrap_page(title=title, script=JS_FILES, css=CSS_FILES, **kwargs)
         if title != "":
