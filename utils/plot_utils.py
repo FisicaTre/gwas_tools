@@ -79,8 +79,11 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
     ls = l1 + l2
     leg = plt.legend(ls, [l.get_label() for l in ls], ncol=1, loc=2)# bbox_to_anchor=[0, 1], loc="lower left")
     #plt.legend(ls, [l.get_label() for l in ls], ncol=1, bbox_to_anchor=[0, 1], loc="lower left")
-    plt.draw()
-    leg_height_ratio = leg.get_window_extent().height / ax1.get_window_extent().height
+    try:
+        plt.draw()
+        leg_height_ratio = leg.get_window_extent().height / ax1.get_window_extent().height
+    except:
+        leg_height_ratio = 0.25
     
     ax1.set_ylim(0, np.max(pred) + (np.max(pred) - np.min(pred)) * (leg_height_ratio + 0.1))
     ax2.set_ylim(0, np.max(imf_ia) + (np.max(imf_ia) - np.min(imf_ia)) * (leg_height_ratio + 0.1))
