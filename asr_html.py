@@ -87,6 +87,9 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     page.openDiv(id_="page-command-line")
     code = [HTML_SCRIPT_NAME]
     code.append("--ipath {}".format(res_path))
+    code.append("--target_channel {}".format(tc_name))
+    code.append("--channels_list {}".format(ch_list_file))
+    code.append("--gspy_list {}".format(gspy_file))
     page.addCommandLine(" ".join(code))
     page.closeDiv()
     page.closeDiv()
@@ -171,7 +174,10 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
         code = [SCRIPT_NAME]
         for key in parameters.keys():
             code.append("--" + key)
-            code.append(str(parameters[key]))
+            if key == defines.OUT_PATH_KEY:
+                code.append(os.path.sep.join(parameters[key].split(os.path.sep)[:-1]))
+            else:
+                code.append(str(parameters[key]))
         page.addCommandLine(" ".join(code))
         page.closeDiv()
         
@@ -247,12 +253,14 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
             page.addSubsection("Imf {}".format(i), id_="imf-{}-section-summary".format(i))
             summary_name = os.path.join(res_path, "comparison", "imf_{}_summary_{}.png".format(i, tc_name))
             corr_summary_name = os.path.join(res_path, "comparison", "imf_{}_corr_summary_{}.png".format(i, tc_name))
-            summary_to_save = os.path.join(curr_plots_folder, "imf-{}-summary-{}.png".format(i, res_id))
-            corr_summary_to_save = os.path.join(curr_plots_folder, "imf-{}-corr-summary-{}.png".format(i, res_id))
-            os.system("cp {} {}".format(summary_name, summary_to_save))
-            os.system("cp {} {}".format(corr_summary_name, corr_summary_to_save))
-            page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-summary-{}.png".format(i, res_id)), "imf-{}-summary".format(i))
-            page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-corr-summary-{}.png".format(i, res_id)), "imf-{}-corr-summary".format(i))
+            summary_to_save = os.path.join(curr_plots_folder, "imf-{}-summary.png".format(i))
+            corr_summary_to_save = os.path.join(curr_plots_folder, "imf-{}-corr-summary.png".format(i))
+            if os.path.exists(summary_name):
+                os.system("cp {} {}".format(summary_name, summary_to_save))
+                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-summary.png".format(i)), "imf-{}-summary".format(i))
+            if os.path.exists(corr_summary_name):
+                os.system("cp {} {}".format(corr_summary_name, corr_summary_to_save))
+                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-corr-summary.png".format(i)), "imf-{}-corr-summary".format(i))
             page.closeDiv()
     
     html_file = os.path.join(curr_folder, "index.html")
