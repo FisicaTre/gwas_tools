@@ -33,7 +33,6 @@ class SubFile(object):
         description string of the sub file (default : empty)
     """
 
-    
     def __init__(self, name, universe="vanilla", description=""):
         if name[-4:] != ".sub":
             raise ValueError("Wrong file extension.")
@@ -45,12 +44,10 @@ class SubFile(object):
         self.addBlankLine()
         self.sub_text.append("universe = {}".format(universe))
 
-
     def addBlankLine(self):
         """Add blank line to .sub file.
         """
         self.sub_text.append("")
-
 
     def addExecutable(self, exec_name):
         """Add `executable` to .sub file.
@@ -63,7 +60,6 @@ class SubFile(object):
         self.addBlankLine()
         self.sub_text.append("executable = {}".format(exec_name))
 
-
     def addArguments(self, args):
         """Add `arguments` to .sub file.
         
@@ -74,7 +70,6 @@ class SubFile(object):
         """
         self.addBlankLine()
         self.sub_text.append("arguments = \" {} \"".format(args))
-
 
     def addAccountingGroupInfo(self, group, user):
         """Add `accounting_group` and `accounting_group_user` to .sub file.
@@ -90,7 +85,6 @@ class SubFile(object):
         self.sub_text.append("accounting_group = {}".format(group))
         self.sub_text.append("accounting_group_user = {}".format(user))
 
-
     def addSpecs(self, ncpu, memory):
         """Add `request_cpus` and `request_memory` to .sub file.
         
@@ -104,7 +98,6 @@ class SubFile(object):
         self.addBlankLine()
         self.sub_text.append("request_cpus = {:d}".format(ncpu))
         self.sub_text.append("request_memory = {:d}".format(memory))
-
 
     def addLogs(self, output, error, to_append=[]):
         """Add `output` and `error` to .sub file.
@@ -126,7 +119,6 @@ class SubFile(object):
         self.sub_text.append("output = {}".format(out_path))
         self.sub_text.append("error = {}".format(err_path))
 
-
     def save(self):
         """Save .sub file to `name`.
         """
@@ -138,4 +130,3 @@ class SubFile(object):
         f = open(self.name, "w")
         f.write(sub_content)
         f.close()
-

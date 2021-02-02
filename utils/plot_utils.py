@@ -15,6 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,7 +24,6 @@ from astropy.time import Time
 from scipy.stats import pearsonr
 from gwpy.timeseries import TimeSeries
 from gwpy.segments import Segment
-from gwdetchar.scattering import get_fringe_frequency
 
 
 def normalize(vec):
@@ -68,7 +68,7 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
         gps_date = "GPS: {:d} | t$_0$: {} UTC\n".format(gps1, t2)
     else:
         gps_date = ""
-    #x = np.arange(0, len(pred) / samp_freq, 1 / samp_freq, dtype=float)
+    # x = np.arange(0, len(pred) / samp_freq, 1 / samp_freq, dtype=float)
     x = np.arange(-len(pred) / (2.0 * samp_freq), len(pred) / (2.0 * samp_freq), 1 / samp_freq, dtype=float)
     font_size = 16
 
@@ -77,8 +77,8 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
     l1 = ax1.plot(x[:len(pred)], pred, "r-", label=pred_name)
     l2 = ax2.plot(x[:len(imf_ia)], imf_ia, "b-", label=imf_ia_name)
     ls = l1 + l2
-    leg = plt.legend(ls, [l.get_label() for l in ls], ncol=1, loc=2)# bbox_to_anchor=[0, 1], loc="lower left")
-    #plt.legend(ls, [l.get_label() for l in ls], ncol=1, bbox_to_anchor=[0, 1], loc="lower left")
+    leg = plt.legend(ls, [l.get_label() for l in ls], ncol=1, loc=2)  # bbox_to_anchor=[0, 1], loc="lower left")
+    # plt.legend(ls, [l.get_label() for l in ls], ncol=1, bbox_to_anchor=[0, 1], loc="lower left")
     try:
         plt.draw()
         leg_height_ratio = leg.get_window_extent().height / ax1.get_window_extent().height
@@ -87,16 +87,16 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
     
     ax1.set_ylim(0, np.max(pred) + (np.max(pred) - np.min(pred)) * (leg_height_ratio + 0.1))
     ax2.set_ylim(0, np.max(imf_ia) + (np.max(imf_ia) - np.min(imf_ia)) * (leg_height_ratio + 0.1))
-    #ax1.set_ylim(0, np.max(pred) + (np.max(pred) - np.min(pred)) * 0.15)
-    #ax2.set_ylim(0, np.max(imf_ia) + (np.max(imf_ia) - np.min(imf_ia)) * 0.15)
+    # ax1.set_ylim(0, np.max(pred) + (np.max(pred) - np.min(pred)) * 0.15)
+    # ax2.set_ylim(0, np.max(imf_ia) + (np.max(imf_ia) - np.min(imf_ia)) * 0.15)
     ax1.set_ylabel("Predictor [$Hz$]", color="r", fontsize=font_size)
     ax1.set_xlabel("t - t$_0$ [s]\n" + gps_date, fontsize=font_size)
     ax2.set_ylabel("IA", color="b", fontsize=font_size)
     ax1.grid(True)
     ax2.grid(False)
-    #txt_css = {"backgroundcolor": "black", "color":  "white"}
-    #at = AnchoredText(s=title, loc=2, prop=txt_css)
-    #ax1.add_artist(at)
+    # txt_css = {"backgroundcolor": "black", "color":  "white"}
+    # at = AnchoredText(s=title, loc=2, prop=txt_css)
+    # ax1.add_artist(at)
     plt.title(title)
     plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
     plt.close("all")
@@ -170,10 +170,10 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path,
         colormap = "viridis"
         plot_t_min = (gps1 - gps2) // 2
         plot_t_max = (gps2 - gps1) // 2
-        #plot_t_step = 5
-        #plot_f_min = 6
-        #plot_f_max = 50
-        #plot_f_step = 10
+        # plot_t_step = 5
+        # plot_f_min = 6
+        # plot_f_max = 50
+        # plot_f_step = 10
         
         t1 = Time(epoch, format="gps")
         t2 = Time(t1, format="iso", scale="utc")
@@ -200,12 +200,14 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path,
             ax.plot(np.linspace(plot_t_min, plot_t_max, len(ts_l2)), ts_l2 * i, color="r", lw=line_width)
         ax.set_xlim(plot_t_min, plot_t_max)
         ax.set_ylim(plot_f_min, plot_f_max)
-        #ax.set_xticks(np.arange(plot_t_min, plot_t_max + plot_t_step, plot_t_step))
-        #ax.set_xticklabels(["{:d}".format(val) for val in np.arange(plot_t_min, plot_t_max + plot_t_step, plot_t_step)])
-        #ax.set_yticks(list(np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)))
-        #ax.set_yticklabels(["{:d}".format(val) for val in np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)])
+        # ax.set_xticks(np.arange(plot_t_min, plot_t_max + plot_t_step, plot_t_step))
+        # ax.set_xticklabels(["{:d}".format(val) for val in np.arange(plot_t_min,
+        # plot_t_max + plot_t_step, plot_t_step)])
+        # ax.set_yticks(list(np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)))
+        # ax.set_yticklabels(["{:d}".format(val) for val in np.arange(plot_f_min,
+        # plot_f_max + plot_f_step, plot_f_step)])
         ax.set_xlabel("t - t$_0$ [s]\n" + gps_date, fontsize=16)
-        #ax.set_title(gps_date, fontsize=16)
+        # ax.set_title(gps_date, fontsize=16)
         cbar = ax.colorbar(clim=(0, 15), location="right")
         cbar.set_label("Normalized energy", fontsize=16)
         plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
@@ -247,17 +249,17 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
         colormap = "viridis"
         plot_t_min = (gps1 - gps2) // 2
         plot_t_max = (gps2 - gps1) // 2
-        #plot_t_step = 5
-        #plot_f_min = 0
-        #plot_f_max = 50
-        #plot_f_step = 10
+        # plot_t_step = 5
+        # plot_f_min = 0
+        # plot_f_max = 50
+        # plot_f_step = 10
         
         t1 = Time(epoch, format="gps")
         t2 = Time(t1, format="iso", scale="utc")
         gps_date = "GPS: {:d} | t$_0$: {} UTC\n".format(epoch, t2)
 
         ts_l2 = pred * correction_factor
-        #ts = TimeSeries(target, t0=gps1, sample_rate=fs, dtype=float)#.astype("float64")
+        # ts = TimeSeries(target, t0=gps1, sample_rate=fs, dtype=float)#.astype("float64")
         ts = TimeSeries(target, times=np.arange(gps1, gps1 + len(target) / fs, 1 / fs, dtype=float), dtype=float)
         ts.times = ts.times.value - epoch
         tsq = ts.q_transform(outseg=Segment(plot_t_min, plot_t_max), tres=0.2, fres=0.2, whiten=True)
@@ -278,12 +280,14 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
             ax.plot(np.linspace(plot_t_min, plot_t_max, len(ts_l2)), ts_l2 * i, color="r", lw=line_width)
         ax.set_xlim(plot_t_min, plot_t_max)
         ax.set_ylim(plot_f_min, plot_f_max)
-        #ax.set_xticks(np.arange(plot_t_min, plot_t_max + plot_t_step, plot_t_step))
-        #ax.set_xticklabels(["{:d}".format(val) for val in np.arange(plot_t_min, plot_t_max + plot_t_step, plot_t_step)])
-        #ax.set_yticks(list(np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)))
-        #ax.set_yticklabels(["{:d}".format(val) for val in np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)])
+        # ax.set_xticks(np.arange(plot_t_min, plot_t_max + plot_t_step, plot_t_step))
+        # ax.set_xticklabels(["{:d}".format(val) for val in np.arange(plot_t_min,
+        # plot_t_max + plot_t_step, plot_t_step)])
+        # ax.set_yticks(list(np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)))
+        # ax.set_yticklabels(["{:d}".format(val) for val in np.arange(plot_f_min,
+        # plot_f_max + plot_f_step, plot_f_step)])
         ax.set_xlabel("t - t$_0$ [s]\n" + gps_date, fontsize=16)
-        #ax.set_title(gps_date, fontsize=16)
+        # ax.set_title(gps_date, fontsize=16)
         cbar = ax.colorbar(clim=(0, 15), location="right")
         cbar.set_label("Normalized energy", fontsize=16)
         plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
@@ -336,7 +340,8 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
             plt.xticks(np.arange(len(counts[i*batch:(i+1)*batch])), uniq[i*batch:(i+1)*batch],
                        rotation=45, horizontalalignment="right")
             plt.title(title)
-            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + ".png"), bbox_inches="tight", dpi=300)
+            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + ".png"),
+                        bbox_inches="tight", dpi=300)
             plt.close("all")
         if len(counts) % batch != 0:
             plt.figure()
@@ -344,7 +349,8 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
             plt.xticks(np.arange(len(counts[n*batch:])), uniq[n*batch:],
                        rotation=45, horizontalalignment="right")
             plt.title(title)
-            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + ".png"), bbox_inches="tight", dpi=300)
+            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + ".png"),
+                        bbox_inches="tight", dpi=300)
             plt.close("all")
     
     
@@ -353,9 +359,9 @@ def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, batch=10
     
     Parameters
     ----------
-    gps_list : list of str
+    gps_list : list
         gps
-    corr_list : list of float
+    corr_list : list
         correlations
     title : str
         plot title
@@ -383,13 +389,16 @@ def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, batch=10
             plt.xticks(np.arange(len(gps_list[i*batch:(i+1)*batch])), gps_list[i*batch:(i+1)*batch],
                        rotation=45, horizontalalignment="right")
             plt.title(title)
-            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + ".png"), bbox_inches="tight", dpi=300)
+            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + ".png"),
+                        bbox_inches="tight", dpi=300)
             plt.close("all")
         if len(gps_list) % batch != 0:
             plt.figure()
             plt.bar(np.arange(len(gps_list[n*batch:])), corr_list[n*batch:], width=0.8)
             plt.ylim(-1, 1)
-            plt.xticks(np.arange(len(gps_list[n*batch:])), gps_list[n*batch:], rotation=45, horizontalalignment="right")
+            plt.xticks(np.arange(len(gps_list[n*batch:])), gps_list[n*batch:], rotation=45,
+                       horizontalalignment="right")
             plt.title(title)
-            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + ".png"), bbox_inches="tight", dpi=300)
+            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + ".png"),
+                        bbox_inches="tight", dpi=300)
             plt.close("all")

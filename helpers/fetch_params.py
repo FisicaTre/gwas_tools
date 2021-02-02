@@ -44,7 +44,7 @@ def get_gps_and_freq(glitch_type, gps1, gps2, ifo, save_path=None):
     numpy array
         Glitches peak frequencies
     """
-    glitches_list = EventTable.fetch("gravityspy", "glitches", #_v2d0",
+    glitches_list = EventTable.fetch("gravityspy", "glitches",  # _v2d0",
                                      selection=["ml_label={}".format(glitch_type),
                                                 "0.9<=ml_confidence<=1.0",
                                                 "12<=snr<=20", "ifo={}".format(ifo),

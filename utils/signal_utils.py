@@ -15,6 +15,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+
 import numpy as np
 from gwpy.timeseries import TimeSeries
 from scipy.signal import kaiserord, lfilter, firwin, butter, freqz
@@ -64,17 +65,18 @@ def lowpass(x, cutoff):
     x_low = x.lowpass(1 / cutoff).value
 
     return x_low
-    #passband_ripple = 60
-    #passband_ripple_db = (10 ** (passband_ripple / 20) - 1) / (10 ** (passband_ripple / 20) + 1)
-    #cutoff_norm = cutoff / (f_samp / 2)
-    #width_percentage = -0.98 * steepness + 0.99
-    #width = width_percentage * (1 - cutoff_norm)
-    #num_taps, beta = kaiserord(passband_ripple, width)
-    #taps = firwin(num_taps, cutoff_norm, window=('kaiser', beta))
-    #filtered_x = lfilter(taps, 1.0, x)
+    # passband_ripple = 60
+    # passband_ripple_db = (10 ** (passband_ripple / 20) - 1) / (10 ** (passband_ripple / 20) + 1)
+    # cutoff_norm = cutoff / (f_samp / 2)
+    # width_percentage = -0.98 * steepness + 0.99
+    # width = width_percentage * (1 - cutoff_norm)
+    # num_taps, beta = kaiserord(passband_ripple, width)
+    # taps = firwin(num_taps, cutoff_norm, window=('kaiser', beta))
+    # filtered_x = lfilter(taps, 1.0, x)
 
-    #return filtered_x
-    
+    # return filtered_x
+
+
 def butter_lowpass(cutoff, f_samp, order=3):
     """Butter filter.
     

@@ -15,9 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+
 import os
-import sys
-import argparse
 import glob
 import re
 from .utils import file_utils
@@ -36,6 +35,7 @@ HTML_SCRIPT_NAME = "./scattered_light_html.py"
 PIPELINE_SCRIPT_NAME = "./asr_pipeline.py"
 SUMMARY_IMFS = 2
 OMEGAGRAM_THR = 0.5
+
 
 def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     """Generate HTML page.
@@ -71,9 +71,10 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     page = slp.ScatteredLightPage(title=title, **{"style": "body { background-color: white; }"})
     
     # pipeline code
-    page.openDiv(id_="pipeline-command-line-section")
-    page.addParagraph("The entire pipeline (analysis, plots, and summary page) can be reproduced with the following command line:", class_="mb-2")
-    page.openDiv(id_="pipeline-command-line")
+    page.openDiv(**{"id_": "pipeline-command-line-section"})
+    page.addParagraph("The entire pipeline (analysis, plots, and summary page) "
+                      "can be reproduced with the following command line:", **{"class_": "mb-2"})
+    page.openDiv(**{"id_": "pipeline-command-line"})
     code = [PIPELINE_SCRIPT_NAME]
     code.append("--target_channel {}".format(tc_name))
     code.append("--channels_list {}".format(ch_list_file))
@@ -82,9 +83,9 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     page.closeDiv()
 
     # html generation code
-    page.openDiv(id_="page-command-line-section")
-    page.addParagraph("This page can be reproduced with the following command line:", class_="mb-2")
-    page.openDiv(id_="page-command-line")
+    page.openDiv(**{"id_": "page-command-line-section"})
+    page.addParagraph("This page can be reproduced with the following command line:", **{"class_": "mb-2"})
+    page.openDiv(**{"id_": "page-command-line"})
     code = [HTML_SCRIPT_NAME]
     code.append("--ipath {}".format(res_path))
     code.append("--target_channel {}".format(tc_name))
@@ -95,8 +96,8 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     page.closeDiv()
     
     # info
-    page.addSection("Info", id_="info-section")
-    page.openDiv(id_="info-list")
+    page.addSection("Info", **{"id_": "info-section"})
+    page.openDiv(**{"id_": "info-list"})
     
     if len(res_folders) > 0:
         os.system("cp {} {}".format(ch_list_file, curr_folder))
@@ -115,8 +116,8 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     page.closeDiv()
 
     # results   
-    page.addSection("Results", id_="results-section") 
-    page.openDiv(id_="results")
+    page.addSection("Results", **{"id_": "results-section"})
+    page.openDiv(**{"id_": "results"})
     for gps_folder in res_folders:
         gps_path = os.path.join(res_path, gps_folder)
         res_file = file_utils.load_yml(gps_path)
@@ -127,7 +128,7 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
             try:
                 imfs_data[i] = {}
                 imfs_data[i]["Culprit"] = res_file[defines.CORR_SECT_KEY][i - 1][defines.CHANNEL_KEY]
-                #imfs_data[i]["Correlation"] = "{:.4f}".format(res_file[defines.CORR_SECT_KEY][i - 1][defines.CORR_KEY])
+                # imfs_data[i]["Correlation"] = "{:.4f}".format(res_file[defines.CORR_SECT_KEY][i - 1][defines.CORR_KEY])
                 imfs_data[i]["Mean frequency"] = "{:.4f} Hz".format(res_file[defines.CORR_SECT_KEY][i - 1][defines.MEAN_FREQ_KEY])
                 imfs_data[i]["omegagram"] = os.path.exists(os.path.join(gps_path, "imf_{:d}_omegagram.png".format(i)))
                 imfs_data[i]["combo"] = ""
@@ -154,10 +155,10 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
         else:
             color_key = "warning"
         
-        page.openDiv(class_="card border-{} mb-1 shadow-sm".format(color_key))
+        page.openDiv(**{"class_": "card border-{} mb-1 shadow-sm".format(color_key)})
         
         # header
-        page.openDiv(class_="card-header text-white bg-{}".format(color_key))
+        page.openDiv(**{"class_": "card-header text-white bg-{}".format(color_key)})
         page.addLink("{}".format(gps_date),
                      **{"class": "btn card-link cis-link",
                         "data-toggle": "collapse",
@@ -165,12 +166,12 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
         page.closeDiv()
         
         # body
-        page.openDiv(id_=res_id, class_="collapse")
-        page.openDiv(class_="card-body")
+        page.openDiv(**{"id_": res_id, "class_": "collapse"})
+        page.openDiv(**{"class_": "card-body"})
         page.parametersTable(parameters, int(gps_start), int(gps_end))
         
-        page.openDiv(id_="command-line-{}".format(res_id))
-        page.addParagraph("This analysis can be reproduced with the following command line:", class_="mb-2")
+        page.openDiv(**{"id_": "command-line-{}".format(res_id)})
+        page.addParagraph("This analysis can be reproduced with the following command line:", **{"class_": "mb-2"})
         code = [SCRIPT_NAME]
         for key in parameters.keys():
             code.append("--" + key)
@@ -181,8 +182,8 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
         page.addCommandLine(" ".join(code))
         page.closeDiv()
         
-        page.openDiv(id_="plots-command-line-{}".format(res_id))
-        page.addParagraph("Plots can be reproduced with the following command line:", class_="mb-2")
+        page.openDiv(**{"id_": "plots-command-line-{}".format(res_id)})
+        page.addParagraph("Plots can be reproduced with the following command line:", **{"class_": "mb-2"})
         code = [PLOTS_SCRIPT_NAME]
         code.append("--ipath {}".format(gps_path))
         code.append("--imfs_to_plot {}".format(",".join([str(i) for i in range(1, SUMMARY_IMFS + 1)])))
@@ -192,36 +193,39 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
         
         for i in range(1, SUMMARY_IMFS + 1):
             if i in imfs_data.keys():
-                page.openDiv(id_="imf-{}-{}".format(i, res_id))
-                page.addSubsection("Imf {}".format(i), id_="imf-{}-{}-section".format(i, res_id))
+                page.openDiv(**{"id_": "imf-{}-{}".format(i, res_id)})
+                page.addSubsection("Imf {}".format(i), **{"id_": "imf-{}-{}-section".format(i, res_id)})
                 
                 omegagram = imfs_data[i].pop("omegagram")
                 combo_file = imfs_data[i].pop("combo")
                 
-                page.openDiv(id_="imf-{}-{}-info".format(i, res_id))
+                page.openDiv(**{"id_": "imf-{}-{}-info".format(i, res_id)})
                 page.addBulletList(imfs_data[i])
                 page.closeDiv()
             
                 imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
                 imf_to_save = os.path.join(curr_plots_folder, "imf-{}-{}.png".format(i, res_id))
                 os.system("cp {} {}".format(imf_plot_name, imf_to_save))
-                page.openDiv(id_="imf-{}-{}-plot".format(i, res_id))
-                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)), "imf-{}-{}".format(i, res_id))
+                page.openDiv(**{"id_": "imf-{}-{}-plot".format(i, res_id)})
+                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
+                             "imf-{}-{}".format(i, res_id))
                 page.closeDiv()
                 
                 if combo_file != "":
                     combo_to_save = os.path.join(curr_plots_folder, "combo-{}-{}.png".format(i, res_id))
                     os.system("cp {} {}".format(combo_file, combo_to_save))
-                    page.openDiv(id_="combo-{}-{}-plot".format(i, res_id))
-                    page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "combo-{}-{}.png".format(i, res_id)), "combo-{}-{}".format(i, res_id))
+                    page.openDiv(**{"id_": "combo-{}-{}-plot".format(i, res_id)})
+                    page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "combo-{}-{}.png".format(i, res_id)),
+                                 "combo-{}-{}".format(i, res_id))
                     page.closeDiv()
                 
                 if omegagram:
                     omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
                     omegagram_to_save = os.path.join(curr_plots_folder, "omegagram-{}-{}.png".format(i, res_id))
                     os.system("cp {} {}".format(omegagram_plot_name, omegagram_to_save))
-                    page.openDiv(id_="omegagram-{}-{}-plot".format(i, res_id))
-                    page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)), "omegagram-{}-{}".format(i, res_id))
+                    page.openDiv(**{"id_": "omegagram-{}-{}-plot".format(i, res_id)})
+                    page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
+                                 "omegagram-{}-{}".format(i, res_id))
                     page.closeDiv()
             
                 page.closeDiv()
@@ -234,11 +238,11 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     
     # summary plots
     if os.path.exists(os.path.join(res_path, "comparison")):
-        page.addSection("Summary", id_="summary-section")
+        page.addSection("Summary", **{"id_": "summary-section"})
         
         # command line
-        page.openDiv(id_="command-line-summary")
-        page.addParagraph("This summary can be reproduced with the following command line:", class_="mb-2")
+        page.openDiv(**{"id_": "command-line-summary"})
+        page.addParagraph("This summary can be reproduced with the following command line:", **{"class_": "mb-2"})
         
         code = [PLOTS_SCRIPT_NAME]
         code.append("--ipath {}".format(res_path))
@@ -249,20 +253,21 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
         
         # imfs
         for i in range(1, SUMMARY_IMFS + 1):
-            page.openDiv(id_="imf-{}-summary".format(i))
-            page.addSubsection("Imf {}".format(i), id_="imf-{}-section-summary".format(i))
+            page.openDiv(**{"id_": "imf-{}-summary".format(i)})
+            page.addSubsection("Imf {}".format(i), **{"id_": "imf-{}-section-summary".format(i)})
             summary_name = os.path.join(res_path, "comparison", "imf_{}_summary_{}.png".format(i, tc_name))
             corr_summary_name = os.path.join(res_path, "comparison", "imf_{}_corr_summary_{}.png".format(i, tc_name))
             summary_to_save = os.path.join(curr_plots_folder, "imf-{}-summary.png".format(i))
             corr_summary_to_save = os.path.join(curr_plots_folder, "imf-{}-corr-summary.png".format(i))
             if os.path.exists(summary_name):
                 os.system("cp {} {}".format(summary_name, summary_to_save))
-                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-summary.png".format(i)), "imf-{}-summary".format(i))
+                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-summary.png".format(i)),
+                             "imf-{}-summary".format(i))
             if os.path.exists(corr_summary_name):
                 os.system("cp {} {}".format(corr_summary_name, corr_summary_to_save))
-                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-corr-summary.png".format(i)), "imf-{}-corr-summary".format(i))
+                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-corr-summary.png".format(i)),
+                             "imf-{}-corr-summary".format(i))
             page.closeDiv()
     
     html_file = os.path.join(curr_folder, "index.html")
     page.savePage(html_file)
-    

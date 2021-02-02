@@ -15,8 +15,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+
 import numpy as np
-import argparse
 import os
 from .utils import file_utils
 from .utils import plot_utils
@@ -38,7 +38,8 @@ def plot_imfs_arg(arg):
             return [int(s) for s in arg.split(",")]
         except:
             return None
-        
+
+
 def comparison_arg(arg):
     """Check on comparison.
     
@@ -111,7 +112,7 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
     res_folders = []
     if single_folder:
         comparison = None
-        comparison_threshold = None
+        comparison_thr = None
         if file_utils.yml_exists(ipath) and file_utils.imfs_exists(ipath) and file_utils.predictors_exists(ipath):
             res_folders.append(ipath)
     else:
@@ -152,7 +153,8 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                                             "imf_{}_culprit".format(imf_pred[defines.IMF_KEY]), res_folder)
                     if omegagram_thr is not None and imf_pred[defines.CORR_KEY] >= omegagram_thr:
                         plot_utils.plot_omegagram_download(preds[:, n_imf], target_channel, gps_start, gps_end,
-                                                           "imf_{}_omegagram".format(imf_pred[defines.IMF_KEY]), res_folder)
+                                                           "imf_{}_omegagram".format(imf_pred[defines.IMF_KEY]),
+                                                           res_folder)
 
                 ch_list = np.array([el[defines.CHANNEL_KEY] for el in yf[defines.CORR_SECT_KEY]])
                 plot_utils.plot_combinations(ch_list, ia, preds, target_channel, gps_event,
@@ -166,7 +168,8 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                                                 "imf_{}_culprit".format(imf_pred[defines.IMF_KEY]), res_folder)
                         if omegagram_thr is not None and imf_pred["corr"] >= omegagram_thr:
                             plot_utils.plot_omegagram_download(preds[:, n_imf], target_channel, gps_start, gps_end,
-                                                                "imf_{}_omegagram".format(imf_pred[defines.IMF_KEY]), res_folder)
+                                                                "imf_{}_omegagram".format(imf_pred[defines.IMF_KEY]),
+                                                               res_folder)
 
                 ch_list = np.array([el[defines.CHANNEL_KEY] for el in yf[defines.CORR_SECT_KEY] if el[defines.IMF_KEY] in imfs_to_plot])
                 if len(ch_list) != 0:

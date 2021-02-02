@@ -15,15 +15,14 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+
 import os
-import argparse
 import numpy as np
 from gwpy.timeseries import TimeSeriesDict
 from scipy.signal import hilbert
 from scipy.stats import pearsonr
 import pytvfemd
 import pickle
-from .utils import file_utils
 from .utils import signal_utils
 from .common import defines
 
@@ -56,8 +55,6 @@ def run_tool(gps, target_channel_name, channels_file, out_path,
     ch_f = open(channels_file, "r")
     channels_list = [ch.rstrip() for ch in ch_f.readlines() if ch.strip()]
     ch_f.close()
-    data = np.array([], dtype=float)
-    odir_name = ""
 
     # build time series matrix
     start_end = gps.split(",")
@@ -90,12 +87,12 @@ def run_tool(gps, target_channel_name, channels_file, out_path,
 
     predictor = n_scattering * (2 / LAMBDA) * np.abs(v_mat)
     predictor = predictor[(defines.EXTRA_SECONDS * fs):-(defines.EXTRA_SECONDS * fs), :]
-    #for i in range(predictor.shape[1]):
-    #    predictor[:, i] = butter_lowpass_filter(predictor[:, i], f_lowpass, fs)
+    # for i in range(predictor.shape[1]):
+    #     predictor[:, i] = butter_lowpass_filter(predictor[:, i], f_lowpass, fs)
 
     # target channel
     target_channel = signal_utils.butter_lowpass_filter(data[:, 0], f_lowpass, fs)
-    #target_channel = signal_utils.lowpass(data[:, 0], f_lowpass)
+    # target_channel = signal_utils.lowpass(data[:, 0], f_lowpass)
 
     # tvf-emd
     imfs = pytvfemd.tvfemd(target_channel, MODES=1)
