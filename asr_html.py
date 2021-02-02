@@ -256,11 +256,16 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
             page.openDiv(**{"id_": "imf-{}-summary".format(i)})
             page.addSubsection("Imf {}".format(i), **{"id_": "imf-{}-section-summary".format(i)})
             summary_name = os.path.join(res_path, "comparison", "imf_{}_summary_{}.png".format(i, tc_name))
+            summary_name_first_batch = os.path.join(res_path, "comparison", "imf_{}_summary_{}_batch_1.png".format(i, tc_name))
             corr_summary_name = os.path.join(res_path, "comparison", "imf_{}_corr_summary_{}.png".format(i, tc_name))
             summary_to_save = os.path.join(curr_plots_folder, "imf-{}-summary.png".format(i))
             corr_summary_to_save = os.path.join(curr_plots_folder, "imf-{}-corr-summary.png".format(i))
             if os.path.exists(summary_name):
                 os.system("cp {} {}".format(summary_name, summary_to_save))
+                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-summary.png".format(i)),
+                             "imf-{}-summary".format(i))
+            elif os.path.exists(summary_name_first_batch):
+                os.system("cp {} {}".format(summary_name_first_batch, summary_to_save))
                 page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-summary.png".format(i)),
                              "imf-{}-summary".format(i))
             if os.path.exists(corr_summary_name):

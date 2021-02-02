@@ -85,15 +85,14 @@ class DagFile(object):
         children : list
             child jobs
         """
-        parent_list = [str(p) for p in parents]
-        child_list = [str(c) for c in children]
+        parent_list = " ".join([str(p) for p in parents])
+        child_list = " ".join([str(c) for c in children])
         self.dag_text.append("PARENT {} CHILD {}".format(parent_list, child_list))
         self.addBlankLine()
 
     def save(self):
         """Save .dag file to `name`.
         """
-        self.addBlankLine()
         dag_content = "\n".join(self.dag_text)
         f = open(self.name, "w")
         f.write(dag_content)
