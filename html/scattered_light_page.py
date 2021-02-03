@@ -94,7 +94,7 @@ class ScatteredLightPage(object):
         Returns
         -------
         str
-            <a **kwargs>text</a>
+            <a kwargs>text</a>
         """
         link = "<a"
         for k in kwargs.keys():
@@ -102,6 +102,21 @@ class ScatteredLightPage(object):
         link += ">{}</a>".format(text)
 
         return link
+
+    def getFormattedCode(self, text):
+        """Return text in <code> tag.
+
+        Parameters
+        ----------
+        text : str
+            <code> text
+
+        Returns
+        -------
+        str
+            <code>text</code>
+        """
+        return "<code>{}</code>".format(text)
 
     def openDiv(self, **kwargs):
         """Add <div>.
@@ -252,4 +267,3 @@ class ScatteredLightPage(object):
             save path
         """
         htmlio.close_page(self.page, path)
-

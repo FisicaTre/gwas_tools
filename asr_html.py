@@ -19,6 +19,7 @@
 import os
 import glob
 import re
+import sys
 from .utils import file_utils
 from datetime import datetime
 from datetime import timedelta
@@ -32,7 +33,7 @@ SAVE_PLOTS_FOLDER = "plots"
 SCRIPT_NAME = "./scattered_light_tool.py"
 PLOTS_SCRIPT_NAME = "./scattered_light_plots.py"
 HTML_SCRIPT_NAME = "./scattered_light_html.py"
-PIPELINE_SCRIPT_NAME = "./asr_pipeline.py"
+PIPELINE_SCRIPT_NAME = "./gwasr_pipeline.py"
 SUMMARY_IMFS = 2
 OMEGAGRAM_THR = 0.5
 
@@ -103,14 +104,16 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
         os.system("cp {} {}".format(ch_list_file, curr_folder))
         os.system("cp {} {}".format(gspy_file, curr_folder))
     
-    info_dict = {"Target channel": tc_name,
-                 "Flags": " | ".join(flags),
-                 "GPS list": page.getFormattedLink(os.path.basename(gspy_file),
-                                                   **{"href": os.path.basename(gspy_file),
-                                                      "download": os.path.basename(gspy_file)}),
-                 "Channels list": page.getFormattedLink(os.path.basename(ch_list_file),
-                                                        **{"href": os.path.basename(ch_list_file),
-                                                           "download": os.path.basename(ch_list_file)})
+    info_dict = {
+                  "Environment": page.getFormattedCode(sys.prefix),
+                  "Target channel": tc_name,
+                  "Flags": " | ".join(flags),
+                  "GPS list": page.getFormattedLink(os.path.basename(gspy_file),
+                                                    **{"href": os.path.basename(gspy_file),
+                                                       "download": os.path.basename(gspy_file)}),
+                  "Channels list": page.getFormattedLink(os.path.basename(ch_list_file),
+                                                         **{"href": os.path.basename(ch_list_file),
+                                                            "download": os.path.basename(ch_list_file)})
                 }
     page.addBulletList(info_dict)
     page.closeDiv()

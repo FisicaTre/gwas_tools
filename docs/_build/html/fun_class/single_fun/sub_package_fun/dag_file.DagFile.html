@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>DagFile &#8212; gwasr  documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="html" href="../../gwasr.html.html" />
+    <link rel="prev" title="dag_file" href="../helpers.dag_file.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../gwasr.html.html" title="html"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../helpers.dag_file.html" title="dag_file"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">gwasr  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../gwasr.helpers.html" >helpers</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../helpers.dag_file.html" accesskey="U">dag_file</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="dagfile">
+<h1>DagFile<a class="headerlink" href="#dagfile" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="gwasr.helpers.dag_file.DagFile">
+<em class="property">class </em><code class="sig-prename descclassname">gwasr.helpers.dag_file.</code><code class="sig-name descname">DagFile</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.dag_file.DagFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to create a .dag file to be
+submitted with <cite>condor_submit_dag</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>name of the .dag file</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gwasr.helpers.dag_file.DagFile.addBlankLine">
+<code class="sig-name descname">addBlankLine</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.dag_file.DagFile.addBlankLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add blank line to .dag file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.helpers.dag_file.DagFile.addJob">
+<code class="sig-name descname">addJob</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">job_number</em>, <em class="sig-param">sub_file</em>, <em class="sig-param">retry=1</em>, <em class="sig-param">args=None</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.dag_file.DagFile.addJob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add job block to .dag file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>job_number</strong><span class="classifier">int</span></dt><dd><p>job number</p>
+</dd>
+<dt><strong>sub_file</strong><span class="classifier">str</span></dt><dd><p>path to the .sub file</p>
+</dd>
+<dt><strong>retry</strong><span class="classifier">int</span></dt><dd><p>how many times retry the job if it fails (default : 1)</p>
+</dd>
+<dt><strong>args</strong><span class="classifier">dict</span></dt><dd><p>variables to be assigned in the .sub file (default : None)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.helpers.dag_file.DagFile.addPostScript">
+<code class="sig-name descname">addPostScript</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">job_number</em>, <em class="sig-param">script</em>, <em class="sig-param">args=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.dag_file.DagFile.addPostScript" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add post block to .dag file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>job_number</strong><span class="classifier">int</span></dt><dd><p>job number</p>
+</dd>
+<dt><strong>script</strong><span class="classifier">str</span></dt><dd><p>path to the script file</p>
+</dd>
+<dt><strong>args</strong><span class="classifier">list</span></dt><dd><p><cite>script</cite> arguments (default : [])</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.helpers.dag_file.DagFile.setParent">
+<code class="sig-name descname">setParent</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">parents</em>, <em class="sig-param">children</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.dag_file.DagFile.setParent" title="Permalink to this definition">¶</a></dt>
+<dd><p>List parent jobs to be followed by children jobs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>parents</strong><span class="classifier">list</span></dt><dd><p>parent jobs</p>
+</dd>
+<dt><strong>children</strong><span class="classifier">list</span></dt><dd><p>child jobs</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.helpers.dag_file.DagFile.save">
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.dag_file.DagFile.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save .dag file to <cite>name</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../helpers.dag_file.html"
+                        title="previous chapter">dag_file</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../gwasr.html.html"
+                        title="next chapter">html</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/fun_class/single_fun/sub_package_fun/dag_file.DagFile.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../gwasr.html.html" title="html"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../helpers.dag_file.html" title="dag_file"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">gwasr  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../gwasr.helpers.html" >helpers</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../helpers.dag_file.html" >dag_file</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020-, Stefano Bianchi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

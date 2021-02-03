@@ -130,8 +130,8 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
         target_channel = yf[defines.PARAMS_SECT_KEY][defines.TARGET_CH_KEY]
         gps = yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY]
         fs = yf[defines.PARAMS_SECT_KEY][defines.SAMP_FREQ_KEY]
-        gps_start = int(gps.split(",")[0]) + defines.EXTRA_SECONDS
-        gps_end = int(gps.split(",")[1]) - defines.EXTRA_SECONDS
+        gps_start = int(gps.split(",")[0])  # + defines.EXTRA_SECONDS
+        gps_end = int(gps.split(",")[1])  # - defines.EXTRA_SECONDS
         gps_event = (gps_start + gps_end) // 2
 
         if imfs_to_plot is not None:

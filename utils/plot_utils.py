@@ -32,6 +32,12 @@ def normalize(vec):
     Parameters
     ----------
     vec : numpy array
+        input vector
+
+    Returns
+    -------
+    numpy array
+        normalized vector
     """
     norm_vec = (vec - np.nanmean(vec)) / np.nanstd(vec)
     

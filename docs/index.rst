@@ -1,4 +1,4 @@
-asr (v0.3)
+gwasr (v0.4)
 ***************
 
 adaptive scattering recognizer
@@ -20,6 +20,8 @@ Documentation for the Code
    :maxdepth: 1
 
    fun_class/gwasr.asr_tool
-   fun_class/asr_plots
-   fun_class/asr_html
-   
+   fun_class/gwasr.asr_plots
+   fun_class/gwasr.asr_html
+   fun_class/gwasr.helpers
+   fun_class/gwasr.html
+   fun_class/gwasr.utils

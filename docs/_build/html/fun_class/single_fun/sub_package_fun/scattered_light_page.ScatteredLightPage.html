@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>ScatteredLightPage &#8212; gwasr  documentation</title>
+    <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="utils" href="../../gwasr.utils.html" />
+    <link rel="prev" title="scattered_light_page" href="../html.scattered_light_page.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../gwasr.utils.html" title="utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../html.scattered_light_page.html" title="scattered_light_page"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">gwasr  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../gwasr.html.html" >html</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../html.scattered_light_page.html" accesskey="U">scattered_light_page</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="scatteredlightpage">
+<h1>ScatteredLightPage<a class="headerlink" href="#scatteredlightpage" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage">
+<em class="property">class </em><code class="sig-prename descclassname">gwasr.html.scattered_light_page.</code><code class="sig-name descname">ScatteredLightPage</code><span class="sig-paren">(</span><em class="sig-param">title=''</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to construct HTML output page of the <cite>asr</cite> package analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>page title</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>general page attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.addParagraph">
+<code class="sig-name descname">addParagraph</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">text</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.addParagraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;p&gt;.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>&lt;p&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;p&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.addLink">
+<code class="sig-name descname">addLink</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">text</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.addLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;a&gt;.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>&lt;a&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;a&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.getFormattedLink">
+<code class="sig-name descname">getFormattedLink</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">text</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.getFormattedLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return &lt;a&gt; with formatted text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>&lt;a&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;a&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>&lt;a kwargs&gt;text&lt;/a&gt;</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.getFormattedCode">
+<code class="sig-name descname">getFormattedCode</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">text</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.getFormattedCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return text in &lt;code&gt; tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>&lt;code&gt; text</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>&lt;code&gt;text&lt;/code&gt;</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.openDiv">
+<code class="sig-name descname">openDiv</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.openDiv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;div&gt;.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;div&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.closeDiv">
+<code class="sig-name descname">closeDiv</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.closeDiv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;/div&gt;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.addSection">
+<code class="sig-name descname">addSection</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">title</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.addSection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;p&gt; with bold text magnified to 180%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>&lt;p&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;p&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.addSubsection">
+<code class="sig-name descname">addSubsection</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">title</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.addSubsection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;p&gt; with bold text magnified to 150%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>&lt;p&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;p&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.addSubsubsection">
+<code class="sig-name descname">addSubsubsection</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">title</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.addSubsubsection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;p&gt; with bold text magnified to 120%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>&lt;p&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;p&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.addBulletList">
+<code class="sig-name descname">addBulletList</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">items</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.addBulletList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add bullet list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>items</strong><span class="classifier">dict</span></dt><dd><p>list items</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.parametersTable">
+<code class="sig-name descname">parametersTable</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">parameters</em>, <em class="sig-param">start</em>, <em class="sig-param">end</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.parametersTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add parameters analysis table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>parameters</strong><span class="classifier">dict</span></dt><dd><p>analysis parameters</p>
+</dd>
+<dt><strong>start</strong><span class="classifier">int</span></dt><dd><p>start GPS</p>
+</dd>
+<dt><strong>end</strong><span class="classifier">int</span></dt><dd><p>end GPS</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.addCommandLine">
+<code class="sig-name descname">addCommandLine</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">code</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.addCommandLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add box with command line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>code</strong><span class="classifier">str</span></dt><dd><p>command line</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.addPlot">
+<code class="sig-name descname">addPlot</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">plot_name</em>, <em class="sig-param">plot_id</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.addPlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>plot_name</strong><span class="classifier">str</span></dt><dd><p>path to plot</p>
+</dd>
+<dt><strong>plot_id</strong><span class="classifier">str</span></dt><dd><p>plot identifier</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.scattered_light_page.ScatteredLightPage.savePage">
+<code class="sig-name descname">savePage</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.scattered_light_page.ScatteredLightPage.savePage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">str</span></dt><dd><p>save path</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../html.scattered_light_page.html"
+                        title="previous chapter">scattered_light_page</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../gwasr.utils.html"
+                        title="next chapter">utils</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/fun_class/single_fun/sub_package_fun/scattered_light_page.ScatteredLightPage.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../gwasr.utils.html" title="utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../html.scattered_light_page.html" title="scattered_light_page"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">gwasr  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../gwasr.html.html" >html</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../html.scattered_light_page.html" >scattered_light_page</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020-, Stefano Bianchi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>

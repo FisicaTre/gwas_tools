@@ -63,8 +63,11 @@ def run_tool(gps, target_channel_name, channels_file, out_path,
 
     gps_start = int(start_end[0])
     gps_end = int(start_end[1])
-    odir_name = str(gps_start + defines.EXTRA_SECONDS) + "_" + str(gps_end - defines.EXTRA_SECONDS)
-    data_dict = TimeSeriesDict.get([target_channel_name] + channels_list, gps_start, gps_end)
+    odir_name = "{}_{}".format(start_end[0], start_end[1])
+    # str(gps_start + defines.EXTRA_SECONDS) + "_" + str(gps_end - defines.EXTRA_SECONDS)
+    data_dict = TimeSeriesDict.get([target_channel_name] + channels_list,
+                                   gps_start - defines.EXTRA_SECONDS,
+                                   gps_end + defines.EXTRA_SECONDS)
     dict_fs = np.min([data_dict[ch_name].channel.sample_rate.value for ch_name in channels_list])
     if dict_fs < fs:
         fs = dict_fs
