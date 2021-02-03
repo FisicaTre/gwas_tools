@@ -1,4 +1,4 @@
-asr (v0.2)
+asr (v0.3)
 ***************
 
 adaptive scattering recognizer
@@ -19,7 +19,7 @@ Documentation for the Code
 .. toctree::
    :maxdepth: 1
 
-   fun_class/asr.asr_tool
+   fun_class/gwasr.asr_tool
    fun_class/asr_plots
    fun_class/asr_html
    
