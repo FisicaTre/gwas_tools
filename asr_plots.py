@@ -144,7 +144,7 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                                         "max_corr_culprit", res_folder)
                 if omegagram_thr is not None and yf[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY] >= omegagram_thr:
                     plot_utils.plot_omegagram_download(preds[:, n_imf], target_channel, gps_start, gps_end,
-                                                       "max_corr_omegagram", res_folder)
+                                                       fs, "max_corr_omegagram", res_folder)
             elif imfs_to_plot == "all":
                 for n_imf, imf_pred in enumerate(yf[defines.CORR_SECT_KEY]):
                     if imf_pred[defines.CORR_KEY] >= imf_thr:
@@ -153,7 +153,7 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                                             "imf_{}_culprit".format(imf_pred[defines.IMF_KEY]), res_folder)
                     if omegagram_thr is not None and imf_pred[defines.CORR_KEY] >= omegagram_thr:
                         plot_utils.plot_omegagram_download(preds[:, n_imf], target_channel, gps_start, gps_end,
-                                                           "imf_{}_omegagram".format(imf_pred[defines.IMF_KEY]),
+                                                           fs, "imf_{}_omegagram".format(imf_pred[defines.IMF_KEY]),
                                                            res_folder)
 
                 ch_list = np.array([el[defines.CHANNEL_KEY] for el in yf[defines.CORR_SECT_KEY]])
@@ -168,7 +168,7 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                                                 "imf_{}_culprit".format(imf_pred[defines.IMF_KEY]), res_folder)
                         if omegagram_thr is not None and imf_pred["corr"] >= omegagram_thr:
                             plot_utils.plot_omegagram_download(preds[:, n_imf], target_channel, gps_start, gps_end,
-                                                                "imf_{}_omegagram".format(imf_pred[defines.IMF_KEY]),
+                                                               fs, "imf_{}_omegagram".format(imf_pred[defines.IMF_KEY]),
                                                                res_folder)
 
                 ch_list = np.array([el[defines.CHANNEL_KEY] for el in yf[defines.CORR_SECT_KEY] if el[defines.IMF_KEY] in imfs_to_plot])

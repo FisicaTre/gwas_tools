@@ -143,7 +143,7 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
                          "combo_imf_{}_culprit".format("+".join([str(i + 1) for i in plot_idxs])), out_path)
             
             
-def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5]):
+def plot_omegagram_download(pred, target_name, gps1, gps2, fs, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5]):
     """Omegagram plot with download of the target channel.
     
     Parameters
@@ -156,6 +156,8 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path,
         gps start
     gps2 : int
         gps end
+    fs : int
+        sampling frequency
     plot_name : str
         plot name
     save_path : str
@@ -187,8 +189,12 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, plot_name, save_path,
 
         ts_l2 = pred * correction_factor
         ts = TimeSeries.get(target_name, gps1, gps2).astype("float64")
+        #ts_resampled = ts.resample(fs).value
+        #print(gps2)
+        #print(gps1 + len(ts_resampled) / fs)
+        #ts = TimeSeries(ts_resampled, times=np.arange(gps1, gps1 + len(ts_resampled) / fs, 1 / fs, dtype=float), dtype=float)
         ts.times = ts.times.value - epoch
-        tsq = ts.q_transform(outseg=Segment(plot_t_min, plot_t_max), tres=0.2, fres=0.2, whiten=True)
+        tsq = ts.q_transform(outseg=Segment(plot_t_min, plot_t_max + 0.2), tres=0.2, fres=0.2, whiten=True)
     
         plot_f_min = tsq.yindex[0].value
         plot_f_max = np.max([tsq.yindex[-1].value, np.max(ts_l2) * np.max(harmonics)])
@@ -235,6 +241,8 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
         gps start
     gps2 : int
         gps end
+    fs : int
+        sampling frequency
     plot_name : str
         plot name
     save_path : str
@@ -268,7 +276,7 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
         # ts = TimeSeries(target, t0=gps1, sample_rate=fs, dtype=float)#.astype("float64")
         ts = TimeSeries(target, times=np.arange(gps1, gps1 + len(target) / fs, 1 / fs, dtype=float), dtype=float)
         ts.times = ts.times.value - epoch
-        tsq = ts.q_transform(outseg=Segment(plot_t_min, plot_t_max), tres=0.2, fres=0.2, whiten=True)
+        tsq = ts.q_transform(outseg=Segment(plot_t_min, plot_t_max + 0.2), tres=0.2, fres=0.2, whiten=True)
         
         plot_f_min = tsq.yindex[0].value
         plot_f_max = np.max([tsq.yindex[-1].value, np.max(ts_l2) * np.max(harmonics)])
