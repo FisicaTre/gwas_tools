@@ -194,10 +194,11 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                 if yf[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY] >= comparison_thr:
                     culprits_list.append(yf[defines.MAX_CORR_SECT_KEY][defines.CHANNEL_KEY])
                     gps_times = yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")
-                    gps_list.append(str((int(gps_times[0]) + int(gps_times[1])) // 2))
+                    # gps_list.append(str((int(gps_times[0]) + int(gps_times[1])) // 2))
+                    gps_list.append((int(gps_times[0]) + int(gps_times[1])) // 2)
                     corr_list.append(yf[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY])
-                    f.write("{:d},{:d},{},{}\n".format(int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[0]) + defines.EXTRA_SECONDS,
-                                                       int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[1]) - defines.EXTRA_SECONDS,
+                    f.write("{:d},{:d},{},{}\n".format(int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[0]),  # + defines.EXTRA_SECONDS,
+                                                       int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[1]),  # - defines.EXTRA_SECONDS,
                                                        yf[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY],
                                                        yf[defines.MAX_CORR_SECT_KEY][defines.CHANNEL_KEY]))
               
@@ -220,32 +221,47 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                 yf = file_utils.load_yml(res_folder)
                 for n_imf in comparison:
                     gps_times = yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")
-                    gps_mid_time = str((int(gps_times[0]) + int(gps_times[1])) // 2)
+                    # gps_mid_time = str((int(gps_times[0]) + int(gps_times[1])) // 2)
+                    gps_mid_time = (int(gps_times[0]) + int(gps_times[1])) // 2
                     corr_dict[n_imf][defines.GPS_KEY].append(gps_mid_time)
                     if len(yf[defines.CORR_SECT_KEY]) >= n_imf:
                         if yf[defines.CORR_SECT_KEY][n_imf - 1][defines.CORR_KEY] >= comparison_thr:
                             culprits_dict[n_imf].append(yf[defines.CORR_SECT_KEY][n_imf - 1][defines.CHANNEL_KEY])
                             corr_dict[n_imf][defines.CORR_KEY].append(yf[defines.CORR_SECT_KEY][n_imf - 1][defines.CORR_KEY])
-                            f_dict[n_imf] += "{:d},{:d},{},{}\n".format(int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[0]) + defines.EXTRA_SECONDS,
-                                                                       int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[1]) - defines.EXTRA_SECONDS,
+                            f_dict[n_imf] += "{:d},{:d},{:f},{:f},{}\n".format(int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[0]),  # + defines.EXTRA_SECONDS,
+                                                                       int(yf[defines.PARAMS_SECT_KEY][defines.GPS_KEY].split(",")[1]),  # - defines.EXTRA_SECONDS,
                                                                        yf[defines.CORR_SECT_KEY][n_imf - 1][defines.CORR_KEY],
+                                                                       yf[defines.CORR_SECT_KEY][n_imf - 1][defines.MEAN_FREQ_KEY],
                                                                        yf[defines.CORR_SECT_KEY][n_imf - 1][defines.CHANNEL_KEY])
                         else:
                             corr_dict[n_imf][defines.CORR_KEY].append(0.0)
                     else:
                         culprits_dict[n_imf].append("Not found")
                         corr_dict[n_imf][defines.CORR_KEY].append(0.0)
+
+            mean_freq_dict = {}
+            for n_imf in comparison:
+                mf_dict = {}
+                for chnl in culprits_dict[n_imf]:
+                    if culprits_dict[n_imf] != "Not found":
+                        mf_dict[chnl] = []
+                for res_folder in res_folders:
+                    yf = file_utils.load_yml(res_folder)
+                    if len(yf[defines.CORR_SECT_KEY]) >= n_imf:
+                        if yf[defines.CORR_SECT_KEY][n_imf - 1][defines.CORR_KEY] >= comparison_thr:
+                            mf_dict[yf[defines.CORR_SECT_KEY][n_imf - 1][defines.CHANNEL_KEY]].append(yf[defines.CORR_SECT_KEY][n_imf - 1][defines.MEAN_FREQ_KEY])
+                mean_freq_dict[n_imf] = mf_dict
             
             for n_imf in comparison:
                 if f_dict[n_imf] != "":
                     f = open(os.path.join(cpath, "imf_{}_summary_list_{}.csv".format(n_imf, target_channel)), "w")
-                    f.write("start,end,corr,channel\n")
+                    f.write("start,end,corr,mean_freq,channel\n")
                     f.write(f_dict[n_imf])
                     f.close()
                 
                 if len(culprits_dict[n_imf]) > 0 and culprits_dict[n_imf].count("Not found") != len(culprits_dict[n_imf]):
                     plot_utils.plot_imfs_summary(culprits_dict[n_imf], "{} (thr {:.2f})".format(target_channel, comparison_thr),
-                                                 "imf_{:d}_summary_{}".format(n_imf, target_channel), cpath)
+                                                 "imf_{:d}_summary_{}".format(n_imf, target_channel), cpath, mean_freqs=mean_freq_dict[n_imf])
                     
                 corr_check = np.sum(np.abs(corr_dict[n_imf][defines.CORR_KEY]))
                 if corr_check != 0.0:
@@ -254,4 +270,4 @@ def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
                                                  np.asarray(corr_dict[n_imf][defines.CORR_KEY])[zero_idxs],
                                                  "{} (thr {:.2f})".format(target_channel, comparison_thr),
                                                  "imf_{:d}_corr_summary_{}".format(n_imf, target_channel),
-                                                 cpath, batch=10)
+                                                 cpath)  # , batch=10)

@@ -310,7 +310,7 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
         print("GPS coordinates are None, cannot plot omegagram.")
         
 
-def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=10):
+def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=10, mean_freqs=None):
     """Summary histogram of culprits found for a certain imf.
     
     Parameters
@@ -327,6 +327,8 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
         descending order sort
     batch : int
         maximum number of points per plot
+    mean_freqs : dict
+        dict {channel_name: [mean_freqs]} for mean frequencies histograms
     """
     culprits = np.array(culprits)
     seen = set()
@@ -343,6 +345,7 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
         plt.figure()
         plt.bar(np.arange(len(counts)), counts, width=0.8)
         plt.xticks(np.arange(len(counts)), uniq, rotation=45, horizontalalignment="right")
+        plt.ylabel("Channel occurrence")
         plt.title(title)
         plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
         plt.close("all")
@@ -353,6 +356,7 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
             plt.bar(np.arange(len(counts[i*batch:(i+1)*batch])), counts[i*batch:(i+1)*batch], width=0.8)
             plt.xticks(np.arange(len(counts[i*batch:(i+1)*batch])), uniq[i*batch:(i+1)*batch],
                        rotation=45, horizontalalignment="right")
+            plt.ylabel("Channel occurrence")
             plt.title(title)
             plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + ".png"),
                         bbox_inches="tight", dpi=300)
@@ -362,13 +366,18 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
             plt.bar(np.arange(len(counts[n*batch:])), counts[n*batch:], width=0.8)
             plt.xticks(np.arange(len(counts[n*batch:])), uniq[n*batch:],
                        rotation=45, horizontalalignment="right")
+            plt.ylabel("Channel occurrence")
             plt.title(title)
             plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + ".png"),
                         bbox_inches="tight", dpi=300)
             plt.close("all")
+
+    if mean_freqs is not None:
+        for key in uniq:
+            plot_mean_freq_summary(mean_freqs[key], title + "\n" + key, plot_name + "_hist_" + key, save_path)
     
     
-def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, batch=10):
+def plot_corr_summary_old(gps_list, corr_list, title, plot_name, save_path, batch=10):
     """Summary of correlations for each GPS for a certain imf.
     
     Parameters
@@ -416,3 +425,58 @@ def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, batch=10
             plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + ".png"),
                         bbox_inches="tight", dpi=300)
             plt.close("all")
+
+
+def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path):
+    """Summary of correlations for each GPS for a certain imf.
+    
+    Parameters
+    ----------
+    gps_list : list
+        gps
+    corr_list : list
+        correlations
+    title : str
+        plot title
+    plot_name : str
+        plot name
+    save_path : str
+        save path
+    """
+    t1 = Time(gps_list[0], format="gps")
+    t2 = Time(t1, format="iso", scale="utc")
+    gps_date = "{:d} ({} UTC)\n".format(gps_list[0], t2)
+    x_values = [x - gps_list[0] for x in gps_list]
+
+    plt.figure()
+    plt.bar(x_values, corr_list, width=0.8)
+    plt.ylim(-1, 1)
+    plt.ylabel("$\\rho$")
+    plt.xlabel("t [s]\nfrom " + gps_date)
+    plt.title(title)
+    plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
+    plt.close("all")
+
+
+def plot_mean_freq_summary(mean_freqs, title, plot_name, save_path):
+    """Summary of mean frequencies for a channel and a certain imf.
+    
+    Parameters
+    ----------
+    mean_freqs : list
+        mean frequencies
+    title : str
+        plot title
+    plot_name : str
+        plot name
+    save_path : str
+        save path
+    """
+    plt.figure()
+    plt.hist(mean_freqs, bins=20)
+    plt.xlabel("Mean frequency [Hz]")
+    plt.ylabel("Counts")
+    plt.title(title)
+    plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
+    plt.close("all")
+
