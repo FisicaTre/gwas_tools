@@ -373,8 +373,12 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
             plt.close("all")
 
     if mean_freqs is not None:
-        for key in uniq:
-            plot_mean_freq_summary(mean_freqs[key], title + "\n" + key, plot_name + "_hist_" + key, save_path)
+        mf_x = []
+        mf_y = []
+        for i, key in enumerate(uniq[:batch]):
+            mf_x += [i for _ in range(len(mean_freqs[key]))]
+            mf_y += mean_freqs[key]
+        plot_mean_freq_summary(mf_x, mf_y, uniq, title, plot_name + "_mean_freq", save_path)
     
     
 def plot_corr_summary_old(gps_list, corr_list, title, plot_name, save_path, batch=10):
@@ -458,13 +462,17 @@ def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path):
     plt.close("all")
 
 
-def plot_mean_freq_summary(mean_freqs, title, plot_name, save_path):
+def plot_mean_freq_summary(x_vals, y_vals, x_labels, title, plot_name, save_path):
     """Summary of mean frequencies for a channel and a certain imf.
     
     Parameters
     ----------
-    mean_freqs : list
-        mean frequencies
+    x_vals : list
+        list of integers for channel number
+    y_vals : list
+        mean_frequencies
+    x_labels : list
+        channels names corresponding to `x_vals`
     title : str
         plot title
     plot_name : str
@@ -473,9 +481,11 @@ def plot_mean_freq_summary(mean_freqs, title, plot_name, save_path):
         save path
     """
     plt.figure()
-    plt.hist(mean_freqs, bins=20)
-    plt.xlabel("Mean frequency [Hz]")
-    plt.ylabel("Counts")
+    plt.scatter(x_vals, y_vals)
+    #plt.hist(mean_freqs, bins=20)
+    plt.ylabel("Mean frequency [Hz]")
+    #plt.ylabel("Counts")
+    plt.xticks(np.arange(len(x_labels)), x_labels, rotation=45, horizontalalignment="right")
     plt.title(title)
     plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
     plt.close("all")

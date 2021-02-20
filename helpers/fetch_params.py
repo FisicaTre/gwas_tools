@@ -61,3 +61,17 @@ def get_gps_and_freq(glitch_type, gps1, gps2, ifo, save_path=None):
         glitches_list.to_csv(save_path, index=False)
 
     return start_times, peak_freqs
+
+
+#def get_gps_sequence(start, end, step):
+#    """Get a sequence of GPS times.
+#
+#    Parameters
+#    ----------
+#    start : int
+#        starting GPS
+#    end : int
+#        ending GPS
+#    step : int
+#        time between two consecutive GPS times
+#    """
