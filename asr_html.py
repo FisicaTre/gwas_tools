@@ -128,7 +128,7 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
         imfs_data = {}
         above_thr = False
         for i in range(1, SUMMARY_IMFS + 1):
-            try:
+            if len(res_file[defines.CORR_SECT_KEY]) >= i:
                 imfs_data[i] = {}
                 imfs_data[i]["Culprit"] = res_file[defines.CORR_SECT_KEY][i - 1][defines.CHANNEL_KEY]
                 # imfs_data[i]["Correlation"] = "{:.4f}".format(res_file[defines.CORR_SECT_KEY][i - 1][defines.CORR_KEY])
@@ -142,8 +142,6 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
                         imfs_data[i]["combo"] = cf
                 if res_file[defines.CORR_SECT_KEY][i - 1][defines.CORR_KEY] >= 0.5:
                     above_thr = True
-            except:
-                continue
         
         gps_start = gps_folder.split("_")[0]
         gps_end = gps_folder.split("_")[1]
