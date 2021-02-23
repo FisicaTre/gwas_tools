@@ -38,19 +38,21 @@ SUMMARY_IMFS = 2
 OMEGAGRAM_THR = 0.5
 
 
-def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
+def generate_html(res_path, date, tc_name, ch_list_file, gps_file, flags=[]):
     """Generate HTML page.
     
     Parameters
     ----------                                            
     res_path : str
         path to the analysis folders
+    date : str
+        date to be published on the page (year-month-day)
     tc_name : str
         target channel name
     ch_list_file : str
         path to the channels list file
-    gspy_file : str
-        path to the gravity spy output file
+    gps_file : str
+        path to the gps and peak frequency file
     flags : list
         list of flags used for the analysis (default : [])
     """ 
@@ -63,7 +65,7 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     res_folders.sort()
 
     # title
-    page_date = datetime.today() - timedelta(days=1)
+    page_date = datetime.strptime(date, "%Y-%m-%d")
     curr_date = page_date.strftime('%Y%m%d')
     curr_folder = os.path.join(SAVE_PATH, curr_date, "_".join(tc_name.split(":")))
     curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
@@ -91,7 +93,7 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     code.append("--ipath {}".format(res_path))
     code.append("--target_channel {}".format(tc_name))
     code.append("--channels_list {}".format(ch_list_file))
-    code.append("--gspy_list {}".format(gspy_file))
+    code.append("--gps_list {}".format(gps_file))
     page.addCommandLine(" ".join(code))
     page.closeDiv()
     page.closeDiv()
@@ -102,15 +104,15 @@ def generate_html(res_path, tc_name, ch_list_file, gspy_file, flags=[]):
     
     if len(res_folders) > 0:
         os.system("cp {} {}".format(ch_list_file, curr_folder))
-        os.system("cp {} {}".format(gspy_file, curr_folder))
+        os.system("cp {} {}".format(gps_file, curr_folder))
     
     info_dict = {
                   "Environment": page.getFormattedCode(sys.prefix),
                   "Target channel": tc_name,
                   "Flags": " | ".join(flags),
-                  "GPS list": page.getFormattedLink(os.path.basename(gspy_file),
-                                                    **{"href": os.path.basename(gspy_file),
-                                                       "download": os.path.basename(gspy_file)}),
+                  "GPS list": page.getFormattedLink(os.path.basename(gps_file),
+                                                    **{"href": os.path.basename(gps_file),
+                                                       "download": os.path.basename(gps_file)}),
                   "Channels list": page.getFormattedLink(os.path.basename(ch_list_file),
                                                          **{"href": os.path.basename(ch_list_file),
                                                             "download": os.path.basename(ch_list_file)})

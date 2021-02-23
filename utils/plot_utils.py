@@ -19,7 +19,6 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.offsetbox import AnchoredText
 from astropy.time import Time
 from scipy.stats import pearsonr
 from gwpy.timeseries import TimeSeries
@@ -44,7 +43,7 @@ def normalize(vec):
     return norm_vec
 
 
-def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_name, save_path):
+def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_name, save_path, save_ext="png"):
     """Plot of the instantaneous amplitude and predictor.
     
     Parameters
@@ -67,6 +66,8 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
         plot name
     save_path : str
         save path
+    save_ext : str
+        plot extension
     """
     if gps1 is not None:
         t1 = Time(gps1, format="gps")
@@ -83,8 +84,7 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
     l1 = ax1.plot(x[:len(pred)], pred, "r-", label=pred_name)
     l2 = ax2.plot(x[:len(imf_ia)], imf_ia, "b-", label=imf_ia_name)
     ls = l1 + l2
-    leg = plt.legend(ls, [l.get_label() for l in ls], ncol=1, loc=2)  # bbox_to_anchor=[0, 1], loc="lower left")
-    # plt.legend(ls, [l.get_label() for l in ls], ncol=1, bbox_to_anchor=[0, 1], loc="lower left")
+    leg = plt.legend(ls, [l.get_label() for l in ls], ncol=1, loc=2)
     try:
         plt.draw()
         leg_height_ratio = leg.get_window_extent().height / ax1.get_window_extent().height
@@ -93,22 +93,18 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
     
     ax1.set_ylim(0, np.max(pred) + (np.max(pred) - np.min(pred)) * (leg_height_ratio + 0.1))
     ax2.set_ylim(0, np.max(imf_ia) + (np.max(imf_ia) - np.min(imf_ia)) * (leg_height_ratio + 0.1))
-    # ax1.set_ylim(0, np.max(pred) + (np.max(pred) - np.min(pred)) * 0.15)
-    # ax2.set_ylim(0, np.max(imf_ia) + (np.max(imf_ia) - np.min(imf_ia)) * 0.15)
     ax1.set_ylabel("Predictor [$Hz$]", color="r", fontsize=font_size)
     ax1.set_xlabel("t - t$_0$ [s]\n" + gps_date, fontsize=font_size)
     ax2.set_ylabel("IA", color="b", fontsize=font_size)
     ax1.grid(True)
     ax2.grid(False)
-    # txt_css = {"backgroundcolor": "black", "color":  "white"}
-    # at = AnchoredText(s=title, loc=2, prop=txt_css)
-    # ax1.add_artist(at)
     plt.title(title)
-    plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
+    plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
     plt.close("all")
     
     
-def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1, samp_freq, out_path, thr=-1.0):
+def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1, samp_freq, out_path,
+                      save_ext="png", thr=-1.0):
     """Plot sum of more instantaneous amplitudes and the predictor.
     
     Parameters
@@ -127,6 +123,8 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
         sampling frequency
     out_path : str
         save path
+    save_ext : str
+        plot extension
     thr : float
         correlation threshold for plots
     """
@@ -140,24 +138,26 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
             if c > thr:
                 plot_imf(predictors[:, plot_idxs[0]], u, sum_envelope, target_channel_name + " (combo)",
                          gps1, samp_freq, "$\\rho$ = {:.4f}".format(c),
-                         "combo_imf_{}_culprit".format("+".join([str(i + 1) for i in plot_idxs])), out_path)
+                         "combo_imf_{}_culprit".format("+".join([str(i + 1) for i in plot_idxs])), out_path,
+                         save_ext=save_ext)
             
             
-def plot_omegagram_download(pred, target_name, gps1, gps2, fs, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5]):
+def plot_omegagram_download(pred, pred_name, target_name, gps1, gps2, plot_name, save_path,
+                            norm=False, harmonics=[1, 2, 3, 4, 5], save_ext="png"):
     """Omegagram plot with download of the target channel.
     
     Parameters
     ----------
     pred : numpy array
         predictor
+    pred_name : str
+        name of the predictor channel
     target_name : str
         name of the channel from which compute the omegagram
     gps1 : int
         gps start
     gps2 : int
         gps end
-    fs : int
-        sampling frequency
     plot_name : str
         plot name
     save_path : str
@@ -166,6 +166,8 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, fs, plot_name, save_p
         normalize predictor to 10 Hz
     harmonics : list of int
         predictor harmonics to be plotted
+    save_ext : str
+        plot extension
     """
     if gps1 is not None and gps2 is not None:
         epoch = (gps1 + gps2) // 2
@@ -178,10 +180,6 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, fs, plot_name, save_p
         colormap = "viridis"
         plot_t_min = (gps1 - gps2) // 2
         plot_t_max = (gps2 - gps1) // 2
-        # plot_t_step = 5
-        # plot_f_min = 6
-        # plot_f_max = 50
-        # plot_f_step = 10
         
         t1 = Time(epoch, format="gps")
         t2 = Time(t1, format="iso", scale="utc")
@@ -189,10 +187,8 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, fs, plot_name, save_p
 
         ts_l2 = pred * correction_factor
         ts = TimeSeries.get(target_name, gps1, gps2).astype("float64")
-        #ts_resampled = ts.resample(fs).value
-        #print(gps2)
-        #print(gps1 + len(ts_resampled) / fs)
-        #ts = TimeSeries(ts_resampled, times=np.arange(gps1, gps1 + len(ts_resampled) / fs, 1 / fs, dtype=float), dtype=float)
+        if ":" in target_name and target_name.split(":")[0][0] == "V":
+            ts = TimeSeries(ts.value, times=np.arange(gps1, gps2 + ts.dt.value, ts.dt.value, dtype=float), dtype=float)
         ts.times = ts.times.value - epoch
         tsq = ts.q_transform(outseg=Segment(plot_t_min, plot_t_max + 0.2), tres=0.2, fres=0.2, whiten=True)
     
@@ -205,38 +201,35 @@ def plot_omegagram_download(pred, target_name, gps1, gps2, fs, plot_name, save_p
         ax = plot.gca()
         pcm = ax.imshow(tsq, vmin=0, vmax=15, cmap=colormap)
         ax.set_ylabel("Frequency [Hz]", fontsize=16)
-        ax.set_ylim(plot_f_min, plot_f_max)
-        ax.set_xlim(plot_t_min, plot_t_max)
         ax.grid(False)
         for i in harmonics:
             ax.plot(np.linspace(plot_t_min, plot_t_max, len(ts_l2)), ts_l2 * i, color="r", lw=line_width)
         ax.set_xlim(plot_t_min, plot_t_max)
         ax.set_ylim(plot_f_min, plot_f_max)
-        # ax.set_xticks(np.arange(plot_t_min, plot_t_max + plot_t_step, plot_t_step))
-        # ax.set_xticklabels(["{:d}".format(val) for val in np.arange(plot_t_min,
-        # plot_t_max + plot_t_step, plot_t_step)])
-        # ax.set_yticks(list(np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)))
-        # ax.set_yticklabels(["{:d}".format(val) for val in np.arange(plot_f_min,
-        # plot_f_max + plot_f_step, plot_f_step)])
         ax.set_xlabel("t - t$_0$ [s]\n" + gps_date, fontsize=16)
-        # ax.set_title(gps_date, fontsize=16)
+        ax.set_title("{}\nand predictor of\n{}".format(target_name, pred_name), fontsizze=16)
         cbar = ax.colorbar(clim=(0, 15), location="right")
         cbar.set_label("Normalized energy", fontsize=16)
-        plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
+        plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
         plt.close("all")
     else:
         print("GPS coordinates are None, cannot plot omegagram.")
         
         
-def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5]):
+def plot_omegagram(pred, pred_name, target, target_name, gps1, gps2, fs, plot_name, save_path,
+                   norm=False, harmonics=[1, 2, 3, 4, 5], save_ext="png"):
     """Omegagram plot.
     
     Parameters
     ----------
     pred : numpy array
         predictor
+    pred_name : str
+        name of the predictor channel
     target : numpy array
         channel from which compute the omegagram
+    target_name : str
+        name of the target channel
     gps1 : int
         gps start
     gps2 : int
@@ -251,6 +244,8 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
         normalize predictor to 10 Hz
     harmonics : list of int
         predictor harmonics to be plotted
+    save_ext : str
+        plot extension
     """
     if gps1 is not None and gps2 is not None:
         epoch = (gps1 + gps2) // 2
@@ -263,17 +258,12 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
         colormap = "viridis"
         plot_t_min = (gps1 - gps2) // 2
         plot_t_max = (gps2 - gps1) // 2
-        # plot_t_step = 5
-        # plot_f_min = 0
-        # plot_f_max = 50
-        # plot_f_step = 10
         
         t1 = Time(epoch, format="gps")
         t2 = Time(t1, format="iso", scale="utc")
         gps_date = "GPS: {:d} | t$_0$: {} UTC\n".format(epoch, t2)
 
         ts_l2 = pred * correction_factor
-        # ts = TimeSeries(target, t0=gps1, sample_rate=fs, dtype=float)#.astype("float64")
         ts = TimeSeries(target, times=np.arange(gps1, gps1 + len(target) / fs, 1 / fs, dtype=float), dtype=float)
         ts.times = ts.times.value - epoch
         tsq = ts.q_transform(outseg=Segment(plot_t_min, plot_t_max + 0.2), tres=0.2, fres=0.2, whiten=True)
@@ -287,30 +277,22 @@ def plot_omegagram(pred, target, gps1, gps2, fs, plot_name, save_path, norm=Fals
         ax = plot.gca()
         pcm = ax.imshow(tsq, vmin=0, vmax=15, cmap=colormap)
         ax.set_ylabel("Frequency [Hz]", fontsize=16)
-        ax.set_ylim(plot_f_min, plot_f_max)
-        ax.set_xlim(plot_t_min, plot_t_max)
         ax.grid(False)
         for i in harmonics:
             ax.plot(np.linspace(plot_t_min, plot_t_max, len(ts_l2)), ts_l2 * i, color="r", lw=line_width)
         ax.set_xlim(plot_t_min, plot_t_max)
         ax.set_ylim(plot_f_min, plot_f_max)
-        # ax.set_xticks(np.arange(plot_t_min, plot_t_max + plot_t_step, plot_t_step))
-        # ax.set_xticklabels(["{:d}".format(val) for val in np.arange(plot_t_min,
-        # plot_t_max + plot_t_step, plot_t_step)])
-        # ax.set_yticks(list(np.arange(plot_f_min, plot_f_max + plot_f_step, plot_f_step)))
-        # ax.set_yticklabels(["{:d}".format(val) for val in np.arange(plot_f_min,
-        # plot_f_max + plot_f_step, plot_f_step)])
         ax.set_xlabel("t - t$_0$ [s]\n" + gps_date, fontsize=16)
-        # ax.set_title(gps_date, fontsize=16)
+        ax.set_title("{}\nand predictor of\n{}".format(target_name, pred_name), fontsizze=16)
         cbar = ax.colorbar(clim=(0, 15), location="right")
         cbar.set_label("Normalized energy", fontsize=16)
-        plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
+        plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
         plt.close("all")
     else:
         print("GPS coordinates are None, cannot plot omegagram.")
         
 
-def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=10, mean_freqs=None):
+def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=10, mean_freqs=None, save_ext="png"):
     """Summary histogram of culprits found for a certain imf.
     
     Parameters
@@ -329,6 +311,8 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
         maximum number of points per plot
     mean_freqs : dict
         dict {channel_name: [mean_freqs]} for mean frequencies histograms
+    save_ext : str
+        plot extension
     """
     culprits = np.array(culprits)
     seen = set()
@@ -347,7 +331,7 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
         plt.xticks(np.arange(len(counts)), uniq, rotation=45, horizontalalignment="right")
         plt.ylabel("Channel occurrence")
         plt.title(title)
-        plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
+        plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
         plt.close("all")
     else:
         n = len(counts) // batch
@@ -358,7 +342,7 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
                        rotation=45, horizontalalignment="right")
             plt.ylabel("Channel occurrence")
             plt.title(title)
-            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + ".png"),
+            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + "." + save_ext),
                         bbox_inches="tight", dpi=300)
             plt.close("all")
         if len(counts) % batch != 0:
@@ -368,7 +352,7 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
                        rotation=45, horizontalalignment="right")
             plt.ylabel("Channel occurrence")
             plt.title(title)
-            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + ".png"),
+            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + "." + save_ext),
                         bbox_inches="tight", dpi=300)
             plt.close("all")
 
@@ -378,10 +362,60 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
         for i, key in enumerate(uniq[:batch]):
             mf_x += [i for _ in range(len(mean_freqs[key]))]
             mf_y += mean_freqs[key]
-        plot_mean_freq_summary(mf_x, mf_y, uniq, title, plot_name + "_mean_freq", save_path)
+        plot_mean_freq_summary(mf_x, mf_y, uniq, title, plot_name + "_mean_freq", save_path, save_ext=save_ext)
     
     
-def plot_corr_summary_old(gps_list, corr_list, title, plot_name, save_path, batch=10):
+# def plot_corr_summary_old(gps_list, corr_list, title, plot_name, save_path, batch=10):
+#     """Summary of correlations for each GPS for a certain imf.
+#
+#     Parameters
+#     ----------
+#     gps_list : list
+#         gps
+#     corr_list : list
+#         correlations
+#     title : str
+#         plot title
+#     plot_name : str
+#         plot name
+#     save_path : str
+#         save path
+#     batch : int
+#         maximum number of points per plot
+#     """
+#     if len(gps_list) <= batch:
+#         plt.figure()
+#         plt.bar(np.arange(len(gps_list)), corr_list, width=0.8)
+#         plt.ylim(-1, 1)
+#         plt.xticks(np.arange(len(gps_list)), gps_list, rotation=45, horizontalalignment="right")
+#         plt.title(title)
+#         plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
+#         plt.close("all")
+#     else:
+#         n = len(gps_list) // batch
+#         for i in range(n):
+#             plt.figure()
+#             plt.bar(np.arange(len(gps_list[i*batch:(i+1)*batch])), corr_list[i*batch:(i+1)*batch], width=0.8)
+#             plt.ylim(-1, 1)
+#             plt.xticks(np.arange(len(gps_list[i*batch:(i+1)*batch])), gps_list[i*batch:(i+1)*batch],
+#                        rotation=45, horizontalalignment="right")
+#             plt.title(title)
+#             plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + ".png"),
+#                         bbox_inches="tight", dpi=300)
+#             plt.close("all")
+#         if len(gps_list) % batch != 0:
+#             plt.figure()
+#             plt.bar(np.arange(len(gps_list[n*batch:])), corr_list[n*batch:], width=0.8)
+#             plt.ylim(-1, 1)
+#             plt.xticks(np.arange(len(gps_list[n*batch:])), gps_list[n*batch:], rotation=45,
+#                        horizontalalignment="right")
+#             plt.title(title)
+#             plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + ".png"),
+#                         bbox_inches="tight", dpi=300)
+#             plt.close("all")
+
+
+def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, save_ext="png"):
     """Summary of correlations for each GPS for a certain imf.
     
     Parameters
@@ -396,56 +430,8 @@ def plot_corr_summary_old(gps_list, corr_list, title, plot_name, save_path, batc
         plot name
     save_path : str
         save path
-    batch : int
-        maximum number of points per plot
-    """
-    if len(gps_list) <= batch:
-        plt.figure()
-        plt.bar(np.arange(len(gps_list)), corr_list, width=0.8)
-        plt.ylim(-1, 1)
-        plt.xticks(np.arange(len(gps_list)), gps_list, rotation=45, horizontalalignment="right")
-        plt.title(title)
-        plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
-        plt.close("all")
-    else:
-        n = len(gps_list) // batch
-        for i in range(n):
-            plt.figure()
-            plt.bar(np.arange(len(gps_list[i*batch:(i+1)*batch])), corr_list[i*batch:(i+1)*batch], width=0.8)
-            plt.ylim(-1, 1)
-            plt.xticks(np.arange(len(gps_list[i*batch:(i+1)*batch])), gps_list[i*batch:(i+1)*batch],
-                       rotation=45, horizontalalignment="right")
-            plt.title(title)
-            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + ".png"),
-                        bbox_inches="tight", dpi=300)
-            plt.close("all")
-        if len(gps_list) % batch != 0:
-            plt.figure()
-            plt.bar(np.arange(len(gps_list[n*batch:])), corr_list[n*batch:], width=0.8)
-            plt.ylim(-1, 1)
-            plt.xticks(np.arange(len(gps_list[n*batch:])), gps_list[n*batch:], rotation=45,
-                       horizontalalignment="right")
-            plt.title(title)
-            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + ".png"),
-                        bbox_inches="tight", dpi=300)
-            plt.close("all")
-
-
-def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path):
-    """Summary of correlations for each GPS for a certain imf.
-    
-    Parameters
-    ----------
-    gps_list : list
-        gps
-    corr_list : list
-        correlations
-    title : str
-        plot title
-    plot_name : str
-        plot name
-    save_path : str
-        save path
+    save_ext : str
+        plot extension
     """
     t1 = Time(gps_list[0], format="gps")
     t2 = Time(t1, format="iso", scale="utc")
@@ -458,11 +444,11 @@ def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path):
     plt.ylabel("$\\rho$")
     plt.xlabel("t [s]\nfrom " + gps_date)
     plt.title(title)
-    plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
+    plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
     plt.close("all")
 
 
-def plot_mean_freq_summary(x_vals, y_vals, x_labels, title, plot_name, save_path):
+def plot_mean_freq_summary(x_vals, y_vals, x_labels, title, plot_name, save_path, save_ext="png"):
     """Summary of mean frequencies for a channel and a certain imf.
     
     Parameters
@@ -479,14 +465,13 @@ def plot_mean_freq_summary(x_vals, y_vals, x_labels, title, plot_name, save_path
         plot name
     save_path : str
         save path
+    save_ext : str
+        plot extension
     """
     plt.figure()
     plt.scatter(x_vals, y_vals)
-    #plt.hist(mean_freqs, bins=20)
     plt.ylabel("Mean frequency [Hz]")
-    #plt.ylabel("Counts")
     plt.xticks(np.arange(len(x_labels)), x_labels, rotation=45, horizontalalignment="right")
     plt.title(title)
-    plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
+    plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
     plt.close("all")
-
