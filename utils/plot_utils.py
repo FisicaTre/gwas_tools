@@ -58,7 +58,7 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
         imf instantaneous amplitude name
     gps1 : int
         gps of the event
-    samp_freq : int
+    samp_freq : float
         sampling frequency
     title : str
         plot title
@@ -119,7 +119,7 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
         name of the channel from which `ias` are computed
     gps1 : int
         gps of the event
-    samp_freq : int
+    samp_freq : float
         sampling frequency
     out_path : str
         save path
@@ -457,7 +457,7 @@ def plot_mean_freq_summary(x_vals, y_vals, x_labels, title, plot_name, save_path
         list of integers for channel number
     y_vals : list
         mean_frequencies
-    x_labels : list
+    x_labels : list[str]
         channels names corresponding to `x_vals`
     title : str
         plot title

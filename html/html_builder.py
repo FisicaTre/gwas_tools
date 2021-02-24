@@ -1,4 +1,4 @@
-#  scattered_light_page.py - this file is part of the asr package,
+#  html_builder.py - this file is part of the asr package,
 #  also known as "adaptive scattering recognizer".
 #  Copyright (C) 2020- Stefano Bianchi
 #
@@ -41,8 +41,8 @@ JS_FILES = ["https://code.jquery.com/jquery-3.5.1.min.js",
             "https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"]
 
 
-class ScatteredLightPage(object):
-    """Class to construct HTML output page of the `asr` package analysis.
+class HtmlBuilder(object):
+    """Class to build HTML page components.
     
         Parameters
         ----------

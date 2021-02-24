@@ -1,4 +1,4 @@
-#  asr_html.py - this file is part of the asr package,
+#  output_page.py - this file is part of the asr package,
 #  also known as "adaptive scattering recognizer".
 #  Copyright (C) 2020- Stefano Bianchi
 #
@@ -24,7 +24,7 @@ from .utils import file_utils
 from datetime import datetime
 from datetime import timedelta
 from astropy.time import Time
-from .html import scattered_light_page as slp
+from .html import html_builder as hb
 from .common import defines
 
 
@@ -56,13 +56,7 @@ def generate_html(res_path, date, tc_name, ch_list_file, gps_file, flags=[]):
     flags : list
         list of flags used for the analysis (default : [])
     """ 
-    res_folders = []
-    for folder in os.listdir(res_path):
-        curr_dir = os.path.join(res_path, folder)
-        if os.path.isdir(curr_dir):
-            if file_utils.yml_exists(curr_dir):
-                res_folders.append(folder)
-    res_folders.sort()
+    res_folders = file_utils.get_results_folders(res_path)
 
     # title
     page_date = datetime.strptime(date, "%Y-%m-%d")
@@ -71,7 +65,7 @@ def generate_html(res_path, date, tc_name, ch_list_file, gps_file, flags=[]):
     curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
     os.system("mkdir -p {}".format(curr_plots_folder))
     title = "Scattered light analysis ({})".format(page_date.strftime('%Y-%m-%d'))
-    page = slp.ScatteredLightPage(title=title, **{"style": "body { background-color: white; }"})
+    page = hb.HtmlBuilder(title=title, **{"style": "body { background-color: white; }"})
     
     # pipeline code
     page.openDiv(**{"id_": "pipeline-command-line-section"})
@@ -125,16 +119,15 @@ def generate_html(res_path, date, tc_name, ch_list_file, gps_file, flags=[]):
     page.openDiv(**{"id_": "results"})
     for gps_folder in res_folders:
         gps_path = os.path.join(res_path, gps_folder)
-        res_file = file_utils.load_yml(gps_path)
-        parameters = res_file[defines.PARAMS_SECT_KEY]
+        res_file = file_utils.YmlFile(gps_path)
+        parameters = res_file[defines.PARAMS_SECT_KEY] ####################
         imfs_data = {}
         above_thr = False
         for i in range(1, SUMMARY_IMFS + 1):
-            if len(res_file[defines.CORR_SECT_KEY]) >= i:
+            if res_file.get_imfs_count() >= i:
                 imfs_data[i] = {}
-                imfs_data[i]["Culprit"] = res_file[defines.CORR_SECT_KEY][i - 1][defines.CHANNEL_KEY]
-                # imfs_data[i]["Correlation"] = "{:.4f}".format(res_file[defines.CORR_SECT_KEY][i - 1][defines.CORR_KEY])
-                imfs_data[i]["Mean frequency"] = "{:.4f} Hz".format(res_file[defines.CORR_SECT_KEY][i - 1][defines.MEAN_FREQ_KEY])
+                imfs_data[i]["Culprit"] = res_file.get_channel_of_imf(i)
+                imfs_data[i]["Mean frequency"] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
                 imfs_data[i]["omegagram"] = os.path.exists(os.path.join(gps_path, "imf_{:d}_omegagram.png".format(i)))
                 imfs_data[i]["combo"] = ""
                 
@@ -142,16 +135,15 @@ def generate_html(res_path, date, tc_name, ch_list_file, gps_file, flags=[]):
                 for cf in glob.glob(os.path.join(gps_path, "combo_imf_*_culprit.png")):
                     if re.search(regex, cf):
                         imfs_data[i]["combo"] = cf
-                if res_file[defines.CORR_SECT_KEY][i - 1][defines.CORR_KEY] >= 0.5:
+                if res_file.get_corr_of_imf(i) >= 0.5:
                     above_thr = True
         
-        gps_start = gps_folder.split("_")[0]
-        gps_end = gps_folder.split("_")[1]
-        gps_event = str((int(gps_start) + int(gps_end)) // 2)
-        res_id = "{}-{}".format(gps_start, gps_end)
+        gps_start, gps_end = res_file.get_gps()
+        gps_event = (gps_start + gps_end) // 2
+        res_id = "{:d}-{:d}".format(gps_start, gps_end)
         t1 = Time(gps_event, format="gps")
         t2 = Time(t1, format="iso", scale="utc")
-        gps_date = "{} UTC (GPS: {})\n".format(t2, gps_event)
+        gps_date = "{} UTC (GPS: {:d})\n".format(t2, gps_event)
         
         if above_thr:
             color_key = "danger"

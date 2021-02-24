@@ -40,6 +40,187 @@ class YmlFile(object):
             with open(yml_file, "r") as f:
                 self.content = yaml.safe_load(f)
 
+    def get_target_channel(self):
+        """Target channel.
+
+        Returns
+        -------
+        str
+            target channel
+        """
+        return self.content[defines.PARAMS_SECT_KEY][defines.TARGET_CH_KEY]
+
+    def get_gps(self):
+        """GPS times.
+
+        Returns
+        -------
+        int
+            starting GPS
+        int
+            ending GPS
+        """
+        gps = self.content[defines.PARAMS_SECT_KEY][defines.GPS_KEY]
+        gps_start = int(gps.split(",")[0])
+        gps_end = int(gps.split(",")[1])
+
+        return gps_start, gps_end
+
+    def get_sampling_frequency(self):
+        """Sampling frequency.
+
+        Returns
+        -------
+        float
+            sampling frequency
+        """
+        return self.content[defines.PARAMS_SECT_KEY][defines.SAMP_FREQ_KEY]
+
+    def get_channels_list(self):
+        """Channels list.
+
+        Returns
+        -------
+        str
+            path to channels list file
+        """
+        return self.content[defines.PARAMS_SECT_KEY][defines.CH_LIST_KEY]
+
+    def get_output_path(self):
+        """Output path.
+
+        Returns
+        -------
+        str
+            path to where output analysis was saved
+        """
+        return self.content[defines.PARAMS_SECT_KEY][defines.OUT_PATH_KEY]
+
+    def get_lowpass_frequency(self):
+        """Lowpass frequency.
+
+        Returns
+        -------
+        float
+            lowpass frequency
+        """
+        return self.content[defines.PARAMS_SECT_KEY][defines.LOWPASS_FREQ_KEY]
+
+    def get_scattering_factor(self):
+        """Scattering factor.
+
+        Returns
+        -------
+        int
+            scattering factor
+        """
+        return self.content[defines.PARAMS_SECT_KEY][defines.SCATTERING_KEY]
+
+    def get_smoothing_window(self):
+        """Smoothing window.
+
+        Returns
+        -------
+        int
+            smoothing window
+        """
+        return self.content[defines.PARAMS_SECT_KEY][defines.SMOOTH_WIN_KEY]
+
+    def get_max_corr_imf(self):
+        """Number of max correlated imf.
+
+        Returns
+        -------
+        int
+            max correlated imf number
+        """
+        return self.content[defines.MAX_CORR_SECT_KEY][defines.IMF_KEY]
+
+    def get_max_corr_channel(self):
+        """Max correlated channel.
+
+        Returns
+        -------
+        str
+            max correlated channel
+        """
+        return self.content[defines.MAX_CORR_SECT_KEY][defines.CHANNEL_KEY]
+
+    def get_max_corr(self):
+        """Max correlation.
+
+        Returns
+        -------
+        float
+            max correlation
+        """
+        return self.content[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY]
+
+    def get_max_corr_mean_freq(self):
+        """Mean frequency of max correlated channel.
+
+        Returns
+        -------
+        float
+            mean frequency of max correlated channel
+        """
+        return self.content[defines.MAX_CORR_SECT_KEY][defines.MEAN_FREQ_KEY]
+
+    def get_imfs_count(self):
+        """Get number of found imfs.
+
+        Returns
+        -------
+        int
+            number of found imfs
+        """
+        return len(self.content[defines.CORR_SECT_KEY])
+
+    def get_channel_of_imf(self, imf):
+        """Most correlated channel with imf `imf`.
+
+        Parameters
+        ----------
+        imf : int
+            imf number
+
+        Returns
+        -------
+        str
+            most correlated channel with imf `imf`
+        """
+        return self.content[defines.CORR_SECT_KEY][imf - 1][defines.CHANNEL_KEY]
+
+    def get_corr_of_imf(self, imf):
+        """Correlation of imf `imf`.
+
+        Parameters
+        ----------
+        imf : int
+            imf number
+
+        Returns
+        -------
+        float
+            correlation of imf `imf`
+        """
+        return self.content[defines.CORR_SECT_KEY][imf - 1][defines.CORR_KEY]
+
+    def get_mean_freq_of_imf(self, imf):
+        """Mean frequency of imf `imf`.
+
+        Parameters
+        ----------
+        imf : int
+            imf number
+
+        Returns
+        -------
+        float
+            mean frequency of imf `imf`
+        """
+        return self.content[defines.CORR_SECT_KEY][imf - 1][defines.MEAN_FREQ_KEY]
+
     def write_parameters(self, gps, target_channel_name, channels_file, out_path,
                          fs, f_lowpass, n_scattering, smooth_win):
         """Write parameters section to file.
@@ -267,3 +448,47 @@ def load_predictors(predictors_path):
     f.close()
 
     return predictors
+
+
+def get_results_folders(results_path, sort=True):
+    """Get list of folders with results from one or multiple analyses.
+
+    Parameters
+    ----------
+    results_path : str
+        path to results folders
+    sort : bool
+        sort folders (default : True)
+
+    Returns
+    -------
+    list[str]
+        list of folders paths
+    """
+    res_folders = []
+    for folder in os.listdir(results_path):
+        curr_dir = os.path.join(results_path, folder)
+        if os.path.isdir(curr_dir):
+            if is_valid_folder(curr_dir):
+                res_folders.append(curr_dir)
+
+    if sort:
+        res_folders.sort()
+
+    return res_folders
+
+
+def is_valid_folder(folder):
+    """Check if all required files are present in `folder`.
+
+    Parameters
+    ----------
+    folder : str
+        path to the folder to validate
+
+    Returns
+    -------
+    bool
+        True if folder is valid
+    """
+    return yml_exists(folder) and imfs_exists(folder) and predictors_exists(folder)
