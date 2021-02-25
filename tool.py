@@ -192,95 +192,95 @@ def save_predictors(preds, file_name, out_path):
     f_pred.close()
 
 
-def run_tool(gps, target_channel_name, channels_file, out_path,
-             fs, f_lowpass, n_scattering=1, smooth_win=50):
-    """Run the analysis.
-    
-    Parameters
-    ----------
-    gps : str
-        comma-separated starting and ending GPS
-    target_channel_name : str
-        target channel name
-    channels_file : str
-        path to channels list file
-    out_path : str
-        path where to save analysis
-    fs : float
-        sampling frequency
-    f_lowpass : float
-        lowpass frequency
-    n_scattering : int
-        number of scattering reflections
-    smooth_win : int
-        smoothing window
-    """
-    # initialize variables
-    ch_f = open(channels_file, "r")
-    channels_list = [ch.rstrip() for ch in ch_f.readlines() if ch.strip()]
-    ch_f.close()
-
-    # build time series matrix
-    start_end = gps.split(",")
-    if len(start_end) != 2:
-        raise ValueError("GPS start or end time not provided.")
-
-    gps_start = int(start_end[0])
-    gps_end = int(start_end[1])
-    data, fs = get_data_from_time_series_dict(target_channel_name, channels_list,
-                                              gps_start, gps_end, fs)
-
-    # create folder for results if it does not exist
-    odir_name = "{}_{}".format(start_end[0], start_end[1])
-    out_path = os.path.join(out_path, odir_name)
-    if not os.path.isdir(out_path):
-        os.makedirs(out_path, exist_ok=True)
-
-    # predictors
-    predictor = get_predictors(data[:, 1:], fs, smooth_win=smooth_win, n_scattering=n_scattering)
-
-    # target channel
-    target_channel = signal_utils.butter_lowpass_filter(data[:, 0], f_lowpass, fs)
-    # target_channel = signal_utils.lowpass(data[:, 0], f_lowpass)
-
-    # tvf-emd
-    imfs = get_imfs(target_channel, fs)
-
-    # correlations
-    corrs = get_correlations(imfs, predictor, smooth_win=smooth_win,
-                             save_envelopes=True, save_env_path=out_path,
-                             save_env_name="_".join(target_channel_name.split(":")))
-
-    # max correlations
-    max_vals = np.max(corrs, axis=1)
-    max_channels = np.argmax(corrs, axis=1)
-    max_channel = int(np.argmax(max_vals))
-    try:
-        max_ch_str = channels_list[max_channels[max_channel]]
-        mean_freq = signal_utils.mean_frequency(data[:, max_channels[max_channel] + 1], fs)
-    except:
-        max_ch_str = "Not found"
-        mean_freq = 0.0
-
-    # output file
-    out_file = file_utils.YmlFile()
-    out_file.write_parameters(gps, target_channel_name, channels_file, out_path,
-                              fs, f_lowpass, n_scattering, smooth_win)
-    out_file.write_max_corr_section(max_channel + 1, max_ch_str,  max_vals[max_channel], mean_freq)
-    ch_str = []
-    ch_corr = []
-    ch_m_fr = []
-    for n_imf in range(len(max_vals)):
-        try:
-            ch_str.append(channels_list[max_channels[n_imf]])
-            ch_corr.append(max_vals[n_imf])
-            ch_m_fr.append(signal_utils.mean_frequency(data[:, max_channels[n_imf] + 1], fs))
-        except:
-            ch_str.append("Not found")
-            ch_corr.append(-999.0)
-            ch_m_fr.append(0.0)
-    out_file.write_correlation_section(ch_str, ch_corr, ch_m_fr)
-    out_file.save(os.path.join(out_path, "output.yml"))
-
-    # save predictors
-    save_predictors(predictor[:, max_channels], "_".join(target_channel_name.split(":")), out_path)
+# def run_tool(gps, target_channel_name, channels_file, out_path,
+#              fs, f_lowpass, n_scattering=1, smooth_win=50):
+#     """Run the analysis.
+#
+#     Parameters
+#     ----------
+#     gps : str
+#         comma-separated starting and ending GPS
+#     target_channel_name : str
+#         target channel name
+#     channels_file : str
+#         path to channels list file
+#     out_path : str
+#         path where to save analysis
+#     fs : float
+#         sampling frequency
+#     f_lowpass : float
+#         lowpass frequency
+#     n_scattering : int
+#         number of scattering reflections
+#     smooth_win : int
+#         smoothing window
+#     """
+#     # initialize variables
+#     ch_f = open(channels_file, "r")
+#     channels_list = [ch.rstrip() for ch in ch_f.readlines() if ch.strip()]
+#     ch_f.close()
+#
+#     # build time series matrix
+#     start_end = gps.split(",")
+#     if len(start_end) != 2:
+#         raise ValueError("GPS start or end time not provided.")
+#
+#     gps_start = int(start_end[0])
+#     gps_end = int(start_end[1])
+#     data, fs = get_data_from_time_series_dict(target_channel_name, channels_list,
+#                                               gps_start, gps_end, fs)
+#
+#     # create folder for results if it does not exist
+#     odir_name = "{}_{}".format(start_end[0], start_end[1])
+#     out_path = os.path.join(out_path, odir_name)
+#     if not os.path.isdir(out_path):
+#         os.makedirs(out_path, exist_ok=True)
+#
+#     # predictors
+#     predictor = get_predictors(data[:, 1:], fs, smooth_win=smooth_win, n_scattering=n_scattering)
+#
+#     # target channel
+#     target_channel = signal_utils.butter_lowpass_filter(data[:, 0], f_lowpass, fs)
+#     # target_channel = signal_utils.lowpass(data[:, 0], f_lowpass)
+#
+#     # tvf-emd
+#     imfs = get_imfs(target_channel, fs)
+#
+#     # correlations
+#     corrs = get_correlations(imfs, predictor, smooth_win=smooth_win,
+#                              save_envelopes=True, save_env_path=out_path,
+#                              save_env_name="_".join(target_channel_name.split(":")))
+#
+#     # max correlations
+#     max_vals = np.max(corrs, axis=1)
+#     max_channels = np.argmax(corrs, axis=1)
+#     max_channel = int(np.argmax(max_vals))
+#     try:
+#         max_ch_str = channels_list[max_channels[max_channel]]
+#         mean_freq = signal_utils.mean_frequency(data[:, max_channels[max_channel] + 1], fs)
+#     except:
+#         max_ch_str = "Not found"
+#         mean_freq = 0.0
+#
+#     # output file
+#     out_file = file_utils.YmlFile()
+#     out_file.write_parameters(gps, target_channel_name, channels_file, out_path,
+#                               fs, f_lowpass, n_scattering, smooth_win)
+#     out_file.write_max_corr_section(max_channel + 1, max_ch_str,  max_vals[max_channel], mean_freq)
+#     ch_str = []
+#     ch_corr = []
+#     ch_m_fr = []
+#     for n_imf in range(len(max_vals)):
+#         try:
+#             ch_str.append(channels_list[max_channels[n_imf]])
+#             ch_corr.append(max_vals[n_imf])
+#             ch_m_fr.append(signal_utils.mean_frequency(data[:, max_channels[n_imf] + 1], fs))
+#         except:
+#             ch_str.append("Not found")
+#             ch_corr.append(-999.0)
+#             ch_m_fr.append(0.0)
+#     out_file.write_correlation_section(ch_str, ch_corr, ch_m_fr)
+#     out_file.save(os.path.join(out_path, "output.yml"))
+#
+#     # save predictors
+#     save_predictors(predictor[:, max_channels], "_".join(target_channel_name.split(":")), out_path)

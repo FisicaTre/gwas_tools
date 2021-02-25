@@ -49,11 +49,10 @@ def comparison_arg(arg):
     """
     if arg == "max_corr":
         return arg
+    elif isinstance(arg, list):
+        return arg
     else:
-        try:
-            return [int(s) for s in arg.split(",")]
-        except:
-            return None
+        return None
         
         
 def corr_thr(arg):
@@ -210,6 +209,11 @@ def plot_comparisons(folders, comparison, comparison_thr=-1.0, save_ext="png"):
     ## to be lightened, create a table with pandas and then do plots
     ## optionally save table to a csv
     ################################################################
+    comparison = plot_imfs_arg(comparison)
+    if comparison is None:
+        return
+    comparison_thr = corr_thr(comparison_thr)
+
     folders_path = os.path.sep.join(folders[0].split(os.path.sep)[:-1])
     cpath = os.path.join(folders_path, "comparison")
     if not os.path.isdir(cpath):
@@ -236,9 +240,11 @@ def plot_comparisons(folders, comparison, comparison_thr=-1.0, save_ext="png"):
                                                           yf.get_max_corr(), yf.get_max_corr_mean_freq()))
         f.close()
         plot_utils.plot_imfs_summary(culprits_list, "{} (thr {:.2f})".format(target_channel, comparison_thr),
-                                     "max_corr_imf_summary_{}".format(target_channel), cpath, save_ext=save_ext)
+                                     "max_corr_imf_summary_{}".format("_".join(target_channel.split(":"))),
+                                     cpath, save_ext=save_ext)
         plot_utils.plot_corr_summary(gps_list, corr_list, "{} (thr {:.2f})".format(target_channel, comparison_thr),
-                                     "max_corr_summary_{}".format(target_channel), cpath, save_ext=save_ext)
+                                     "max_corr_summary_{}".format("_".join(target_channel.split(":"))),
+                                     cpath, save_ext=save_ext)
     elif isinstance(comparison, list):
         culprits_dict = {}
         corr_dict = {}
@@ -291,8 +297,8 @@ def plot_comparisons(folders, comparison, comparison_thr=-1.0, save_ext="png"):
             if len(culprits_dict[n_imf]) > 0 and culprits_dict[n_imf].count("Not found") != len(culprits_dict[n_imf]):
                 plot_utils.plot_imfs_summary(culprits_dict[n_imf],
                                              "{} (thr {:.2f})".format(target_channel, comparison_thr),
-                                             "imf_{:d}_summary_{}".format(n_imf, target_channel), cpath,
-                                             mean_freqs=mean_freq_dict[n_imf], save_ext=save_ext)
+                                             "imf_{:d}_summary_{}".format(n_imf, "_".join(target_channel.split(":"))),
+                                             cpath, mean_freqs=mean_freq_dict[n_imf], save_ext=save_ext)
 
             corr_check = np.sum(np.abs(corr_dict[n_imf][defines.CORR_KEY]))
             if corr_check != 0.0:
@@ -300,48 +306,50 @@ def plot_comparisons(folders, comparison, comparison_thr=-1.0, save_ext="png"):
                 plot_utils.plot_corr_summary(np.asarray(corr_dict[n_imf][defines.GPS_KEY])[zero_idxs],
                                              np.asarray(corr_dict[n_imf][defines.CORR_KEY])[zero_idxs],
                                              "{} (thr {:.2f})".format(target_channel, comparison_thr),
-                                             "imf_{:d}_corr_summary_{}".format(n_imf, target_channel),
+                                             "imf_{:d}_corr_summary_{}".format(n_imf,
+                                                                               "_".join(target_channel.split(":"))),
                                              cpath, save_ext=save_ext)
 
 
-def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
-          omegagram_thr=None, comparison=None, comparison_thr=None):
-    """Plot analysis results.
-    
-    Parameters
-    ----------
-    ipath : str
-        path to results folder
-    single_folder : bool
-        whether or not `ipath` points to a single folder or a group of folders
-    imfs_to_plot : str
-        imfs to plot, can be "all", "max_corr", or comma-separated numbers
-    imf_thr : float
-        imfs threshold
-    omegagram_thr : float
-        omegagram threshold
-    comparison : str
-        imfs for comparison, can be "max_corr", or comma-separated numbers
-    comparison_thr : float
-        comparison imfs threshold
-    """
-    if imf_thr is None:
-        imf_thr = -1.0
-    if omegagram_thr is None:
-        omegagram_thr = -1.0
-    if comparison_thr is None:
-        comparison_thr = -1.0
-    
-    res_folders = []
-    if single_folder:
-        comparison = None
-        comparison_thr = None
-        if file_utils.is_valid_folder(ipath):
-            res_folders.append(ipath)
-    else:
-        res_folders = file_utils.get_results_folders(ipath)
-
-    plot_imfs(res_folders, imfs_to_plot, imf_thr=imf_thr, combos=True)
-    plot_omegagrams(res_folders, imfs_to_plot, omegagram_thr=omegagram_thr)
-    if comparison is not None:
-        plot_comparisons(res_folders, comparison, comparison_thr=comparison_thr)
+# def plots(ipath, single_folder=False, imfs_to_plot=None, imf_thr=None,
+#           omegagram_thr=None, comparison=None, comparison_thr=None):
+#     """Plot analysis results.
+#
+#     Parameters
+#     ----------
+#     ipath : str
+#         path to results folder
+#     single_folder : bool
+#         whether or not `ipath` points to a single folder or a group of folders
+#     imfs_to_plot : str
+#         imfs to plot, can be "all", "max_corr", or comma-separated numbers
+#     imf_thr : float
+#         imfs threshold
+#     omegagram_thr : float
+#         omegagram threshold
+#     comparison : str
+#         imfs for comparison, can be "max_corr", or comma-separated numbers
+#     comparison_thr : float
+#         comparison imfs threshold
+#     """
+#     if imf_thr is None:
+#         imf_thr = -1.0
+#     if omegagram_thr is None:
+#         omegagram_thr = -1.0
+#     if comparison_thr is None:
+#         comparison_thr = -1.0
+#
+#     res_folders = []
+#     if single_folder:
+#         comparison = None
+#         comparison_thr = None
+#         if file_utils.is_valid_folder(ipath):
+#             res_folders.append(ipath)
+#     else:
+#         res_folders = file_utils.get_results_folders(ipath)
+#
+#     if imfs_to_plot is not None:
+#         plot_imfs(res_folders, imfs_to_plot, imf_thr=imf_thr, combos=True)
+#         plot_omegagrams(res_folders, imfs_to_plot, omegagram_thr=omegagram_thr)
+#     if comparison is not None:
+#         plot_comparisons(res_folders, comparison, comparison_thr=comparison_thr)

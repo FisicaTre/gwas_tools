@@ -190,35 +190,17 @@ class HtmlBuilder(object):
         
         Parameters
         ----------                        
-        parameters : dict
+        parameters : list[tuple]
             analysis parameters
         start : int
             start GPS
         end : int
             end GPS
         """
-        content = []
-        content.append(("GPS (<code>--{}</code>)".format(defines.GPS_KEY),
-                        parameters[defines.GPS_KEY]))
-        content.append(("Target channel (<code>--{}</code>)".format(defines.TARGET_CH_KEY),
-                        parameters[defines.TARGET_CH_KEY]))
-        content.append(("Channels list (<code>--{}</code>)".format(defines.CH_LIST_KEY),
-                        parameters[defines.CH_LIST_KEY]))
-        content.append(("Output path (<code>--{}</code>)".format(defines.OUT_PATH_KEY),
-                        parameters[defines.OUT_PATH_KEY]))
-        content.append(("Sampling frequency (<code>--{}</code>)".format(defines.SAMP_FREQ_KEY),
-                        str(parameters[defines.SAMP_FREQ_KEY])))
-        content.append(("Lowpass frequency (<code>--{}</code>)".format(defines.LOWPASS_FREQ_KEY),
-                        str(parameters[defines.LOWPASS_FREQ_KEY])))
-        content.append(("Predictor's harmonics (<code>--{}</code>)".format(defines.SCATTERING_KEY),
-                        str(parameters[defines.SCATTERING_KEY])))
-        content.append(("Smoothing window (<code>--{}</code>)".format(defines.SMOOTH_WIN_KEY),
-                        str(parameters[defines.SMOOTH_WIN_KEY])))
-
-        self.addSubsection("Parameters")  # , id_="parameters-section-{}-{}".format(start, end))
+        self.addSubsection("Parameters")
         self.openDiv(**{"class_": "row"})
         self.openDiv(**{"class_": "col-md-9 col-sm-12"})
-        self.page.add(htmlio.parameter_table(content, start, end))
+        self.page.add(htmlio.parameter_table(parameters, start, end))
         self.closeDiv()
         self.closeDiv()
 
@@ -234,6 +216,58 @@ class HtmlBuilder(object):
         self.page.pre(**{"style": "line-height: 125%;"})
         self.page.span(code)
         self.page.pre.close()
+        self.closeDiv()
+
+    def addCommandLineBlock(self, code, description, block_id):
+        """Add box with command line with a paragraph above.
+
+        Parameters
+        ----------
+        code : str
+            command line
+        description : str
+            description of the command line
+        block_id : str
+            div block id
+        """
+        self.openDiv(**{"id_": "{}-section".format(block_id)})
+        self.addParagraph(description, **{"class_": "mb-2"})
+        self.openDiv(**{"id_": "{}".format(block_id)})
+        self.addCommandLine(" ".join(code))
+        self.closeDiv()
+        self.closeDiv()
+
+    def openCard(self, title, color, target_id):
+        """Open a card element.
+
+        Parameters
+        ----------
+        title : str
+            title shown on the card
+        color : str
+            card color
+        target_id : str
+            id to link body to header
+        """
+        self.openDiv(**{"class_": "card border-{} mb-1 shadow-sm".format(color)})
+
+        # header
+        self.openDiv(**{"class_": "card-header text-white bg-{}".format(color)})
+        self.addLink(title,
+                     **{"class": "btn card-link cis-link",
+                        "data-toggle": "collapse",
+                        "data-target": "#{}".format(target_id)})
+        self.closeDiv()
+
+        # body
+        self.openDiv(**{"id_": target_id, "class_": "collapse"})
+        self.openDiv(**{"class_": "card-body"})
+
+    def closeCard(self):
+        """Close a card element.
+        """
+        self.closeDiv()
+        self.closeDiv()
         self.closeDiv()
 
     def addPlot(self, plot_name, plot_id):
@@ -255,7 +289,7 @@ class HtmlBuilder(object):
         self.page.a(href=plot_name, id_="a-{}".format(plot_id), **aparams)
         self.page.img(id_="img-{}".format(plot_id),
                       **{"src": plot_name, "alt": os.path.basename(plot_name),
-                         "style": "height: 70%; width: 70%; object-fit: contain"})
+                         "style": "height: 50%; width: 50%; object-fit: contain"})
         self.page.a.close()
 
     def savePage(self, path):
