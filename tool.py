@@ -97,7 +97,8 @@ def get_predictors(channels, fs, smooth_win=None, n_scattering=1):
             v_mat[:, i] = signal_utils.smooth(v_mat[:, i], smooth_win)
 
     predictor = n_scattering * (2 / LAMBDA) * np.abs(v_mat)
-    predictor = predictor[(defines.EXTRA_SECONDS * fs):-(defines.EXTRA_SECONDS * fs), :]
+    fs_int = int(fs)
+    predictor = predictor[(defines.EXTRA_SECONDS * fs_int):-(defines.EXTRA_SECONDS * fs_int), :]
     # for i in range(predictor.shape[1]):
     #     predictor[:, i] = butter_lowpass_filter(predictor[:, i], f_lowpass, fs)
 
@@ -122,7 +123,8 @@ def get_imfs(target_channel, fs, norm=True):
         `target_channel` imfs matrix
     """
     imfs = pytvfemd.tvfemd(target_channel, MODES=1)
-    imfs = imfs[(defines.EXTRA_SECONDS * fs):-(defines.EXTRA_SECONDS * fs), :]
+    fs_int = int(fs)
+    imfs = imfs[(defines.EXTRA_SECONDS * fs_int):-(defines.EXTRA_SECONDS * fs_int), :]
     if norm:
         imfs = (imfs - np.nanmean(imfs, axis=0)) / np.nanstd(imfs, axis=0)
 

@@ -214,6 +214,9 @@ def plot_comparisons(folders, comparison, comparison_thr=-1.0, save_ext="png"):
         return
     comparison_thr = corr_thr(comparison_thr)
 
+    if len(folders) == 0:
+        return
+
     folders_path = os.path.sep.join(folders[0].split(os.path.sep)[:-1])
     cpath = os.path.join(folders_path, "comparison")
     if not os.path.isdir(cpath):
@@ -226,7 +229,7 @@ def plot_comparisons(folders, comparison, comparison_thr=-1.0, save_ext="png"):
         gps_list = []
         corr_list = []
         m_freq_list = []
-        f = open(os.path.join(cpath, "max_corr_summary_table_{}.csv".format(target_channel)), "w")
+        f = open(os.path.join(cpath, "max_corr_summary_table_{}.csv".format("_".join(target_channel.split(":")))), "w")
         f.write("start,end,channel,corr,mean_freq\n")
         for res_folder in folders:
             yf = file_utils.YmlFile(res_folder)
@@ -289,7 +292,7 @@ def plot_comparisons(folders, comparison, comparison_thr=-1.0, save_ext="png"):
 
         for n_imf in comparison:
             if f_dict[n_imf] != "":
-                f = open(os.path.join(cpath, "imf_{}_summary_table_{}.csv".format(n_imf, target_channel)), "w")
+                f = open(os.path.join(cpath, "imf_{}_summary_table_{}.csv".format(n_imf, "_".join(target_channel.split(":")))), "w")
                 f.write("start,end,channel,corr,mean_freq\n")
                 f.write(f_dict[n_imf])
                 f.close()

@@ -233,7 +233,7 @@ class HtmlBuilder(object):
         self.openDiv(**{"id_": "{}-section".format(block_id)})
         self.addParagraph(description, **{"class_": "mb-2"})
         self.openDiv(**{"id_": "{}".format(block_id)})
-        self.addCommandLine(" ".join(code))
+        self.addCommandLine(code)
         self.closeDiv()
         self.closeDiv()
 

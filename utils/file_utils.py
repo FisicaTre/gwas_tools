@@ -34,10 +34,11 @@ class YmlFile(object):
     """
 
     def __init__(self, yml_file=None):
+        self.name = "output.yml"
         if yml_file is None:
             self.content = {}
         else:
-            with open(yml_file, "r") as f:
+            with open(os.path.join(yml_file, self.name), "r") as f:
                 self.content = yaml.safe_load(f)
 
     def get_target_channel(self):
@@ -249,10 +250,10 @@ class YmlFile(object):
         self.content[defines.PARAMS_SECT_KEY][defines.TARGET_CH_KEY] = target_channel_name
         self.content[defines.PARAMS_SECT_KEY][defines.CH_LIST_KEY] = channels_file
         self.content[defines.PARAMS_SECT_KEY][defines.OUT_PATH_KEY] = out_path
-        self.content[defines.PARAMS_SECT_KEY][defines.SAMP_FREQ_KEY] = fs
-        self.content[defines.PARAMS_SECT_KEY][defines.LOWPASS_FREQ_KEY] = f_lowpass
-        self.content[defines.PARAMS_SECT_KEY][defines.SCATTERING_KEY] = n_scattering
-        self.content[defines.PARAMS_SECT_KEY][defines.SMOOTH_WIN_KEY] = smooth_win
+        self.content[defines.PARAMS_SECT_KEY][defines.SAMP_FREQ_KEY] = float(fs)
+        self.content[defines.PARAMS_SECT_KEY][defines.LOWPASS_FREQ_KEY] = float(f_lowpass)
+        self.content[defines.PARAMS_SECT_KEY][defines.SCATTERING_KEY] = int(n_scattering)
+        self.content[defines.PARAMS_SECT_KEY][defines.SMOOTH_WIN_KEY] = int(smooth_win)
 
     def write_max_corr_section(self, n_imf, max_ch_str, max_corr, mean_freq):
         """Write max correlation section to file.
@@ -269,10 +270,10 @@ class YmlFile(object):
             mean frequency of the channel with max correlation
         """
         self.content[defines.MAX_CORR_SECT_KEY] = {}
-        self.content[defines.MAX_CORR_SECT_KEY][defines.IMF_KEY] = n_imf
+        self.content[defines.MAX_CORR_SECT_KEY][defines.IMF_KEY] = int(n_imf)
         self.content[defines.MAX_CORR_SECT_KEY][defines.CHANNEL_KEY] = max_ch_str
-        self.content[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY] = max_corr
-        self.content[defines.MAX_CORR_SECT_KEY][defines.MEAN_FREQ_KEY] = mean_freq
+        self.content[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY] = float(max_corr)
+        self.content[defines.MAX_CORR_SECT_KEY][defines.MEAN_FREQ_KEY] = float(mean_freq)
 
     def write_correlation_section(self, channels, corrs, mean_freqs):
         """Write correlation section to file.
@@ -288,19 +289,19 @@ class YmlFile(object):
         """
         self.content[defines.CORR_SECT_KEY] = []
         for i in range(len(channels)):
-            tmp_dict = {defines.IMF_KEY: i + 1, defines.CHANNEL_KEY: channels[i],
-                        defines.CORR_KEY: corrs[i], defines.MEAN_FREQ_KEY: mean_freqs[i]}
+            tmp_dict = {defines.IMF_KEY: int(i + 1), defines.CHANNEL_KEY: channels[i],
+                        defines.CORR_KEY: float(corrs[i]), defines.MEAN_FREQ_KEY: float(mean_freqs[i])}
             self.content[defines.CORR_SECT_KEY].append(tmp_dict)
 
-    def save(self, file_name):
+    def save(self, save_path):
         """Save file.
 
         Parameters
         ----------
-        file_name : str
-            full path to the output file
+        save_path : str
+            path to the output file
         """
-        with open(file_name, "w") as yaml_file:
+        with open(os.path.join(save_path, self.name), "w") as yaml_file:
             yaml.dump(self.content, yaml_file, default_flow_style=False, sort_keys=False)
 
 
