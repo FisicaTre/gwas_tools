@@ -1,5 +1,4 @@
-#  defines.py - this file is part of the asr package,
-#  also known as "adaptive scattering recognizer".
+#  defines.py - this file is part of the gwasr package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify

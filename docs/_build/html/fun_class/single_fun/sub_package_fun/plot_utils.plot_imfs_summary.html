@@ -44,7 +44,7 @@
 <h1>plot_imfs_summary<a class="headerlink" href="#plot-imfs-summary" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="gwasr.utils.plot_utils.plot_imfs_summary">
-<code class="sig-prename descclassname">gwasr.utils.plot_utils.</code><code class="sig-name descname">plot_imfs_summary</code><span class="sig-paren">(</span><em class="sig-param">culprits</em>, <em class="sig-param">title</em>, <em class="sig-param">plot_name</em>, <em class="sig-param">save_path</em>, <em class="sig-param">dsort=True</em>, <em class="sig-param">batch=10</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.utils.plot_utils.plot_imfs_summary" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gwasr.utils.plot_utils.</code><code class="sig-name descname">plot_imfs_summary</code><span class="sig-paren">(</span><em class="sig-param">culprits</em>, <em class="sig-param">title</em>, <em class="sig-param">plot_name</em>, <em class="sig-param">save_path</em>, <em class="sig-param">dsort=True</em>, <em class="sig-param">batch=10</em>, <em class="sig-param">mean_freqs=None</em>, <em class="sig-param">save_ext='png'</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.utils.plot_utils.plot_imfs_summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Summary histogram of culprits found for a certain imf.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -60,6 +60,10 @@
 <dt><strong>dsort</strong><span class="classifier">bool</span></dt><dd><p>descending order sort</p>
 </dd>
 <dt><strong>batch</strong><span class="classifier">int</span></dt><dd><p>maximum number of points per plot</p>
+</dd>
+<dt><strong>mean_freqs</strong><span class="classifier">dict</span></dt><dd><p>dict {channel_name: [mean_freqs]} for mean frequencies histograms</p>
+</dd>
+<dt><strong>save_ext</strong><span class="classifier">str</span></dt><dd><p>plot extension</p>
 </dd>
 </dl>
 </dd>

@@ -1,5 +1,4 @@
-#  tool.py - this file is part of the asr package,
-#  also known as "adaptive scattering recognizer".
+#  tool.py - this file is part of the gwasr package.
 #  Copyright (C) 2020- Stefano Bianchi, Alessandro Longo
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -25,7 +24,6 @@ import pytvfemd
 import pickle
 from .utils import signal_utils
 from .common import defines
-from .utils import file_utils
 
 
 LAMBDA = 1.064

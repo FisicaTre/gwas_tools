@@ -1,9 +1,9 @@
-ScatteredLightPage
-==================
+HtmlBuilder
+===========
 
-.. currentmodule:: gwasr.html.scattered_light_page
+.. currentmodule:: gwasr.html.html_builder
 
-.. autoclass:: ScatteredLightPage
+.. autoclass:: HtmlBuilder
    :show-inheritance:
 
    .. automethod:: addParagraph
@@ -18,5 +18,8 @@ ScatteredLightPage
    .. automethod:: addBulletList
    .. automethod:: parametersTable
    .. automethod:: addCommandLine
+   .. automethod:: addCommandLineBlock
+   .. automethod:: openCard
+   .. automethod:: closeCard
    .. automethod:: addPlot
    .. automethod:: savePage

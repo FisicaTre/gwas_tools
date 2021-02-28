@@ -1,5 +1,4 @@
-#  html_builder.py - this file is part of the asr package,
-#  also known as "adaptive scattering recognizer".
+#  html_builder.py - this file is part of the gwasr package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -18,7 +17,6 @@
 
 from gwdetchar.io import html as htmlio
 import os
-from ..common import defines
 
 
 CSS_FILES = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/fontawesome.min.css",

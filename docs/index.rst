@@ -1,4 +1,4 @@
-gwasr (v0.4)
+gwasr (v0.5)
 ***************
 
 adaptive scattering recognizer
@@ -19,9 +19,6 @@ Documentation for the Code
 .. toctree::
    :maxdepth: 1
 
-   fun_class/gwasr.asr_tool
-   fun_class/gwasr.asr_plots
-   fun_class/gwasr.asr_html
    fun_class/gwasr.helpers
    fun_class/gwasr.html
    fun_class/gwasr.utils

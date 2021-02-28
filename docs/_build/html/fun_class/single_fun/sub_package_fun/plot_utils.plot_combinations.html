@@ -44,7 +44,7 @@
 <h1>plot_combinations<a class="headerlink" href="#plot-combinations" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="gwasr.utils.plot_utils.plot_combinations">
-<code class="sig-prename descclassname">gwasr.utils.plot_utils.</code><code class="sig-name descname">plot_combinations</code><span class="sig-paren">(</span><em class="sig-param">plot_channels</em>, <em class="sig-param">ias</em>, <em class="sig-param">predictors</em>, <em class="sig-param">target_channel_name</em>, <em class="sig-param">gps1</em>, <em class="sig-param">samp_freq</em>, <em class="sig-param">out_path</em>, <em class="sig-param">thr=-1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.utils.plot_utils.plot_combinations" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gwasr.utils.plot_utils.</code><code class="sig-name descname">plot_combinations</code><span class="sig-paren">(</span><em class="sig-param">plot_channels</em>, <em class="sig-param">ias</em>, <em class="sig-param">predictors</em>, <em class="sig-param">target_channel_name</em>, <em class="sig-param">gps1</em>, <em class="sig-param">samp_freq</em>, <em class="sig-param">out_path</em>, <em class="sig-param">save_ext='png'</em>, <em class="sig-param">thr=-1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.utils.plot_utils.plot_combinations" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot sum of more instantaneous amplitudes and the predictor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -59,9 +59,11 @@
 </dd>
 <dt><strong>gps1</strong><span class="classifier">int</span></dt><dd><p>gps of the event</p>
 </dd>
-<dt><strong>samp_freq</strong><span class="classifier">int</span></dt><dd><p>sampling frequency</p>
+<dt><strong>samp_freq</strong><span class="classifier">float</span></dt><dd><p>sampling frequency</p>
 </dd>
 <dt><strong>out_path</strong><span class="classifier">str</span></dt><dd><p>save path</p>
+</dd>
+<dt><strong>save_ext</strong><span class="classifier">str</span></dt><dd><p>plot extension</p>
 </dd>
 <dt><strong>thr</strong><span class="classifier">float</span></dt><dd><p>correlation threshold for plots</p>
 </dd>

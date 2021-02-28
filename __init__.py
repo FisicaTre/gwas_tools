@@ -1,5 +1,4 @@
-#  __init__.py - this file is part of the asr package,
-#  also known as "adaptive scattering recognizer".
+#  __init__.py - this file is part of the gwasr package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -16,5 +15,5 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
-__version__ = '0.4'
+__version__ = '0.5'
 __author__ = 'Stefano Bianchi'

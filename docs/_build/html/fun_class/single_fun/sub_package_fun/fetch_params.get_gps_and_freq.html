@@ -14,7 +14,7 @@
     <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="sub_file" href="../helpers.sub_file.html" />
+    <link rel="next" title="get_gps_sequence" href="fetch_params.get_gps_sequence.html" />
     <link rel="prev" title="fetch_params" href="../helpers.fetch_params.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -24,7 +24,7 @@
           <a href="../../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../helpers.sub_file.html" title="sub_file"
+          <a href="fetch_params.get_gps_sequence.html" title="get_gps_sequence"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../helpers.fetch_params.html" title="fetch_params"
@@ -44,7 +44,7 @@
 <h1>get_gps_and_freq<a class="headerlink" href="#get-gps-and-freq" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="gwasr.helpers.fetch_params.get_gps_and_freq">
-<code class="sig-prename descclassname">gwasr.helpers.fetch_params.</code><code class="sig-name descname">get_gps_and_freq</code><span class="sig-paren">(</span><em class="sig-param">glitch_type</em>, <em class="sig-param">gps1</em>, <em class="sig-param">gps2</em>, <em class="sig-param">ifo</em>, <em class="sig-param">save_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.fetch_params.get_gps_and_freq" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gwasr.helpers.fetch_params.</code><code class="sig-name descname">get_gps_and_freq</code><span class="sig-paren">(</span><em class="sig-param">glitch_type</em>, <em class="sig-param">gps1</em>, <em class="sig-param">gps2</em>, <em class="sig-param">ifo</em>, <em class="sig-param">ml_confidence=(0.9</em>, <em class="sig-param">1.0)</em>, <em class="sig-param">snr=(12</em>, <em class="sig-param">20)</em>, <em class="sig-param">save_path=None</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.fetch_params.get_gps_and_freq" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get GPS and peak frequency between <cite>gps1</cite>
 and <cite>gps2</cite> for glitches of type <cite>glitch_type</cite>.</p>
 <dl class="field-list simple">
@@ -57,6 +57,10 @@ and <cite>gps2</cite> for glitches of type <cite>glitch_type</cite>.</p>
 <dt><strong>gps2</strong><span class="classifier">str</span></dt><dd><p>ending GPS</p>
 </dd>
 <dt><strong>ifo</strong><span class="classifier">str</span></dt><dd><p>interferometer identifier</p>
+</dd>
+<dt><strong>ml_confidence</strong><span class="classifier">tuple[float]</span></dt><dd><p>ml confidence limits</p>
+</dd>
+<dt><strong>snr</strong><span class="classifier">tuple[int]</span></dt><dd><p>SNR limits</p>
 </dd>
 <dt><strong>save_path</strong><span class="classifier">str</span></dt><dd><p>where to save output in csv format (default : None)</p>
 </dd>
@@ -85,8 +89,8 @@ and <cite>gps2</cite> for glitches of type <cite>glitch_type</cite>.</p>
   <p class="topless"><a href="../helpers.fetch_params.html"
                         title="previous chapter">fetch_params</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../helpers.sub_file.html"
-                        title="next chapter">sub_file</a></p>
+  <p class="topless"><a href="fetch_params.get_gps_sequence.html"
+                        title="next chapter">get_gps_sequence</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -115,7 +119,7 @@ and <cite>gps2</cite> for glitches of type <cite>glitch_type</cite>.</p>
           <a href="../../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../helpers.sub_file.html" title="sub_file"
+          <a href="fetch_params.get_gps_sequence.html" title="get_gps_sequence"
              >next</a> |</li>
         <li class="right" >
           <a href="../helpers.fetch_params.html" title="fetch_params"

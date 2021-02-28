@@ -44,12 +44,14 @@
 <h1>plot_omegagram_download<a class="headerlink" href="#plot-omegagram-download" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="gwasr.utils.plot_utils.plot_omegagram_download">
-<code class="sig-prename descclassname">gwasr.utils.plot_utils.</code><code class="sig-name descname">plot_omegagram_download</code><span class="sig-paren">(</span><em class="sig-param">pred, target_name, gps1, gps2, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5]</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.utils.plot_utils.plot_omegagram_download" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gwasr.utils.plot_utils.</code><code class="sig-name descname">plot_omegagram_download</code><span class="sig-paren">(</span><em class="sig-param">pred, pred_name, target_name, gps1, gps2, plot_name, save_path, norm=False, harmonics=[1, 2, 3, 4, 5], save_ext='png'</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.utils.plot_utils.plot_omegagram_download" title="Permalink to this definition">¶</a></dt>
 <dd><p>Omegagram plot with download of the target channel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>pred</strong><span class="classifier">numpy array</span></dt><dd><p>predictor</p>
+</dd>
+<dt><strong>pred_name</strong><span class="classifier">str</span></dt><dd><p>name of the predictor channel</p>
 </dd>
 <dt><strong>target_name</strong><span class="classifier">str</span></dt><dd><p>name of the channel from which compute the omegagram</p>
 </dd>
@@ -64,6 +66,8 @@
 <dt><strong>norm</strong><span class="classifier">bool</span></dt><dd><p>normalize predictor to 10 Hz</p>
 </dd>
 <dt><strong>harmonics</strong><span class="classifier">list of int</span></dt><dd><p>predictor harmonics to be plotted</p>
+</dd>
+<dt><strong>save_ext</strong><span class="classifier">str</span></dt><dd><p>plot extension</p>
 </dd>
 </dl>
 </dd>

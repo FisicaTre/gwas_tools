@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>load_yml &#8212; gwasr  documentation</title>
+    <title>get_gps_sequence &#8212; gwasr  documentation</title>
     <link rel="stylesheet" href="../../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
@@ -14,8 +14,8 @@
     <script type="text/javascript" src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="load_imfs" href="file_utils.load_imfs.html" />
-    <link rel="prev" title="predictors_exists" href="file_utils.predictors_exists.html" /> 
+    <link rel="next" title="sub_file" href="../helpers.sub_file.html" />
+    <link rel="prev" title="get_gps_and_freq" href="fetch_params.get_gps_and_freq.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -24,14 +24,14 @@
           <a href="../../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="file_utils.load_imfs.html" title="load_imfs"
+          <a href="../helpers.sub_file.html" title="sub_file"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="file_utils.predictors_exists.html" title="predictors_exists"
+          <a href="fetch_params.get_gps_and_freq.html" title="get_gps_and_freq"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">gwasr  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../gwasr.utils.html" >utils</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../utils.file_utils.html" accesskey="U">file_utils</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="../../gwasr.helpers.html" >helpers</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../helpers.fetch_params.html" accesskey="U">fetch_params</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -40,8 +40,32 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="load-yml">
-<h1>load_yml<a class="headerlink" href="#load-yml" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="get-gps-sequence">
+<h1>get_gps_sequence<a class="headerlink" href="#get-gps-sequence" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="gwasr.helpers.fetch_params.get_gps_sequence">
+<code class="sig-prename descclassname">gwasr.helpers.fetch_params.</code><code class="sig-name descname">get_gps_sequence</code><span class="sig-paren">(</span><em class="sig-param">start</em>, <em class="sig-param">end</em>, <em class="sig-param">step</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.fetch_params.get_gps_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a sequence of GPS times.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>start</strong><span class="classifier">int</span></dt><dd><p>starting GPS</p>
+</dd>
+<dt><strong>end</strong><span class="classifier">int</span></dt><dd><p>ending GPS</p>
+</dd>
+<dt><strong>step</strong><span class="classifier">int</span></dt><dd><p>time between two consecutive GPS times</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>numpy array</dt><dd><p>consecutive GPS times (every <cite>step</cite> seconds)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
@@ -51,15 +75,15 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="file_utils.predictors_exists.html"
-                        title="previous chapter">predictors_exists</a></p>
+  <p class="topless"><a href="fetch_params.get_gps_and_freq.html"
+                        title="previous chapter">get_gps_and_freq</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="file_utils.load_imfs.html"
-                        title="next chapter">load_imfs</a></p>
+  <p class="topless"><a href="../helpers.sub_file.html"
+                        title="next chapter">sub_file</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../../../_sources/fun_class/single_fun/sub_package_fun/file_utils.load_yml.rst.txt"
+      <li><a href="../../../_sources/fun_class/single_fun/sub_package_fun/fetch_params.get_gps_sequence.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -84,14 +108,14 @@
           <a href="../../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="file_utils.load_imfs.html" title="load_imfs"
+          <a href="../helpers.sub_file.html" title="sub_file"
              >next</a> |</li>
         <li class="right" >
-          <a href="file_utils.predictors_exists.html" title="predictors_exists"
+          <a href="fetch_params.get_gps_and_freq.html" title="get_gps_and_freq"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">gwasr  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../gwasr.utils.html" >utils</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="../utils.file_utils.html" >file_utils</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="../../gwasr.helpers.html" >helpers</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../helpers.fetch_params.html" >fetch_params</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

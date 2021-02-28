@@ -1,0 +1,377 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>HtmlBuilder &#8212; gwasr  documentation</title>
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="utils" href="../gwasr.utils.html" />
+    <link rel="prev" title="html" href="../gwasr.html.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../gwasr.utils.html" title="utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../gwasr.html.html" title="html"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">gwasr  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../gwasr.html.html" accesskey="U">html</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="htmlbuilder">
+<h1>HtmlBuilder<a class="headerlink" href="#htmlbuilder" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="gwasr.html.html_builder.HtmlBuilder">
+<em class="property">class </em><code class="sig-prename descclassname">gwasr.html.html_builder.</code><code class="sig-name descname">HtmlBuilder</code><span class="sig-paren">(</span><em class="sig-param">title=''</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to build HTML page components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>page title</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>general page attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.addParagraph">
+<code class="sig-name descname">addParagraph</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">text</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.addParagraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;p&gt;.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>&lt;p&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;p&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.addLink">
+<code class="sig-name descname">addLink</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">text</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.addLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;a&gt;.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>&lt;a&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;a&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.getFormattedLink">
+<code class="sig-name descname">getFormattedLink</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">text</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.getFormattedLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return &lt;a&gt; with formatted text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>&lt;a&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;a&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>&lt;a kwargs&gt;text&lt;/a&gt;</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.getFormattedCode">
+<code class="sig-name descname">getFormattedCode</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">text</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.getFormattedCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return text in &lt;code&gt; tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>text</strong><span class="classifier">str</span></dt><dd><p>&lt;code&gt; text</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>str</dt><dd><p>&lt;code&gt;text&lt;/code&gt;</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.openDiv">
+<code class="sig-name descname">openDiv</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.openDiv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;div&gt;.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;div&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.closeDiv">
+<code class="sig-name descname">closeDiv</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.closeDiv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;/div&gt;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.addSection">
+<code class="sig-name descname">addSection</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">title</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.addSection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;p&gt; with bold text magnified to 180%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>&lt;p&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;p&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.addSubsection">
+<code class="sig-name descname">addSubsection</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">title</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.addSubsection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;p&gt; with bold text magnified to 150%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>&lt;p&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;p&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.addSubsubsection">
+<code class="sig-name descname">addSubsubsection</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">title</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.addSubsubsection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add &lt;p&gt; with bold text magnified to 120%.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>&lt;p&gt; text</p>
+</dd>
+<dt><strong>kwargs</strong><span class="classifier">dict</span></dt><dd><p>&lt;p&gt; attributes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.addBulletList">
+<code class="sig-name descname">addBulletList</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">items</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.addBulletList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add bullet list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>items</strong><span class="classifier">dict</span></dt><dd><p>list items</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.parametersTable">
+<code class="sig-name descname">parametersTable</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">parameters</em>, <em class="sig-param">start</em>, <em class="sig-param">end</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.parametersTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add parameters analysis table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>parameters</strong><span class="classifier">list[tuple]</span></dt><dd><p>analysis parameters</p>
+</dd>
+<dt><strong>start</strong><span class="classifier">int</span></dt><dd><p>start GPS</p>
+</dd>
+<dt><strong>end</strong><span class="classifier">int</span></dt><dd><p>end GPS</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.addCommandLine">
+<code class="sig-name descname">addCommandLine</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">code</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.addCommandLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add box with command line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>code</strong><span class="classifier">str</span></dt><dd><p>command line</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.addCommandLineBlock">
+<code class="sig-name descname">addCommandLineBlock</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">code</em>, <em class="sig-param">description</em>, <em class="sig-param">block_id</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.addCommandLineBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add box with command line with a paragraph above.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>code</strong><span class="classifier">str</span></dt><dd><p>command line</p>
+</dd>
+<dt><strong>description</strong><span class="classifier">str</span></dt><dd><p>description of the command line</p>
+</dd>
+<dt><strong>block_id</strong><span class="classifier">str</span></dt><dd><p>div block id</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.openCard">
+<code class="sig-name descname">openCard</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">title</em>, <em class="sig-param">color</em>, <em class="sig-param">target_id</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.openCard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open a card element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>title</strong><span class="classifier">str</span></dt><dd><p>title shown on the card</p>
+</dd>
+<dt><strong>color</strong><span class="classifier">str</span></dt><dd><p>card color</p>
+</dd>
+<dt><strong>target_id</strong><span class="classifier">str</span></dt><dd><p>id to link body to header</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.closeCard">
+<code class="sig-name descname">closeCard</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.closeCard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close a card element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.addPlot">
+<code class="sig-name descname">addPlot</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">plot_name</em>, <em class="sig-param">plot_id</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.addPlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>plot_name</strong><span class="classifier">str</span></dt><dd><p>path to plot</p>
+</dd>
+<dt><strong>plot_id</strong><span class="classifier">str</span></dt><dd><p>plot identifier</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="gwasr.html.html_builder.HtmlBuilder.savePage">
+<code class="sig-name descname">savePage</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">path</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.html.html_builder.HtmlBuilder.savePage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">str</span></dt><dd><p>save path</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../gwasr.html.html"
+                        title="previous chapter">html</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../gwasr.utils.html"
+                        title="next chapter">utils</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/fun_class/single_fun/html.html_builder.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../gwasr.utils.html" title="utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../gwasr.html.html" title="html"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">gwasr  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../gwasr.html.html" >html</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020-, Stefano Bianchi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.1.2.
+    </div>
+  </body>
+</html>
