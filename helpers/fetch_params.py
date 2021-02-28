@@ -20,7 +20,7 @@ import numpy as np
 from gwpy.table import EventTable
 
 
-def get_gps_and_freq(glitch_type, gps1, gps2, ifo, save_path=None):
+def get_gps_and_freq(glitch_type, gps1, gps2, ifo, ml_confidence=(0.9, 1.0), snr=(12, 20), save_path=None):
     """Get GPS and peak frequency between `gps1`
     and `gps2` for glitches of type `glitch_type`.
     
@@ -34,6 +34,10 @@ def get_gps_and_freq(glitch_type, gps1, gps2, ifo, save_path=None):
         ending GPS
     ifo : str
         interferometer identifier
+    ml_confidence : tuple[float]
+        ml confidence limits
+    snr : tuple[int]
+        SNR limits
     save_path : str
         where to save output in csv format (default : None)
         
@@ -44,10 +48,15 @@ def get_gps_and_freq(glitch_type, gps1, gps2, ifo, save_path=None):
     numpy array
         Glitches peak frequencies
     """
+    ml_low = str(ml_confidence[0])
+    ml_high = str(ml_confidence[1])
+    snr_low = str(snr[0])
+    snr_high = str(snr[1])
     glitches_list = EventTable.fetch("gravityspy", "glitches_v2d0",
                                      selection=["ml_label={}".format(glitch_type),
-                                                "0.9<=ml_confidence<=1.0",
-                                                "12<=snr<=20", "ifo={}".format(ifo),
+                                                "{}<=ml_confidence<={}".format(ml_low, ml_high),
+                                                "{}<=snr<={}".format(snr_low, snr_high),
+                                                "ifo={}".format(ifo),
                                                 "{}<event_time<{}".format(gps1, gps2)],
                                      host="gravityspyplus.ciera.northwestern.edu",
                                      user="mla", passwd="gl1tch35Rb4d!")

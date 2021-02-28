@@ -451,7 +451,7 @@ def load_predictors(predictors_path):
     return predictors
 
 
-def get_results_folders(results_path, sort=True):
+def get_results_folders(results_path, sort=True, must_include=None):
     """Get list of folders with results from one or multiple analyses.
 
     Parameters
@@ -460,6 +460,9 @@ def get_results_folders(results_path, sort=True):
         path to results folders
     sort : bool
         sort folders (default : True)
+    must_include : list[str]
+        patterns of files that must be present in the
+        folder, otherwise is discarded (default : None)
 
     Returns
     -------
@@ -471,7 +474,16 @@ def get_results_folders(results_path, sort=True):
         curr_dir = os.path.join(results_path, folder)
         if os.path.isdir(curr_dir):
             if is_valid_folder(curr_dir):
-                res_folders.append(curr_dir)
+                if must_include is not None:
+                    add_folder = True
+                    for pattern in must_include:
+                        if len(glob.glob(os.path.join(curr_dir, pattern))) == 0:
+                            add_folder = False
+                            break
+                    if add_folder:
+                        res_folders.append(curr_dir)
+                else:
+                    res_folders.append(curr_dir)
 
     if sort:
         res_folders.sort()
