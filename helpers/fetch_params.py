@@ -57,13 +57,14 @@ def get_gps_and_freq(glitch_type, gps1, gps2, ifo, ml_confidence=(0.9, 1.0), snr
                                                 "{}<=snr<={}".format(snr_low, snr_high),
                                                 "ifo={}".format(ifo),
                                                 "{}<event_time<{}".format(gps1, gps2)],
+                                     #host="gravityspyplus.ciera.northwestern.edu",
                                      user="mla", passwd="gl1tch35Rb4d!")
     
     glitches_list = glitches_list.to_pandas()
     glitches_list.drop_duplicates("peak_time", keep=False, inplace=True)
     peak_freqs = np.array(glitches_list.peak_frequency.values, dtype=float)
     start_times = np.array(glitches_list.peak_time.values, dtype=float)
-    
+
     if save_path is not None:
         glitches_list.to_csv(save_path, index=False)
 

@@ -29,7 +29,7 @@ from .common import defines
 LAMBDA = 1.064
 
 
-def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start, gps_end, fs):
+def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start, gps_end, fs, verbose=False):
     """Get data from `gwpy` function `TimeSeriesDict.get`.
 
     Parameters
@@ -44,6 +44,7 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
         ending GPS
     fs : float
         desired sampling frequency for the channels
+    verbose : verbosity option of TimeSeriesDict (default : False)
 
     Returns
     -------
@@ -56,7 +57,8 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
     """
     data_dict = TimeSeriesDict.get([target_channel_name] + channels_list,
                                    gps_start - defines.EXTRA_SECONDS,
-                                   gps_end + defines.EXTRA_SECONDS)
+                                   gps_end + defines.EXTRA_SECONDS,
+                                   verbose=verbose)
     dict_fs = np.min([data_dict[ch_name].channel.sample_rate.value for ch_name in channels_list])
     if dict_fs < fs:
         fs = dict_fs
