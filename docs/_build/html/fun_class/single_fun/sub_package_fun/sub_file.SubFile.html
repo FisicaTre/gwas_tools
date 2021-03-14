@@ -30,7 +30,7 @@
           <a href="../helpers.sub_file.html" title="sub_file"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">gwasr  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../gwasr.helpers.html" >helpers</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../gwscattering.helpers.html" >helpers</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../helpers.sub_file.html" accesskey="U">sub_file</a> &#187;</li> 
       </ul>
     </div>  
@@ -42,116 +42,6 @@
             
   <div class="section" id="subfile">
 <h1>SubFile<a class="headerlink" href="#subfile" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="gwasr.helpers.sub_file.SubFile">
-<em class="property">class </em><code class="sig-prename descclassname">gwasr.helpers.sub_file.</code><code class="sig-name descname">SubFile</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">universe='vanilla'</em>, <em class="sig-param">description=''</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.sub_file.SubFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class to create a .sub file to be
-submitted with <cite>condor_submit</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>name</strong><span class="classifier">str</span></dt><dd><p>name of the .sub file</p>
-</dd>
-<dt><strong>universe</strong><span class="classifier">str</span></dt><dd><p>universe (default : vanilla)</p>
-</dd>
-<dt><strong>description</strong><span class="classifier">str</span></dt><dd><p>description string of the sub file (default : empty)</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<dl class="method">
-<dt id="gwasr.helpers.sub_file.SubFile.addBlankLine">
-<code class="sig-name descname">addBlankLine</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.sub_file.SubFile.addBlankLine" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add blank line to .sub file.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="gwasr.helpers.sub_file.SubFile.addExecutable">
-<code class="sig-name descname">addExecutable</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">exec_name</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.sub_file.SubFile.addExecutable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add <cite>executable</cite> to .sub file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>exec_name</strong><span class="classifier">str</span></dt><dd><p>executable name</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="gwasr.helpers.sub_file.SubFile.addArguments">
-<code class="sig-name descname">addArguments</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">args</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.sub_file.SubFile.addArguments" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add <cite>arguments</cite> to .sub file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>args</strong><span class="classifier">str</span></dt><dd><p>arguments as a single string</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="gwasr.helpers.sub_file.SubFile.addAccountingGroupInfo">
-<code class="sig-name descname">addAccountingGroupInfo</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">group</em>, <em class="sig-param">user</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.sub_file.SubFile.addAccountingGroupInfo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add <cite>accounting_group</cite> and <cite>accounting_group_user</cite> to .sub file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>group</strong><span class="classifier">str</span></dt><dd><p>accounting group</p>
-</dd>
-<dt><strong>user</strong><span class="classifier">str</span></dt><dd><p>accounting group user</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="gwasr.helpers.sub_file.SubFile.addSpecs">
-<code class="sig-name descname">addSpecs</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">ncpu</em>, <em class="sig-param">memory</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.sub_file.SubFile.addSpecs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add <cite>request_cpus</cite> and <cite>request_memory</cite> to .sub file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ncpu</strong><span class="classifier">int</span></dt><dd><p>number of cpus</p>
-</dd>
-<dt><strong>memory</strong><span class="classifier">int</span></dt><dd><p>requested memory in Mb</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="gwasr.helpers.sub_file.SubFile.addLogs">
-<code class="sig-name descname">addLogs</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">output</em>, <em class="sig-param">error</em>, <em class="sig-param">to_append=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.sub_file.SubFile.addLogs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add <cite>output</cite> and <cite>error</cite> to .sub file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>output</strong><span class="classifier">str</span></dt><dd><p>path to the output folder</p>
-</dd>
-<dt><strong>error</strong><span class="classifier">str</span></dt><dd><p>path to the error folder</p>
-</dd>
-<dt><strong>to_append</strong><span class="classifier">list of str</span></dt><dd><p>str to be appended to output and error file names</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="gwasr.helpers.sub_file.SubFile.save">
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="headerlink" href="#gwasr.helpers.sub_file.SubFile.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save .sub file to <cite>name</cite>.</p>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 
 
@@ -200,7 +90,7 @@ submitted with <cite>condor_submit</cite>.</p>
           <a href="../helpers.sub_file.html" title="sub_file"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../../../index.html">gwasr  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../gwasr.helpers.html" >helpers</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../gwscattering.helpers.html" >helpers</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="../helpers.sub_file.html" >sub_file</a> &#187;</li> 
       </ul>
     </div>

@@ -1,4 +1,4 @@
-#  file_utils.py - this file is part of the gwasr package.
+#  file_utils.py - this file is part of the gwscattering package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,8 @@ import yaml
 import os
 import glob
 import pickle
+import numpy as np
+import pandas as pd
 from ..common import defines
 
 
@@ -28,7 +30,7 @@ class YmlFile(object):
 
     Parameters
     ----------
-    yml_file : str
+    yml_file : str, optional
         path to the yml file (default : None)
     """
 
@@ -388,26 +390,6 @@ def predictors_exists(predictors_path):
     return True
 
 
-# def load_yml(yml_path):
-#     """Load yml file.
-#
-#     Parameters
-#     ----------
-#     yml_path : str
-#         path to yml file
-#
-#     Returns
-#     -------
-#     dict
-#         yml file
-#     """
-#     yml_file = os.path.join(yml_path, "output.yml")
-#     with open(yml_file, "r") as f:
-#         yml = yaml.safe_load(f)
-#
-#     return yml
-
-
 def load_imfs(imfs_path):
     """Load imfs file.
     
@@ -457,9 +439,9 @@ def get_results_folders(results_path, sort=True, must_include=None):
     ----------
     results_path : str
         path to results folders
-    sort : bool
+    sort : bool, optional
         sort folders (default : True)
-    must_include : list[str]
+    must_include : list[str], optional
         patterns of files that must be present in the
         folder, otherwise is discarded (default : None)
 
@@ -504,3 +486,124 @@ def is_valid_folder(folder):
         True if folder is valid
     """
     return yml_exists(folder) and imfs_exists(folder) and predictors_exists(folder)
+
+
+def save_predictors(preds, file_name, out_path):
+    """Save predictors to binary file.
+
+    Parameters
+    ----------
+    preds : numpy ndarray
+        predictors
+    file_name : str
+        name of the file
+    out_path : str
+        where to save the file
+    """
+    f_pred = open(os.path.join(out_path, "{}.predictors".format(file_name)), "wb")
+    pickle.dump(preds, f_pred)
+    f_pred.close()
+
+
+def save_envelopes(envelopes, file_name, out_path):
+    """Save imfs' instantaneous amplitudes to binary file.
+
+    Parameters
+    ----------
+    envelopes : numpy ndarray
+        imfs' instantaneous amplitudes
+    file_name : str
+        name of the file
+    out_path : str
+        where to save the file
+    """
+    f_imfs = open(os.path.join(out_path, "{}.imf".format(file_name)), "wb")
+    pickle.dump(envelopes, f_imfs)
+    f_imfs.close()
+
+
+def summary_table(folders, comparison, table_name):
+    """Comparison plots of results.
+
+    Parameters
+    ----------
+    folders : list[str]
+        paths to the file needed for the plots
+    comparison : str, list[int]
+        imfs for comparison, can be "max_corr", or list
+    table_name : str
+        name of the output csv
+    """
+    if len(folders) == 0:
+        return
+
+    folders_path = os.path.sep.join(folders[0].split(os.path.sep)[:-1])
+    cpath = os.path.join(folders_path, "comparison")
+    if not os.path.isdir(cpath):
+        os.makedirs(cpath, exist_ok=True)
+
+    if comparison == "max_corr":
+        gps = []
+        culprits = []
+        corrs = []
+        m_freqs = []
+
+        for folder in folders:
+            if is_valid_folder(folder):
+                yf = YmlFile(folder)
+                g = yf.get_gps()
+                gps.append((g[0] + g[1]) // 2)
+                try:
+                    culprits.append(yf.get_max_corr_channel())
+                    corrs.append(yf.get_max_corr())
+                    m_freqs.append(yf.get_max_corr_mean_freq())
+                except:
+                    culprits.append(np.nan)
+                    corrs.append(np.nan)
+                    m_freqs.append(np.nan)
+
+        df = pd.DataFrame({"gps": gps,
+                           "culprit": culprits,
+                           "corr": corrs,
+                           "mean_freq": m_freqs
+                           })
+        df.to_csv(os.path.join(cpath, table_name), index=False)
+    elif isinstance(comparison, list):
+        try:
+            comparison = [int(i) for i in comparison]
+        except:
+            raise ValueError("`comparison` must be `max_corr` or list[int]")
+        gps = []
+        culprits = {}
+        corrs = {}
+        m_freqs = {}
+
+        for i in comparison:
+            culprits[i] = []
+            corrs[i] = []
+            m_freqs[i] = []
+
+        for folder in folders:
+            if is_valid_folder(folder):
+                yf = YmlFile(folder)
+                g = yf.get_gps()
+                gps.append((g[0] + g[1]) // 2)
+                for i in comparison:
+                    try:
+                        culprits[i].append(yf.get_channel_of_imf(i))
+                        corrs[i].append(yf.get_corr_of_imf(i))
+                        m_freqs[i].append(yf.get_mean_freq_of_imf(i))
+                    except:
+                        culprits[i].append(np.nan)
+                        corrs[i].append(np.nan)
+                        m_freqs[i].append(np.nan)
+
+        df_dict = {"gps": gps}
+        for i in comparison:
+            df_dict["culprit_{:d}".format(i)] = culprits[i]
+            df_dict["corr_{:d}".format(i)] = corrs[i]
+            df_dict["mean_freq_{:d}".format(i)] = m_freqs[i]
+        df = pd.DataFrame(df_dict)
+        df.to_csv(os.path.join(cpath, table_name), index=False)
+    else:
+        raise ValueError("`comparison` must be `max_corr` or list[int]")

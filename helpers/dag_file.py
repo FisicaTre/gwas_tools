@@ -1,4 +1,4 @@
-#  dag_file.py - this file is part of the gwasr package.
+#  dag_file.py - this file is part of the gwscattering package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -45,9 +45,9 @@ class DagFile(object):
             job number
         sub_file : str
             path to the .sub file
-        retry : int
+        retry : int, optional
             how many times retry the job if it fails (default : 1)
-        args : dict
+        args : dict, optional
             variables to be assigned in the .sub file (default : None)
         """
         self.dag_text.append("JOB {:d} {}".format(job_number, sub_file))
@@ -58,7 +58,7 @@ class DagFile(object):
             self.dag_text.append("VARS {} {}".format(job_number, args_str))
         self.addBlankLine()
 
-    def addPostScript(self, job_number, script, args=[]):
+    def addPostScript(self, job_number, script, args=None):
         """Add post block to .dag file.
 
         Parameters
@@ -67,9 +67,12 @@ class DagFile(object):
             job number
         script : str
             path to the script file
-        args : list
+        args : list[str], optional
             `script` arguments (default : [])
         """
+        if args is None:
+            args = []
+
         args_list = " ".join(args)
         self.dag_text.append("SCRIPT POST {} {} {}".format(job_number, script, args_list))
         self.addBlankLine()

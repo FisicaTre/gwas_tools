@@ -1,24 +1,34 @@
-gwasr (v0.5)
-***************
+gwscattering (v0.6)
+*******************
 
-adaptive scattering recognizer
+Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.
 
 Requirements
 ============
 
 - Python 3.6+
-- to be completed
+- numpy
+- gwpy
+- gwdetchar
+- MarkupPy
+- pytz
+- pandas
+- scipy
+- yaml
+- matplotlib
+- astropy
+- pytvfemd
 
 Installation
 ============
 
-to be done
+pip install gwscattering
 
 Documentation for the Code
 ==========================
 .. toctree::
    :maxdepth: 1
 
-   fun_class/gwasr.helpers
-   fun_class/gwasr.html
-   fun_class/gwasr.utils
+   fun_class/gwscattering.helpers
+   fun_class/gwscattering.html
+   fun_class/gwscattering.utils

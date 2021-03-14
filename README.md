@@ -1,18 +1,19 @@
-## GWASR  
+## gwscattering  
 Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.
 
 #### Version
 
-v0.5
+v0.6
 
 ####  Requirements
 
 - Python 3.6+
+- [requirements.txt](requirements.txt)
 
 #### Description
 
 - `helpers`
-- functions to get inputs for the pipeline, and classes to build a `.sub` and a `.dag` file to submit the pipeline.
+  - functions to get inputs for the pipeline, and classes to build a `.sub` and a `.dag` file to submit the pipeline.
 - `html`
   - class to build a html page to summarize the output of the pipeline.
 - `utils`

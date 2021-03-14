@@ -1,0 +1,11 @@
+numpy>=1.15,<1.20
+gwpy
+gwdetchar
+MarkupPy
+pytz
+pandas
+scipy
+yaml
+matplotlib
+astropy
+pytvfemd

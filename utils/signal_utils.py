@@ -1,5 +1,5 @@
-#  signal_utils.py - this file is part of the gwasr package.
-#  Copyright (C) 2020- Stefano Bianchi
+#  signal_utils.py - this file is part of the gwscattering package.
+#  Copyright (C) 2020- Stefano Bianchi, Alessandro Longo
 #
 #  This program is free software: you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -17,7 +17,14 @@
 
 import numpy as np
 from gwpy.timeseries import TimeSeries
+from gwpy.timeseries import TimeSeriesDict
 from scipy.signal import kaiserord, lfilter, firwin, butter, freqz
+from scipy.signal import hilbert
+from scipy.stats import pearsonr
+import pytvfemd
+from ..common import defines
+
+LAMBDA = 1.064
 
 
 def smooth(arr, win):
@@ -85,8 +92,8 @@ def butter_lowpass(cutoff, f_samp, order=3):
         cutoff frequency
     f_samp : float
         sampling frequency
-    order : int
-        filter order
+    order : int, optional
+        filter order (default : 3)
         
     Returns
     -------
@@ -111,8 +118,8 @@ def butter_lowpass_filter(x, cutoff, f_samp, order=3):
         cutoff frequency
     f_samp : float
         sampling frequency
-    order : int
-        filter order
+    order : int, optional
+        filter order (default : 3)
         
     Returns
     -------
@@ -170,7 +177,7 @@ def mean_amplitude(x, f):
     return np.abs(dft[mean_f_idx])
 
 
-def predictor(time, ts, N=1, LAMBDA=1.064, smooth_win=None):
+def get_predictor(time, ts, N=1, smooth_win=None):
     """Time series predictor.
     
     Parameters
@@ -179,12 +186,10 @@ def predictor(time, ts, N=1, LAMBDA=1.064, smooth_win=None):
         time array
     ts : numpy array
         time series
-    N : int
-        scattering factor
-    LAMBDA : float
-        interferometer wavelenght
-    smooth_win : int
-        smoothing window
+    N : int, optional
+        scattering factor (default : 1)
+    smooth_win : int, optional
+        smoothing window (default : None)
         
     Returns
     -------
@@ -197,3 +202,150 @@ def predictor(time, ts, N=1, LAMBDA=1.064, smooth_win=None):
     pred = N * (2 / LAMBDA) * np.abs(v_mat)
     
     return pred
+
+
+def get_predictors(channels, fs, smooth_win=None, n_scattering=1):
+    """Get predictors from channels.
+
+    Parameters
+    ----------
+    channels : numpy ndarray
+        channels matrix (shape (len(channels_values), num_channels)
+    fs : float
+        channels common sampling frequency
+    smooth_win : int, optional
+        smoothing window (default : None)
+    n_scattering : int, optional
+        scattering factor (default : 1)
+
+    Returns
+    -------
+    numpy ndarray
+        channels predictors
+    """
+    time = np.arange(0, len(channels) / fs, 1 / fs, dtype=float)
+    v_mat = np.diff(channels, axis=0) / np.diff(time)[:, np.newaxis]
+    if smooth_win is not None:
+        for i in range(len(v_mat[0, :])):
+            v_mat[:, i] = smooth(v_mat[:, i], smooth_win)
+
+    predictors = n_scattering * (2 / LAMBDA) * np.abs(v_mat)
+    fs_int = int(fs)
+    predictors = predictors[(defines.EXTRA_SECONDS * fs_int):-(defines.EXTRA_SECONDS * fs_int), :]
+    # for i in range(predictors.shape[1]):
+    #     predictors[:, i] = butter_lowpass_filter(predictors[:, i], f_lowpass, fs)
+
+    return predictors
+
+
+def get_imfs(target_channel, fs, norm=True):
+    """Get imfs with pytvfemd.
+
+    Parameters
+    ----------
+    target_channel : numpy array
+        channel from which extract imfs
+    fs : float
+        `target_channel` sampling frequency
+    norm : bool, optional
+        normalize imfs (default : True)
+
+    Returns
+    -------
+    numpy ndarray
+        `target_channel` imfs matrix
+    """
+    imfs = pytvfemd.tvfemd(target_channel, MODES=1)
+    fs_int = int(fs)
+    imfs = imfs[(defines.EXTRA_SECONDS * fs_int):-(defines.EXTRA_SECONDS * fs_int), :]
+    if norm:
+        imfs = (imfs - np.nanmean(imfs, axis=0)) / np.nanstd(imfs, axis=0)
+
+    return imfs
+
+
+def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start, gps_end,
+                                   fs=None, verbose=False):
+    """Get data from `gwpy` function `TimeSeriesDict.get`.
+
+    Parameters
+    ----------
+    target_channel_name : str
+        name of the target channel
+    channels_list : list[str]
+        list of auxiliary channels names
+    gps_start : int
+        starting GPS
+    gps_end : int
+        ending GPS
+    fs : float, optional
+        desired sampling frequency for the channels (default : None)
+    verbose : bool, optional
+        verbosity option of TimeSeriesDict (default : False)
+
+    Returns
+    -------
+    numpy ndarray
+        matrix with channels values, first column
+        corresponds to the target channel
+    float
+        common sampling frequency of the channels
+        in the matrix
+    """
+    if fs is None:
+        fs = np.inf
+
+    data_dict = TimeSeriesDict.get([target_channel_name] + channels_list,
+                                   gps_start - defines.EXTRA_SECONDS,
+                                   gps_end + defines.EXTRA_SECONDS,
+                                   verbose=verbose)
+    dict_fs = np.min([data_dict[ch_name].channel.sample_rate.value for ch_name in channels_list])
+    if dict_fs < fs:
+        fs = dict_fs
+    data_dict.resample(fs)
+    data = np.zeros((data_dict[target_channel_name].value.shape[0], len(channels_list) + 1), dtype=float)
+    data[:, 0] = data_dict[target_channel_name].value
+    for i in range(1, len(channels_list) + 1):
+        data[:, i] = data_dict[channels_list[i - 1]].value
+
+    return data, fs
+
+
+def upper_envelope(ts):
+    """Get upper envelope of a signal.
+
+    Parameters
+    ----------
+    ts : numpy ndarray
+        input signal
+
+    Returns
+    -------
+    numpy ndarray
+        input signal's envelope
+    """
+    analytic_signal = hilbert(ts)
+    upper_env = np.abs(analytic_signal)
+
+    return upper_env
+
+
+def get_correlation_between(x, y):
+    """Get Pearson correlation between `x` and `y`.
+
+    Parameters
+    ----------
+    x : numpy ndarray
+        first series
+    y : numpy ndarray
+        second series
+
+    Returns
+    -------
+    float
+        correlation value
+    """
+    r_corr, _ = pearsonr(x, y)
+    r_corr = -999.0 if np.isnan(r_corr) else r_corr
+
+    return r_corr

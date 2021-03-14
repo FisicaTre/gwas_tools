@@ -1,7 +1,7 @@
 DagFile
 =======
 
-.. currentmodule:: gwasr.helpers.dag_file
+.. currentmodule:: gwscattering.helpers.dag_file
 
 .. autoclass:: DagFile
    :show-inheritance:

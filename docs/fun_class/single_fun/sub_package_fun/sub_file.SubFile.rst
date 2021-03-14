@@ -1,7 +1,7 @@
 SubFile
 =======
 
-.. currentmodule:: gwasr.helpers.sub_file
+.. currentmodule:: gwscattering.helpers.sub_file
 
 .. autoclass:: SubFile
    :show-inheritance:

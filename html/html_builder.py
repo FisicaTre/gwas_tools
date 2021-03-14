@@ -1,4 +1,4 @@
-#  html_builder.py - this file is part of the gwasr package.
+#  html_builder.py - this file is part of the gwscattering package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -16,8 +16,15 @@
 
 
 from gwdetchar.io import html as htmlio
+from MarkupPy import markup
 import os
+from getpass import getuser
+import datetime
+from pytz import reference
 
+
+REPO_BASE = "https://github.com/stfbnc"
+PACKAGE_NAME = "gwscattering"
 
 CSS_FILES = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/fontawesome.min.css",
              "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/solid.min.css",
@@ -42,13 +49,13 @@ JS_FILES = ["https://code.jquery.com/jquery-3.5.1.min.js",
 class HtmlBuilder(object):
     """Class to build HTML page components.
     
-        Parameters
-        ----------
-        title : str
-            page title
-        kwargs : dict
-            general page attributes
-        """
+    Parameters
+    ----------
+    title : str
+        page title
+    kwargs : dict
+        general page attributes
+    """
 
     def __init__(self, title="", **kwargs):
         self.page = htmlio.new_bootstrap_page(title=title, script=JS_FILES, css=CSS_FILES, **kwargs)
@@ -131,41 +138,35 @@ class HtmlBuilder(object):
         """
         self.page.div.close()
 
-    def addSection(self, title, **kwargs):
+    def addSection(self, title):
         """Add <p> with bold text magnified to 180%.
         
         Parameters
         ----------
         title : str
             <p> text
-        kwargs : dict
-            <p> attributes
         """
         self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:180%;",
                                                                "class": "mt-2 mb-2"})
 
-    def addSubsection(self, title, **kwargs):
+    def addSubsection(self, title):
         """Add <p> with bold text magnified to 150%.
         
         Parameters
         ----------                                            
         title : str
             <p> text
-        kwargs : dict
-            <p> attributes
         """
         self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:150%;",
                                                                "class": "mt-2 mb-2"})
 
-    def addSubsubsection(self, title, **kwargs):
+    def addSubsubsection(self, title):
         """Add <p> with bold text magnified to 120%.
         
         Parameters
         ----------                                            
         title : str
             <p> text
-        kwargs : dict
-            <p> attributes
         """
         self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:120%;",
                                                                "class": "mt-2 mb-2"})
@@ -185,9 +186,9 @@ class HtmlBuilder(object):
 
     def parametersTable(self, parameters, start, end):
         """Add parameters analysis table.
-        
+
         Parameters
-        ----------                        
+        ----------
         parameters : list[tuple]
             analysis parameters
         start : int
@@ -290,12 +291,48 @@ class HtmlBuilder(object):
                          "style": "height: 50%; width: 50%; object-fit: contain"})
         self.page.a.close()
 
-    def savePage(self, path):
+    def addFooter(self):
+        """Add footer with package and page creator information.
+        """
+        source = os.path.join(REPO_BASE, PACKAGE_NAME)
+        issues = os.path.join(source, "issues")
+
+        self.page.twotags.append("footer")
+        markup.element("footer", case=self.page.case, parent=self.page)(class_="footer")
+        self.openDiv(**{"class_": "container"})
+        self.openDiv(**{"class_": "row"})
+        self.openDiv(**{"class_": "col-sm-3 icon-bar"})
+        self.page.a(markup.oneliner.i('', class_='fas fa-code'), href=source,
+                    title='View {} source code'.format(PACKAGE_NAME), target='_blank')
+        self.page.a(markup.oneliner.i('', class_='fas fa-ticket-alt'), href=issues,
+                    title='Report a problem', target='_blank')
+        self.closeDiv()
+
+        self.openDiv(**{"class_": "col-sm-6"})
+        now = datetime.datetime.now()
+        tz = reference.LocalTimezone().tzname(now)
+        date = now.strftime('%H:%M {} on %d %B %Y'.format(tz))
+        self.addParagraph("Created by {0} at {1}".format(getuser(), date))
+        self.closeDiv()
+        self.closeDiv()
+        self.closeDiv()
+        markup.element("footer", case=self.page.case, parent=self.page).close()
+
+    def savePage(self, path, add_footer=True):
         """Save page.
         
         Parameters
         ----------                                            
         path : str
             save path
+        add_footer : bool, optional
+            add footer (default : True)
         """
-        htmlio.close_page(self.page, path)
+        self.closeDiv()
+        if add_footer:
+            self.addFooter()
+        if not self.page._full:
+            self.page.body.close()
+            self.page.html.close()
+        with open(path, "w") as f:
+            f.write(self.page())

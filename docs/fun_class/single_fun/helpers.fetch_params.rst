@@ -1,7 +1,7 @@
 fetch_params
 ============
 
-.. currentmodule:: gwasr.helpers
+.. currentmodule:: gwscattering.helpers
 
 .. toctree::
    :maxdepth: 1

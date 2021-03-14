@@ -1,7 +1,7 @@
 HtmlBuilder
 ===========
 
-.. currentmodule:: gwasr.html.html_builder
+.. currentmodule:: gwscattering.html.html_builder
 
 .. autoclass:: HtmlBuilder
    :show-inheritance:
@@ -22,4 +22,5 @@ HtmlBuilder
    .. automethod:: openCard
    .. automethod:: closeCard
    .. automethod:: addPlot
+   .. automethod:: addFooter
    .. automethod:: savePage

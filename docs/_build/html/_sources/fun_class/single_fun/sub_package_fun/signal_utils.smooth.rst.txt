@@ -1,6 +1,6 @@
 smooth
 ======
 
-.. currentmodule:: gwasr.utils.signal_utils
+.. currentmodule:: gwscattering.utils.signal_utils
 
 .. autofunction:: smooth

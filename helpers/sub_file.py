@@ -1,4 +1,4 @@
-#  sub_file.py - this file is part of the gwasr package.
+#  sub_file.py - this file is part of the gwscattering package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -26,9 +26,9 @@ class SubFile(object):
     ----------
     name : str
         name of the .sub file
-    universe : str
+    universe : str, optional
         universe (default : vanilla)
-    description : str
+    description : str, optional
         description string of the sub file (default : empty)
     """
 
@@ -98,7 +98,7 @@ class SubFile(object):
         self.sub_text.append("request_cpus = {:d}".format(ncpu))
         self.sub_text.append("request_memory = {:d}".format(memory))
 
-    def addLogs(self, output, error, to_append=[]):
+    def addLogs(self, output, error, to_append=None):
         """Add `output` and `error` to .sub file.
         
         Parameters
@@ -107,9 +107,12 @@ class SubFile(object):
             path to the output folder
         error : str
             path to the error folder
-        to_append : list of str
+        to_append : list[str], optional
             str to be appended to output and error file names
         """
+        if to_append is None:
+            to_append = []
+
         out_name = ["out", "$(Process)"] + to_append
         err_name = ["err", "$(Process)"] + to_append
         out_path = os.path.join(output, ".".join(out_name))

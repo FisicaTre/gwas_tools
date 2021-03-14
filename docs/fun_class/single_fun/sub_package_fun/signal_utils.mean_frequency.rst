@@ -1,6 +1,6 @@
 mean_frequency
 ==============
 
-.. currentmodule:: gwasr.utils.signal_utils
+.. currentmodule:: gwscattering.utils.signal_utils
 
 .. autofunction:: mean_frequency

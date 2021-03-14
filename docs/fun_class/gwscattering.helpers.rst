@@ -1,7 +1,7 @@
 helpers
 =======
 
-.. currentmodule:: gwasr
+.. currentmodule:: gwscattering
 
 .. toctree::
    :maxdepth: 1

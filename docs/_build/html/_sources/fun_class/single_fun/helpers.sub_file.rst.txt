@@ -1,7 +1,7 @@
 sub_file
 ========
 
-.. currentmodule:: gwasr.helpers
+.. currentmodule:: gwscattering.helpers
 
 .. toctree::
    :maxdepth: 1

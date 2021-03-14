@@ -1,4 +1,4 @@
-#  fetch_params.py - this file is part of the gwasr package.
+#  fetch_params.py - this file is part of the gwscattering package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,8 @@ import numpy as np
 from gwpy.table import EventTable
 
 
-def get_gps_and_freq(glitch_type, gps1, gps2, ifo, ml_confidence=(0.9, 1.0), snr=(12, 20), save_path=None):
+def get_gps_and_freq(glitch_type, gps1, gps2, ifo, ml_confidence=(0.9, 1.0),
+                     snr=(12, 20), save_path=None):
     """Get GPS and peak frequency between `gps1`
     and `gps2` for glitches of type `glitch_type`.
     
@@ -33,11 +34,11 @@ def get_gps_and_freq(glitch_type, gps1, gps2, ifo, ml_confidence=(0.9, 1.0), snr
         ending GPS
     ifo : str
         interferometer identifier
-    ml_confidence : tuple[float]
-        ml confidence limits
-    snr : tuple[int]
-        SNR limits
-    save_path : str
+    ml_confidence : tuple[float], optional
+        ml confidence limits (default : (0.9, 1.0))
+    snr : tuple[int], optional
+        SNR limits (default : (12, 20))
+    save_path : str, optional
         where to save output in csv format (default : None)
         
     Returns

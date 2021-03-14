@@ -1,4 +1,4 @@
-#  plot_utils.py - this file is part of the gwasr package.
+#  plot_utils.py - this file is part of the gwscattering package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -22,27 +22,31 @@ from astropy.time import Time
 from scipy.stats import pearsonr
 from gwpy.timeseries import TimeSeries
 from gwpy.segments import Segment
+from ..utils import file_utils
 
 
-def normalize(vec):
-    """Normalize a vector to zero mean and unit standard deviation.
-    
-    Parameters
-    ----------
-    vec : numpy array
-        input vector
-
-    Returns
-    -------
-    numpy array
-        normalized vector
-    """
-    norm_vec = (vec - np.nanmean(vec)) / np.nanstd(vec)
-    
-    return norm_vec
+def plot_imfs_arg(arg):
+    if arg in ["all", "max_corr"]:
+        return arg
+    elif isinstance(arg, list):
+        return arg
+    else:
+        return None
 
 
-def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_name, save_path, save_ext="png"):
+def corr_thr(arg):
+    arg = float(arg)
+    if -1.0 <= arg <= 1.0:
+        return arg
+    else:
+        if arg < 0.0:
+            return -1.0
+        else:
+            return 1.0
+
+
+def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title,
+             plot_name, save_path, save_ext="png"):
     """Plot of the instantaneous amplitude and predictor.
     
     Parameters
@@ -65,8 +69,8 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
         plot name
     save_path : str
         save path
-    save_ext : str
-        plot extension
+    save_ext : str, optional
+        plot extension (default : png)
     """
     if gps1 is not None:
         t1 = Time(gps1, format="gps")
@@ -102,8 +106,8 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title, plot_
     plt.close("all")
     
     
-def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1, samp_freq, out_path,
-                      save_ext="png", thr=-1.0):
+def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1, samp_freq,
+                      out_path, save_ext="png", thr=-1.0):
     """Plot sum of more instantaneous amplitudes and the predictor.
     
     Parameters
@@ -122,10 +126,10 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
         sampling frequency
     out_path : str
         save path
-    save_ext : str
-        plot extension
-    thr : float
-        correlation threshold for plots
+    save_ext : str, optional
+        plot extension (default : png)
+    thr : float, optional
+        correlation threshold for plots (default : -1.0)
     """
     seen = set()
     uniq = [x for x in plot_channels if x not in seen and not seen.add(x)]
@@ -142,7 +146,7 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
             
             
 def plot_omegagram_download(pred, pred_name, target_name, gps1, gps2, plot_name, save_path,
-                            norm=False, harmonics=[1, 2, 3, 4, 5], save_ext="png"):
+                            norm=False, harmonics=None, save_ext="png"):
     """Omegagram plot with download of the target channel.
     
     Parameters
@@ -161,13 +165,16 @@ def plot_omegagram_download(pred, pred_name, target_name, gps1, gps2, plot_name,
         plot name
     save_path : str
         save path
-    norm : bool
-        normalize predictor to 10 Hz
-    harmonics : list of int
-        predictor harmonics to be plotted
-    save_ext : str
-        plot extension
+    norm : bool, optional
+        normalize predictor to 10 Hz (default : False)
+    harmonics : list[int], optional
+        predictor harmonics to be plotted (default : [1, 2, 3, 4, 5])
+    save_ext : str, optional
+        plot extension (default : png)
     """
+    if harmonics is None:
+        harmonics = [1, 2, 3, 4, 5]
+
     if gps1 is not None and gps2 is not None:
         epoch = (gps1 + gps2) // 2
         if norm:
@@ -216,7 +223,7 @@ def plot_omegagram_download(pred, pred_name, target_name, gps1, gps2, plot_name,
         
         
 def plot_omegagram(pred, pred_name, target, target_name, gps1, gps2, fs, plot_name, save_path,
-                   norm=False, harmonics=[1, 2, 3, 4, 5], save_ext="png"):
+                   norm=False, harmonics=None, save_ext="png"):
     """Omegagram plot.
     
     Parameters
@@ -239,13 +246,16 @@ def plot_omegagram(pred, pred_name, target, target_name, gps1, gps2, fs, plot_na
         plot name
     save_path : str
         save path
-    norm : bool
-        normalize predictor to 10 Hz
-    harmonics : list of int
-        predictor harmonics to be plotted
-    save_ext : str
-        plot extension
+    norm : bool, optional
+        normalize predictor to 10 Hz (default : False)
+    harmonics : list[int], optional
+        predictor harmonics to be plotted (default : [1, 2, 3, 4, 5])
+    save_ext : str, optional
+        plot extension (default : png)
     """
+    if harmonics is None:
+        harmonics = [1, 2, 3, 4, 5]
+
     if gps1 is not None and gps2 is not None:
         epoch = (gps1 + gps2) // 2
         if norm:
@@ -291,7 +301,8 @@ def plot_omegagram(pred, pred_name, target, target_name, gps1, gps2, fs, plot_na
         print("GPS coordinates are None, cannot plot omegagram.")
         
 
-def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=10, mean_freqs=None, save_ext="png"):
+def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True,
+                      batch=10, mean_freqs=None, save_ext="png"):
     """Summary histogram of culprits found for a certain imf.
     
     Parameters
@@ -304,14 +315,14 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
         plot name
     save_path : str
         save path
-    dsort : bool
-        descending order sort
-    batch : int
-        maximum number of points per plot
-    mean_freqs : dict
-        dict {channel_name: [mean_freqs]} for mean frequencies histograms
-    save_ext : str
-        plot extension
+    dsort : bool, optional
+        descending order sort (default : True)
+    batch : int, optional
+        maximum number of points per plot (default : 10)
+    mean_freqs : dict, optional
+        dict {channel_name: [mean_freqs]} for mean frequencies histograms (default : None)
+    save_ext : str, optional
+        plot extension (default : png)
     """
     culprits = np.array(culprits)
     seen = set()
@@ -362,56 +373,6 @@ def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True, batch=1
             mf_x += [i for _ in range(len(mean_freqs[key]))]
             mf_y += mean_freqs[key]
         plot_mean_freq_summary(mf_x, mf_y, uniq, title, plot_name + "_mean_freq", save_path, save_ext=save_ext)
-    
-    
-# def plot_corr_summary_old(gps_list, corr_list, title, plot_name, save_path, batch=10):
-#     """Summary of correlations for each GPS for a certain imf.
-#
-#     Parameters
-#     ----------
-#     gps_list : list
-#         gps
-#     corr_list : list
-#         correlations
-#     title : str
-#         plot title
-#     plot_name : str
-#         plot name
-#     save_path : str
-#         save path
-#     batch : int
-#         maximum number of points per plot
-#     """
-#     if len(gps_list) <= batch:
-#         plt.figure()
-#         plt.bar(np.arange(len(gps_list)), corr_list, width=0.8)
-#         plt.ylim(-1, 1)
-#         plt.xticks(np.arange(len(gps_list)), gps_list, rotation=45, horizontalalignment="right")
-#         plt.title(title)
-#         plt.savefig(os.path.join(save_path, plot_name + ".png"), bbox_inches="tight", dpi=300)
-#         plt.close("all")
-#     else:
-#         n = len(gps_list) // batch
-#         for i in range(n):
-#             plt.figure()
-#             plt.bar(np.arange(len(gps_list[i*batch:(i+1)*batch])), corr_list[i*batch:(i+1)*batch], width=0.8)
-#             plt.ylim(-1, 1)
-#             plt.xticks(np.arange(len(gps_list[i*batch:(i+1)*batch])), gps_list[i*batch:(i+1)*batch],
-#                        rotation=45, horizontalalignment="right")
-#             plt.title(title)
-#             plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + ".png"),
-#                         bbox_inches="tight", dpi=300)
-#             plt.close("all")
-#         if len(gps_list) % batch != 0:
-#             plt.figure()
-#             plt.bar(np.arange(len(gps_list[n*batch:])), corr_list[n*batch:], width=0.8)
-#             plt.ylim(-1, 1)
-#             plt.xticks(np.arange(len(gps_list[n*batch:])), gps_list[n*batch:], rotation=45,
-#                        horizontalalignment="right")
-#             plt.title(title)
-#             plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + ".png"),
-#                         bbox_inches="tight", dpi=300)
-#             plt.close("all")
 
 
 def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, save_ext="png"):
@@ -429,8 +390,8 @@ def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, save_ext
         plot name
     save_path : str
         save path
-    save_ext : str
-        plot extension
+    save_ext : str, optional
+        plot extension (default : png)
     """
     t1 = Time(gps_list[0], format="gps")
     t2 = Time(t1, format="iso", scale="utc")
@@ -464,8 +425,8 @@ def plot_mean_freq_summary(x_vals, y_vals, x_labels, title, plot_name, save_path
         plot name
     save_path : str
         save path
-    save_ext : str
-        plot extension
+    save_ext : str, optional
+        plot extension (default : str)
     """
     plt.figure()
     plt.scatter(x_vals, y_vals)
@@ -474,3 +435,124 @@ def plot_mean_freq_summary(x_vals, y_vals, x_labels, title, plot_name, save_path
     plt.title(title)
     plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
     plt.close("all")
+
+
+def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png"):
+    """Plot imfs in the given folders.
+
+    Parameters
+    ----------
+    folders : list[str]
+        paths to the file needed for the plots
+    imfs : str, list[int]
+        imfs to plot, can be "all", "max_corr", or list of integers
+    imf_thr : float, optional
+        correlation value above which to plot imfs (default : -1.0)
+    combos : bool, optional
+        if True, plot also combinations of imfs with the same channel name (default : False)
+    save_ext : str, optional
+        plots extension (default : png)
+    """
+    imfs_to_plot = plot_imfs_arg(imfs)
+    if imfs_to_plot is None:
+        return
+    imf_thr = corr_thr(imf_thr)
+
+    for res_folder in folders:
+        yf = file_utils.YmlFile(res_folder)
+        ia = file_utils.load_imfs(res_folder)
+        preds = file_utils.load_predictors(res_folder)
+
+        target_channel = yf.get_target_channel()
+        gps_start, gps_end = yf.get_gps()
+        fs = yf.get_sampling_frequency()
+        gps_event = (gps_start + gps_end) // 2
+
+        if imfs == "max_corr":
+            n_imf = yf.get_max_corr_imf() - 1
+            predictor_name = yf.get_max_corr_channel()
+            if yf.get_max_corr() >= imf_thr:
+                plot_imf(preds[:, n_imf], predictor_name, ia[:, n_imf], target_channel,
+                         gps_event, fs, "$\\rho$ = {:.4f}".format(yf.get_max_corr()),
+                         "max_corr_culprit", res_folder, save_ext=save_ext)
+        elif imfs_to_plot == "all":
+            for n_imf in range(yf.get_imfs_count()):
+                if yf.get_corr_of_imf(n_imf + 1) >= imf_thr:
+                    plot_imf(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1), ia[:, n_imf], target_channel,
+                             gps_event, fs, "$\\rho$ = {:.4f}".format(yf.get_corr_of_imf(n_imf + 1)),
+                             "imf_{}_culprit".format(n_imf + 1), res_folder, save_ext=save_ext)
+            if combos:
+                ch_list = np.array([yf.get_channel_of_imf(el + 1) for el in range(yf.get_imfs_count())])
+                plot_combinations(ch_list, ia, preds, target_channel, gps_event,
+                                  fs, res_folder, thr=imf_thr, save_ext=save_ext)
+        elif isinstance(imfs_to_plot, list):
+            for n_imf in range(yf.get_imfs_count()):
+                if n_imf + 1 in imfs_to_plot:
+                    if yf.get_corr_of_imf(n_imf + 1) >= imf_thr:
+                        plot_imf(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1), ia[:, n_imf],
+                                 target_channel, gps_event, fs,
+                                 "$\\rho$ = {:.4f}".format(yf.get_corr_of_imf(n_imf + 1)),
+                                 "imf_{}_culprit".format(n_imf + 1), res_folder, save_ext=save_ext)
+            if combos:
+                ch_list = np.array(
+                    [yf.get_channel_of_imf(el + 1) for el in range(yf.get_imfs_count()) if el + 1 in imfs_to_plot])
+                if len(ch_list) != 0:
+                    imfs_list = [imf - 1 for imf in imfs_to_plot if imf <= yf.get_imfs_count()]
+                    plot_combinations(ch_list, ia[:, imfs_list], preds[:, imfs_list],
+                                      target_channel, gps_event, fs, res_folder, thr=imf_thr,
+                                      save_ext=save_ext)
+
+
+def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None, save_ext="png"):
+    """Plot omegagrams in the given folders.
+
+    Parameters
+    ----------
+    folders : list[str]
+        paths to the file needed for the plots
+    imfs : str, list[int]
+        imfs to consider, can be "all", "max_corr", or list of integers
+    omegagram_thr : float, optional
+        correlation value above which to plot omegagrams (default : -1.0)
+    harmonics : list[int]
+        harmonics for the culprit (default : [1, 2, 3, 4, 5])
+    save_ext : str, optional
+        plots extension (default : png)
+    """
+    if harmonics is None:
+        harmonics = [1, 2, 3, 4, 5]
+
+    imfs_to_plot = plot_imfs_arg(imfs)
+    if imfs_to_plot is None:
+        return
+    omegagram_thr = corr_thr(omegagram_thr)
+
+    for res_folder in folders:
+        yf = file_utils.YmlFile(res_folder)
+        preds = file_utils.load_predictors(res_folder)
+
+        target_channel = yf.get_target_channel()
+        gps_start, gps_end = yf.get_gps()
+
+        if imfs == "max_corr":
+            n_imf = yf.get_max_corr_imf() - 1
+            predictor_name = yf.get_max_corr_channel()
+            if yf.get_max_corr() >= omegagram_thr:
+                plot_omegagram_download(preds[:, n_imf], predictor_name, target_channel, gps_start,
+                                        gps_end, "max_corr_omegagram", res_folder, harmonics=harmonics,
+                                        save_ext=save_ext)
+        elif imfs_to_plot == "all":
+            for n_imf in range(yf.get_imfs_count()):
+                if yf.get_corr_of_imf(n_imf + 1) >= omegagram_thr:
+                    plot_omegagram_download(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1),
+                                            target_channel, gps_start, gps_end,
+                                            "imf_{}_omegagram".format(n_imf + 1), res_folder,
+                                            harmonics=harmonics, save_ext=save_ext)
+        elif isinstance(imfs_to_plot, list):
+            for n_imf in range(yf.get_imfs_count()):
+                if n_imf + 1 in imfs_to_plot:
+                    if yf.get_corr_of_imf(n_imf + 1) >= omegagram_thr:
+                        plot_omegagram_download(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1),
+                                                target_channel, gps_start, gps_end,
+                                                "imf_{}_omegagram".format(n_imf + 1), res_folder,
+                                                harmonics=harmonics, save_ext=save_ext)
