@@ -432,7 +432,7 @@ def load_predictors(predictors_path):
     return predictors
 
 
-def get_results_folders(results_path, sort=True, must_include=None):
+def get_results_folders(results_path, sort=True, must_include=None, filter_non_valid=True):
     """Get list of folders with results from one or multiple analyses.
 
     Parameters
@@ -442,8 +442,11 @@ def get_results_folders(results_path, sort=True, must_include=None):
     sort : bool, optional
         sort folders (default : True)
     must_include : list[str], optional
-        patterns of files that must be present in the
-        folder, otherwise is discarded (default : None)
+        patterns of files that must be present in a
+        folder, otherwise it is discarded. Ignored if
+        `filter_non_valid` is False (default : None)
+    filter_non_valid : bool, optional
+        whether or not exclude non valid folders (default : True)
 
     Returns
     -------
@@ -454,17 +457,20 @@ def get_results_folders(results_path, sort=True, must_include=None):
     for folder in os.listdir(results_path):
         curr_dir = os.path.join(results_path, folder)
         if os.path.isdir(curr_dir):
-            if is_valid_folder(curr_dir):
-                if must_include is not None:
-                    add_folder = True
-                    for pattern in must_include:
-                        if len(glob.glob(os.path.join(curr_dir, pattern))) == 0:
-                            add_folder = False
-                            break
-                    if add_folder:
+            if filter_non_valid:
+                if is_valid_folder(curr_dir):
+                    if must_include is not None:
+                        add_folder = True
+                        for pattern in must_include:
+                            if len(glob.glob(os.path.join(curr_dir, pattern))) == 0:
+                                add_folder = False
+                                break
+                        if add_folder:
+                            res_folders.append(curr_dir)
+                    else:
                         res_folders.append(curr_dir)
-                else:
-                    res_folders.append(curr_dir)
+            else:
+                res_folders.append(curr_dir)
 
     if sort:
         res_folders.sort()
@@ -522,7 +528,7 @@ def save_envelopes(envelopes, file_name, out_path):
     f_imfs.close()
 
 
-def summary_table(folders, comparison, table_name):
+def summary_table(folders, comparison, table_name, event_time="center"):
     """Comparison plots of results.
 
     Parameters
@@ -533,9 +539,16 @@ def summary_table(folders, comparison, table_name):
         imfs for comparison, can be "max_corr", or list
     table_name : str
         name of the output csv
+    event_time : str
+        position of the event's gps in the analysed period.
+        Can be `start`, `center`, or `end` (default : center)
     """
     if len(folders) == 0:
         return
+
+    ev_pos = ["start", "center", "end"]
+    if event_time not in ev_pos:
+        raise ValueError("Event time can only be: {}".format(", ".join(ev_pos)))
 
     folders_path = os.path.sep.join(folders[0].split(os.path.sep)[:-1])
     cpath = os.path.join(folders_path, "comparison")
@@ -552,7 +565,13 @@ def summary_table(folders, comparison, table_name):
             if is_valid_folder(folder):
                 yf = YmlFile(folder)
                 g = yf.get_gps()
-                gps.append((g[0] + g[1]) // 2)
+                if event_time == "start":
+                    gps.append(g[0])
+                elif event_time == "center":
+                    gps.append((g[0] + g[1]) // 2)
+                elif event_time == "end":
+                    gps.append(g[1])
+
                 try:
                     culprits.append(yf.get_max_corr_channel())
                     corrs.append(yf.get_max_corr())
@@ -587,7 +606,13 @@ def summary_table(folders, comparison, table_name):
             if is_valid_folder(folder):
                 yf = YmlFile(folder)
                 g = yf.get_gps()
-                gps.append((g[0] + g[1]) // 2)
+                if event_time == "start":
+                    gps.append(g[0])
+                elif event_time == "center":
+                    gps.append((g[0] + g[1]) // 2)
+                elif event_time == "end":
+                    gps.append(g[1])
+
                 for i in comparison:
                     try:
                         culprits[i].append(yf.get_channel_of_imf(i))

@@ -265,7 +265,7 @@ def get_imfs(target_channel, fs, norm=True):
 
 
 def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start, gps_end,
-                                   fs=None, verbose=False):
+                                   fs=None, verbose=False, frametype=None):
     """Get data from `gwpy` function `TimeSeriesDict.get`.
 
     Parameters
@@ -282,6 +282,8 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
         desired sampling frequency for the channels (default : None)
     verbose : bool, optional
         verbosity option of TimeSeriesDict (default : False)
+    frametype : str, optional
+        frametype for desired data (default : None)
 
     Returns
     -------
@@ -295,10 +297,16 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
     if fs is None:
         fs = np.inf
 
-    data_dict = TimeSeriesDict.get([target_channel_name] + channels_list,
-                                   gps_start - defines.EXTRA_SECONDS,
-                                   gps_end + defines.EXTRA_SECONDS,
-                                   verbose=verbose)
+    if frametype is None:
+        data_dict = TimeSeriesDict.get([target_channel_name] + channels_list,
+                                       gps_start - defines.EXTRA_SECONDS,
+                                       gps_end + defines.EXTRA_SECONDS,
+                                       verbose=verbose)
+    else:
+        data_dict = TimeSeriesDict.get([target_channel_name] + channels_list,
+                                       gps_start - defines.EXTRA_SECONDS,
+                                       gps_end + defines.EXTRA_SECONDS,
+                                       verbose=verbose, frametype=frametype)
     dict_fs = np.min([data_dict[ch_name].channel.sample_rate.value for ch_name in channels_list])
     if dict_fs < fs:
         fs = dict_fs

@@ -84,8 +84,8 @@ class SubFile(object):
         self.sub_text.append("accounting_group = {}".format(group))
         self.sub_text.append("accounting_group_user = {}".format(user))
 
-    def addSpecs(self, ncpu, memory):
-        """Add `request_cpus` and `request_memory` to .sub file.
+    def addSpecs(self, ncpu, memory, disk=None):
+        """Add `request_cpus`, `request_memory`, and optional `request_disk` to .sub file.
         
         Parameters
         ----------
@@ -93,8 +93,12 @@ class SubFile(object):
             number of cpus
         memory : int
             requested memory in Mb
+        disk : int
+            requested disk space (default : None)
         """
         self.addBlankLine()
+        if disk is not None:
+            self.sub_text.append("request_disk = {:d}".format(disk))
         self.sub_text.append("request_cpus = {:d}".format(ncpu))
         self.sub_text.append("request_memory = {:d}".format(memory))
 
@@ -120,6 +124,16 @@ class SubFile(object):
         self.addBlankLine()
         self.sub_text.append("output = {}".format(out_path))
         self.sub_text.append("error = {}".format(err_path))
+
+    def add(self, line):
+        """Add custom line to .sub file.
+
+         Parameters
+         ----------
+         line : str
+             line to add
+         """
+        self.sub_text.append(line)
 
     def save(self):
         """Save .sub file to `name`.
