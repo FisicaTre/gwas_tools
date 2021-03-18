@@ -50,7 +50,10 @@ class YmlFile(object):
         str
             target channel
         """
-        return self.content[defines.PARAMS_SECT_KEY][defines.TARGET_CH_KEY]
+        try:
+            return self.content[defines.PARAMS_SECT_KEY][defines.TARGET_CH_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_gps(self):
         """GPS times.
@@ -62,7 +65,11 @@ class YmlFile(object):
         int
             ending GPS
         """
-        gps = self.content[defines.PARAMS_SECT_KEY][defines.GPS_KEY]
+        try:
+            gps = self.content[defines.PARAMS_SECT_KEY][defines.GPS_KEY]
+        except:
+            raise ValueError("Value not found.")
+
         gps_start = int(gps.split(",")[0])
         gps_end = int(gps.split(",")[1])
 
@@ -76,7 +83,10 @@ class YmlFile(object):
         float
             sampling frequency
         """
-        return self.content[defines.PARAMS_SECT_KEY][defines.SAMP_FREQ_KEY]
+        try:
+            return self.content[defines.PARAMS_SECT_KEY][defines.SAMP_FREQ_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_channels_list(self):
         """Channels list.
@@ -86,7 +96,10 @@ class YmlFile(object):
         str
             path to channels list file
         """
-        return self.content[defines.PARAMS_SECT_KEY][defines.CH_LIST_KEY]
+        try:
+            return self.content[defines.PARAMS_SECT_KEY][defines.CH_LIST_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_output_path(self):
         """Output path.
@@ -96,7 +109,10 @@ class YmlFile(object):
         str
             path to where output analysis was saved
         """
-        return self.content[defines.PARAMS_SECT_KEY][defines.OUT_PATH_KEY]
+        try:
+            return self.content[defines.PARAMS_SECT_KEY][defines.OUT_PATH_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_lowpass_frequency(self):
         """Lowpass frequency.
@@ -106,7 +122,10 @@ class YmlFile(object):
         float
             lowpass frequency
         """
-        return self.content[defines.PARAMS_SECT_KEY][defines.LOWPASS_FREQ_KEY]
+        try:
+            return self.content[defines.PARAMS_SECT_KEY][defines.LOWPASS_FREQ_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_scattering_factor(self):
         """Scattering factor.
@@ -116,7 +135,10 @@ class YmlFile(object):
         int
             scattering factor
         """
-        return self.content[defines.PARAMS_SECT_KEY][defines.SCATTERING_KEY]
+        try:
+            return self.content[defines.PARAMS_SECT_KEY][defines.SCATTERING_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_smoothing_window(self):
         """Smoothing window.
@@ -126,7 +148,10 @@ class YmlFile(object):
         int
             smoothing window
         """
-        return self.content[defines.PARAMS_SECT_KEY][defines.SMOOTH_WIN_KEY]
+        try:
+            return self.content[defines.PARAMS_SECT_KEY][defines.SMOOTH_WIN_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_max_corr_imf(self):
         """Number of max correlated imf.
@@ -136,7 +161,10 @@ class YmlFile(object):
         int
             max correlated imf number
         """
-        return self.content[defines.MAX_CORR_SECT_KEY][defines.IMF_KEY]
+        try:
+            return self.content[defines.MAX_CORR_SECT_KEY][defines.IMF_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_max_corr_channel(self):
         """Max correlated channel.
@@ -146,7 +174,10 @@ class YmlFile(object):
         str
             max correlated channel
         """
-        return self.content[defines.MAX_CORR_SECT_KEY][defines.CHANNEL_KEY]
+        try:
+            return self.content[defines.MAX_CORR_SECT_KEY][defines.CHANNEL_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_max_corr(self):
         """Max correlation.
@@ -156,7 +187,10 @@ class YmlFile(object):
         float
             max correlation
         """
-        return self.content[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY]
+        try:
+            return self.content[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_max_corr_mean_freq(self):
         """Mean frequency of max correlated channel.
@@ -166,7 +200,10 @@ class YmlFile(object):
         float
             mean frequency of max correlated channel
         """
-        return self.content[defines.MAX_CORR_SECT_KEY][defines.MEAN_FREQ_KEY]
+        try:
+            return self.content[defines.MAX_CORR_SECT_KEY][defines.MEAN_FREQ_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def get_imfs_count(self):
         """Get number of found imfs.
@@ -176,52 +213,82 @@ class YmlFile(object):
         int
             number of found imfs
         """
-        return len(self.content[defines.CORR_SECT_KEY])
+        if defines.CORR_SECT_KEY in self.content.keys():
+            return len(self.content[defines.CORR_SECT_KEY])
+        else:
+            raise ValueError("{} section not found.".format(defines.CORR_SECT_KEY))
 
-    def get_channel_of_imf(self, imf):
+    def get_channel_of_imf(self, imf, second_best=False):
         """Most correlated channel with imf `imf`.
 
         Parameters
         ----------
         imf : int
             imf number
+        second_best : bool
+            if True, returns the value from the section for
+            the second best culprit
 
         Returns
         -------
         str
             most correlated channel with imf `imf`
         """
-        return self.content[defines.CORR_SECT_KEY][imf - 1][defines.CHANNEL_KEY]
+        try:
+            if second_best:
+                return self.content[defines.CORR_2_SECT_KEY][imf - 1][defines.CHANNEL_KEY]
+            else:
+                return self.content[defines.CORR_SECT_KEY][imf - 1][defines.CHANNEL_KEY]
+        except:
+            raise ValueError("Value not found.")
 
-    def get_corr_of_imf(self, imf):
+    def get_corr_of_imf(self, imf, second_best=False):
         """Correlation of imf `imf`.
 
         Parameters
         ----------
         imf : int
             imf number
+        second_best : bool
+            if True, returns the value from the section for
+            the second best culprit
 
         Returns
         -------
         float
             correlation of imf `imf`
         """
-        return self.content[defines.CORR_SECT_KEY][imf - 1][defines.CORR_KEY]
+        try:
+            if second_best:
+                return self.content[defines.CORR_2_SECT_KEY][imf - 1][defines.CORR_KEY]
+            else:
+                return self.content[defines.CORR_SECT_KEY][imf - 1][defines.CORR_KEY]
+        except:
+            raise ValueError("Value not found.")
 
-    def get_mean_freq_of_imf(self, imf):
+    def get_mean_freq_of_imf(self, imf, second_best=False):
         """Mean frequency of imf `imf`.
 
         Parameters
         ----------
         imf : int
             imf number
+        second_best : bool
+            if True, returns the value from the section for
+            the second best culprit
 
         Returns
         -------
         float
             mean frequency of imf `imf`
         """
-        return self.content[defines.CORR_SECT_KEY][imf - 1][defines.MEAN_FREQ_KEY]
+        try:
+            if second_best:
+                return self.content[defines.CORR_2_SECT_KEY][imf - 1][defines.MEAN_FREQ_KEY]
+            else:
+                return self.content[defines.CORR_SECT_KEY][imf - 1][defines.MEAN_FREQ_KEY]
+        except:
+            raise ValueError("Value not found.")
 
     def write_parameters(self, gps, target_channel_name, channels_file, out_path,
                          fs, f_lowpass, n_scattering, smooth_win):
@@ -294,6 +361,25 @@ class YmlFile(object):
                         defines.CORR_KEY: float(corrs[i]), defines.MEAN_FREQ_KEY: float(mean_freqs[i])}
             self.content[defines.CORR_SECT_KEY].append(tmp_dict)
 
+    def write_2nd_best_correlation_section(self, channels, corrs, mean_freqs):
+        """Write correlation section corresponding to the second
+        best culprit of each imf to file.
+
+        Parameters
+        ----------
+        channels : list[str]
+            list of culprits for each imf
+        corrs : list[float]
+            list of correlations for each imf
+        mean_freqs : list[float]
+            list of mean frequencies for each imf
+        """
+        self.content[defines.CORR_2_SECT_KEY] = []
+        for i in range(len(channels)):
+            tmp_dict = {defines.IMF_KEY: int(i + 1), defines.CHANNEL_KEY: channels[i],
+                        defines.CORR_KEY: float(corrs[i]), defines.MEAN_FREQ_KEY: float(mean_freqs[i])}
+            self.content[defines.CORR_2_SECT_KEY].append(tmp_dict)
+
     def save(self, save_path):
         """Save file.
 
@@ -323,7 +409,7 @@ def from_mat(mat_file, mat_col):
     """
     mat = scipy.io.loadmat(mat_file)
     mat_data = mat[mat_col]
-    
+
     return mat_data
 
 
