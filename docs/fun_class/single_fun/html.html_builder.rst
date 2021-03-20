@@ -1,7 +1,7 @@
 HtmlBuilder
 ===========
 
-.. currentmodule:: gwscattering.html.html_builder
+.. currentmodule:: gwadaptive_scattering.html.html_builder
 
 .. autoclass:: HtmlBuilder
    :show-inheritance:

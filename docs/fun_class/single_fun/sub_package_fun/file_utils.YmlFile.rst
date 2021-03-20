@@ -1,7 +1,7 @@
 YmlFile
 =======
 
-.. currentmodule:: gwscattering.utils.file_utils
+.. currentmodule:: gwadaptive_scattering.utils.file_utils
 
 .. autoclass:: YmlFile
    :show-inheritance:

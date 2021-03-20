@@ -1,6 +1,6 @@
 lowpass
 =======
 
-.. currentmodule:: gwscattering.utils.signal_utils
+.. currentmodule:: gwadaptive_scattering.utils.signal_utils
 
 .. autofunction:: lowpass

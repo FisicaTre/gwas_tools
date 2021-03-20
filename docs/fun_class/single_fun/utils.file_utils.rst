@@ -1,7 +1,7 @@
 file_utils
 ==========
 
-.. currentmodule:: gwscattering.utils
+.. currentmodule:: gwadaptive_scattering.utils
 
 .. toctree::
    :maxdepth: 1

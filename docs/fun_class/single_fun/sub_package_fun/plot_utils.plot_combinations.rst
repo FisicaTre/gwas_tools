@@ -1,6 +1,6 @@
 plot_combinations
 =================
 
-.. currentmodule:: gwscattering.utils.plot_utils
+.. currentmodule:: gwadaptive_scattering.utils.plot_utils
 
 .. autofunction:: plot_combinations

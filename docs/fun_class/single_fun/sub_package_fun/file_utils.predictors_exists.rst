@@ -1,6 +1,6 @@
 predictors_exists
 =================
 
-.. currentmodule:: gwscattering.utils.file_utils
+.. currentmodule:: gwadaptive_scattering.utils.file_utils
 
 .. autofunction:: predictors_exists

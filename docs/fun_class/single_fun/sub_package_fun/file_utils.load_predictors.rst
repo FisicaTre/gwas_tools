@@ -1,6 +1,6 @@
 load_predictors
 ===============
 
-.. currentmodule:: gwscattering.utils.file_utils
+.. currentmodule:: gwadaptive_scattering.utils.file_utils
 
 .. autofunction:: load_predictors

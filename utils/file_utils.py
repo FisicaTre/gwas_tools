@@ -1,4 +1,4 @@
-#  file_utils.py - this file is part of the gwscattering package.
+#  file_utils.py - this file is part of the gwadaptive_scattering package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify

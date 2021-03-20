@@ -1,9 +1,9 @@
-## gwscattering  
+## gwadaptive_scattering  
 Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.
 
 #### Version
 
-v0.6
+v0.6.2
 
 ####  Requirements
 
@@ -11,13 +11,13 @@ v0.6
 - [requirements.txt](requirements.txt)
 
 #### Description
-
 - `helpers`
   - functions to get inputs for the pipeline, and classes to build a `.sub` and a `.dag` file to submit the pipeline.
 - `html`
   - class to build a html page to summarize the output of the pipeline.
 - `utils`
   - utils functions to process signals, manage output files, and plot pipeline's results.
+
 #### References
 - Application to LIGO data: [Link](https://iopscience.iop.org/article/10.1088/1361-6382/aa8e6b/meta) 
 - Application to Virgo data: [Link](https://iopscience.iop.org/article/10.1088/1361-6382/ab9719/meta) 

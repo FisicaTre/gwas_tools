@@ -1,7 +1,7 @@
 dag_file
 ========
 
-.. currentmodule:: gwscattering.helpers
+.. currentmodule:: gwadaptive_scattering.helpers
 
 .. toctree::
    :maxdepth: 1

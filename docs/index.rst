@@ -1,5 +1,5 @@
-gwscattering (v0.6)
-*******************
+gwadaptive_scattering (v0.6.2)
+******************************
 
 Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.
 
@@ -12,13 +12,13 @@ Requirements
 Installation
 ============
 
-pip install gwscattering
+pip install gwadaptive_scattering
 
 Documentation for the Code
 ==========================
 .. toctree::
    :maxdepth: 1
 
-   fun_class/gwscattering.helpers
-   fun_class/gwscattering.html
-   fun_class/gwscattering.utils
+   fun_class/gwadaptive_scattering.helpers
+   fun_class/gwadaptive_scattering.html
+   fun_class/gwadaptive_scattering.utils
