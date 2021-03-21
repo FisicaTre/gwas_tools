@@ -24,7 +24,7 @@ from pytz import reference
 
 
 REPO_BASE = "https://github.com/stfbnc"
-PACKAGE_NAME = "gwscattering"
+PACKAGE_NAME = "gwadaptive_scattering"
 
 CSS_FILES = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/fontawesome.min.css",
              "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/solid.min.css",
