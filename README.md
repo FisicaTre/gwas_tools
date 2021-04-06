@@ -3,7 +3,7 @@ Utils functions to build a pipeline for scattered light noise hunting in gravita
 
 #### Version
 
-v0.6.2
+v0.6.3
 
 ####  Requirements
 
