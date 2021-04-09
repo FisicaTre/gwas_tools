@@ -132,7 +132,7 @@ def butter_lowpass_filter(x, cutoff, f_samp, order=3):
     return y
 
 
-def mean_frequency(x, f):
+def mean_frequency_wa(x, f):
     """Array mean frequency.
     
     Parameters
@@ -153,6 +153,39 @@ def mean_frequency(x, f):
     mean_f = (freq * amp).sum()
 
     return mean_f
+
+
+def mean_frequency(channel_name, start, end, bandpass_limits=None, verbose=False):
+    """Mean frequency of a signal (highest peak in the spectrum).
+
+    Parameters
+    ----------
+    channel_name : str
+        channel name
+    start : int
+        gps start
+    end : int
+        gps end
+    bandpass_limits : tuple[float]
+        frequencies interval for bandpass filter
+    verbose : bool
+        verbosity
+
+    Returns
+    -------
+    float
+        mean frequency of the signal
+    """
+    ts = TimeSeries.get(channel_name, start, end, verbose=verbose)
+    if bandpass_limits is not None:
+        bp_start = bandpass_limits[0]
+        bp_end = bandpass_limits[1]
+        ts = ts.bandpass(bp_start, bp_end)
+    asd = ts.asd()
+    mf_idx = asd == asd.max()
+    mf = asd.frequencies[mf_idx]
+
+    return mf.value[0]
 
 
 def mean_amplitude(x, f):
