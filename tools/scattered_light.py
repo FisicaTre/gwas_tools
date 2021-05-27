@@ -93,6 +93,10 @@ def scattered_light(gps, target_channel_name, channels_file, out_path, f_lowpass
     # max correlations
     max_vals = np.max(corrs, axis=1)
     max_channels = np.argmax(corrs, axis=1)
+    # if len(channels_list) > 1:
+    #    max_vals_2 = [np.max([n for n in corrs[i, :] if n != np.max(corrs[i, :])]) for i in range(corrs.shape[0])]
+    #    max_channels_2 = [np.where(corrs[i, :] == max_vals_2[i])[0][0] for i in range(corrs.shape[0])]
+
     max_channel = int(np.argmax(max_vals))
     try:
         max_ch_str = channels_list[max_channels[max_channel]]
@@ -120,6 +124,22 @@ def scattered_light(gps, target_channel_name, channels_file, out_path, f_lowpass
             ch_corr.append(-999.0)
             ch_m_fr.append(0.0)
     out_file.write_correlation_section(ch_str, ch_corr, ch_m_fr)
+
+    # if len(channels_list) > 1:
+    #    ch_2_str = []
+    #    ch_2_corr = []
+    #    ch_2_m_fr = []
+    #    for n_imf in range(len(max_vals_2)):
+    #        try:
+    #            ch_2_str.append(channels_list[max_channels_2[n_imf]])
+    #            ch_2_corr.append(max_vals_2[n_imf])
+    #            ch_2_m_fr.append(signal_utils.mean_frequency(data[:, max_channels_2[n_imf] + 1], fs))
+    #        except:
+    #            ch_2_str.append("Not found")
+    #            ch_2_corr.append(-999.0)
+    #            ch_2_m_fr.append(0.0)
+    #    out_file.write_2nd_best_correlation_section(ch_2_str, ch_2_corr, ch_2_m_fr)
+
     out_file.save(out_path)
 
     # save predictors
