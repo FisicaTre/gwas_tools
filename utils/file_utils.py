@@ -56,24 +56,46 @@ class YmlFile(object):
             raise ValueError("Value not found.")
 
     def get_gps(self):
-        """GPS times.
+        """GPS time.
 
         Returns
         -------
         int
-            starting GPS
-        int
-            ending GPS
+            GPS time
         """
         try:
             gps = self.content[defines.PARAMS_SECT_KEY][defines.GPS_KEY]
+            return gps
         except:
             raise ValueError("Value not found.")
 
-        gps_start = int(gps.split(",")[0])
-        gps_end = int(gps.split(",")[1])
+    def get_seconds(self):
+        """Duration of the analyzed period.
 
-        return gps_start, gps_end
+        Returns
+        -------
+        int
+            duration of the analyzed period
+        """
+        try:
+            seconds = self.content[defines.PARAMS_SECT_KEY][defines.SECONDS_KEY]
+            return seconds
+        except:
+            raise ValueError("Value not found.")
+
+    def get_event_position(self):
+        """Position of the event in the analyzed period.
+
+        Returns
+        -------
+        str
+            position of the event in the analyzed period
+        """
+        try:
+            event_pos = self.content[defines.PARAMS_SECT_KEY][defines.EVENT_KEY]
+            return event_pos
+        except:
+            raise ValueError("Value not found.")
 
     def get_sampling_frequency(self):
         """Sampling frequency.
@@ -290,14 +312,18 @@ class YmlFile(object):
         except:
             raise ValueError("Value not found.")
 
-    def write_parameters(self, gps, target_channel_name, channels_file, out_path,
+    def write_parameters(self, gps, seconds, event, target_channel_name, channels_file, out_path,
                          fs, f_lowpass, n_scattering, smooth_win):
         """Write parameters section to file.
 
         Parameters
         ----------
-        gps : str
-            gps times (comma separated)
+        gps : int
+            gps time
+        seconds : int
+            seconds analyzed
+        event : str
+            position of `gps` in the analyzed period (`start`, `center`, or `end`)
         target_channel_name : str
             target channel name
         channels_file : str
@@ -314,7 +340,9 @@ class YmlFile(object):
             smoothing window
         """
         self.content[defines.PARAMS_SECT_KEY] = {}
-        self.content[defines.PARAMS_SECT_KEY][defines.GPS_KEY] = gps
+        self.content[defines.PARAMS_SECT_KEY][defines.GPS_KEY] = int(gps)
+        self.content[defines.PARAMS_SECT_KEY][defines.SECONDS_KEY] = int(seconds)
+        self.content[defines.PARAMS_SECT_KEY][defines.EVENT_KEY] = event
         self.content[defines.PARAMS_SECT_KEY][defines.TARGET_CH_KEY] = target_channel_name
         self.content[defines.PARAMS_SECT_KEY][defines.CH_LIST_KEY] = channels_file
         self.content[defines.PARAMS_SECT_KEY][defines.OUT_PATH_KEY] = out_path

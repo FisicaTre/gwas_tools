@@ -18,6 +18,8 @@
 # output.yml keys
 PARAMS_SECT_KEY = "parameters"
 GPS_KEY = "gps"
+SECONDS_KEY = "seconds"
+EVENT_KEY = "event"
 TARGET_CH_KEY = "target_channel"
 CH_LIST_KEY = "channels_list"
 OUT_PATH_KEY = "opath"
@@ -35,3 +37,4 @@ MEAN_FREQ_KEY = "mean_freq"
 
 # common parameters
 EXTRA_SECONDS = 1
+EVENT_LOCATION = ["start", "center", "end"]

@@ -18,10 +18,11 @@
 import os
 import numpy as np
 from ..utils import signal_utils, file_utils
+from ..common import defines
 
 
-def scattered_light(gps, target_channel_name, channels_file, out_path, f_lowpass,
-                    fs=256, n_scattering=1, smooth_win=50):
+def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
+                    event="center", fs=256, n_scattering=1, smooth_win=50):
     """Analysis for scattered light identification.
     The script outputs a folder named as the input gps,
     with inside three files:
@@ -31,8 +32,10 @@ def scattered_light(gps, target_channel_name, channels_file, out_path, f_lowpass
 
     Parameters
     ----------
-    gps : str
-        GPS start and end (comma separated)
+    gps : int
+        gps of the event
+    seconds : int
+        how many seconds to analyze in total
     target_channel_name : str
         target channel name
     channels_file : str
@@ -41,6 +44,9 @@ def scattered_light(gps, target_channel_name, channels_file, out_path, f_lowpass
         output path where to save results
     f_lowpass : float
         lowpass filter frequency
+    event : str
+        position of the event's gps in the analysed period.
+        Can be `start`, `center`, or `end` (default : center)
     fs : float, optional
         channels resample frequency (default : 256)
     n_scattering : int, optional
@@ -48,24 +54,35 @@ def scattered_light(gps, target_channel_name, channels_file, out_path, f_lowpass
     smooth_win : int, optional
         signals smoothing window (default : 50)
     """
+    if event not in defines.EVENT_LOCATION:
+        raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
+
     # initialize variables
     ch_f = open(channels_file, "r")
     channels_list = [ch.rstrip() for ch in ch_f.readlines() if ch.strip()]
     ch_f.close()
 
     # create folder for results if it does not exist
-    start_end = gps.split(",")
-    if len(start_end) != 2:
-        raise ValueError("GPS start or end time not provided.")
+    #start_end = gps.split(",")
+    #if len(start_end) != 2:
+    #    raise ValueError("GPS start or end time not provided.")
 
-    odir_name = "{}_{}".format(start_end[0], start_end[1])
+    #odir_name = "{}_{}".format(start_end[0], start_end[1])
+    odir_name = "{:d}".format(gps)
     out_path = os.path.join(out_path, odir_name)
     if not os.path.isdir(out_path):
         os.makedirs(out_path, exist_ok=True)
         
     # build time series matrix
-    gps_start = int(start_end[0])
-    gps_end = int(start_end[1])
+    gps_start = gps - seconds // 2
+    gps_end = gps + seconds // 2
+    if event == "start":
+        gps_start = gps
+        gps_end = gps + seconds
+    elif event == "end":
+        gps_start = gps - seconds
+        gps_end = gps
+
     data, fs = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
                                                            gps_start, gps_end, fs, verbose=True)
 
@@ -107,8 +124,8 @@ def scattered_light(gps, target_channel_name, channels_file, out_path, f_lowpass
 
     # output file
     out_file = file_utils.YmlFile()
-    out_file.write_parameters(gps, target_channel_name, channels_file, out_path,
-                              fs, f_lowpass, n_scattering, smooth_win)
+    out_file.write_parameters(gps, seconds, event, target_channel_name, channels_file,
+                              out_path, fs, f_lowpass, n_scattering, smooth_win)
     out_file.write_max_corr_section(max_channel + 1, max_ch_str, max_vals[max_channel], mean_freq)
     ch_str = []
     ch_corr = []

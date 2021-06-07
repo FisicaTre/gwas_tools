@@ -31,9 +31,10 @@ SAVE_PLOTS_FOLDER = "plots"
 #PLOTS_SCRIPT_NAME = "./scattered_light_plots.py"
 #COMPARISON_SCRIPT_NAME = "./scattered_light_comparison.py"
 #HTML_SCRIPT_NAME = "./scattered_light_page.py"
-#PIPELINE_SCRIPT_NAME = "./gwasr_pipeline.py"
+PIPELINE_SCRIPT_NAME = "./gwasr_pipeline.py"
 #SUMMARY_IMFS = 2
-COLOR_THRESHOLD = 0.5
+COLOR_THRESHOLD_MIN = 0.5
+COLOR_THRESHOLD_MAX = 0.7
 COPY_OR_MOVE = "cp"
 
 
@@ -58,8 +59,6 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
     summary_imfs : int, optional
         imfs to show in the page
     """
-    flags = []
-
     res_folders = file_utils.get_results_folders(res_path, must_include=["imf_*_culprit.png"])
 
     # title
@@ -72,26 +71,14 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
     page = hb.HtmlBuilder(title=title, **{"style": "body { background-color: white; }"})
 
     # pipeline code
-    #code = [
-    #    PIPELINE_SCRIPT_NAME,
-    #    "--target_channel {}".format(tc_name),
-    #    "--channels_list {}".format(ch_list_file)
-    #]
-    #description = "The entire pipeline (analysis, plots, and summary page) " \
-    #              "can be reproduced with the following command line:"
-    #page.addCommandLineBlock(" ".join(code), description, "pipeline-command-line")
-
-    # html generation code
-    #code = [
-    #    HTML_SCRIPT_NAME,
-    #    "--ipath {}".format(res_path),
-    #    "--date {}".format(date),
-    #    "--target_channel {}".format(tc_name),
-    #    "--channels_list {}".format(ch_list_file),
-    #    "--gps_list {}".format(gps_file)
-    #]
-    #description = "This page can be reproduced with the following command line:"
-    #page.addCommandLineBlock(" ".join(code), description, "page-command-line")
+    code = [
+        PIPELINE_SCRIPT_NAME,
+        "--target_channel {}".format(tc_name),
+        "--channels_list {}".format(ch_list_file),
+        "--date {}".format("".join(date.split("-")))
+    ]
+    description = "This page can be reproduced with the following command line:"
+    page.addCommandLineBlock(" ".join(code), description, "pipeline-command-line")
 
     # info
     page.addSection("Info")
@@ -104,7 +91,6 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
     info_dict = {
         "Environment": page.getFormattedCode(sys.prefix),
         "Target channel": tc_name,
-        "Flags": " | ".join(flags),
         "GPS list": page.getFormattedLink(os.path.basename(gps_file),
                                           **{"href": os.path.basename(gps_file),
                                              "download": os.path.basename(gps_file)}),
@@ -122,7 +108,9 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
         gps_path = os.path.join(res_path, gps_folder)
         res_file = file_utils.YmlFile(gps_path)
         parameters = [
-            ("GPS", ",".join([str(g) for g in res_file.get_gps()])),
+            ("GPS", res_file.get_gps()),
+            ("Seconds", res_file.get_seconds()),
+            ("Event position", res_file.get_event_position()),
             ("Target channel", res_file.get_target_channel()),
             ("Channels list", res_file.get_channels_list()),
             ("Output path", res_file.get_output_path()),
@@ -132,7 +120,8 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
             ("Smoothing window", res_file.get_smoothing_window())
         ]
         imfs_data = {}
-        above_thr = False
+        above_thr_max = False
+        above_thr_min = False
         for i in range(1, summary_imfs + 1):
             if res_file.get_imfs_count() >= i:
                 imfs_data[i] = {}
@@ -145,50 +134,41 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
                 for cf in glob.glob(os.path.join(gps_path, "combo_imf_*_culprit.png")):
                     if re.search(regex, cf):
                         imfs_data[i]["combo"] = cf
-                if res_file.get_corr_of_imf(i) >= COLOR_THRESHOLD:
-                    above_thr = True
+                imf_i_corr = res_file.get_corr_of_imf(i)
+                if imf_i_corr >= COLOR_THRESHOLD_MAX:
+                    above_thr_max = True
+                elif COLOR_THRESHOLD_MIN <= imf_i_corr < COLOR_THRESHOLD_MAX:
+                    above_thr_min = True
 
-        gps_start, gps_end = res_file.get_gps()
-        gps_event = (gps_start + gps_end) // 2
-        res_id = "{:d}-{:d}".format(gps_start, gps_end)
+        #gps_start, gps_end = res_file.get_gps()
+        #gps_event = (gps_start + gps_end) // 2
+        gps_event = res_file.get_gps()
+        #res_id = "{:d}-{:d}".format(gps_start, gps_end)
+        res_id = "{:d}".format(gps_event)
         t1 = Time(gps_event, format="gps")
         t2 = Time(t1, format="iso", scale="utc")
         gps_date = "{} UTC (GPS: {:d})\n".format(t2, gps_event)
 
-        if above_thr:
+        if above_thr_max:
             color_key = "danger"
-        else:
+        elif above_thr_min:
             color_key = "warning"
+        else:
+            color_key = "success"
 
         # card
         page.openCard(gps_date, color_key, res_id)
 
         # parameters table
+        seconds = res_file.get_seconds()
+        event_pos = res_file.get_event_position()
+        gps_start = gps_event
+        if event_pos == "center":
+            gps_start = gps_event - seconds // 2
+        elif event_pos == "end":
+            gps_start = gps_event - seconds
+        gps_end = gps_start + seconds
         page.parametersTable(parameters, int(gps_start), int(gps_end))
-
-        # tool command line
-        #code = [
-        #    SCRIPT_NAME,
-        #    "--gps {}".format(",".join([str(g) for g in res_file.get_gps()])),
-        #    "--target_channel {}".format(res_file.get_target_channel()),
-        #    "--channels_list {}".format(res_file.get_channels_list()),
-        #    "--opath {}".format(os.path.sep.join(res_file.get_output_path().split(os.path.sep)[:-1])),
-        #    "--samp_freq {:.2f}".format(res_file.get_sampling_frequency()),
-        #    "--lowpass_freq {:.2f}".format(res_file.get_lowpass_frequency()),
-        #    "--scattering {:d}".format(res_file.get_scattering_factor()),
-        #    "--smooth_win {:d}".format(res_file.get_smoothing_window())
-        #]
-        #description = "This analysis can be reproduced with the following command line:"
-        #page.addCommandLineBlock(" ".join(code), description, "command-line-{}".format(res_id))
-
-        # plots command line
-        #code = [
-        #    PLOTS_SCRIPT_NAME,
-        #    "--ipath {}".format(gps_path),
-        #    "--single_folder True"
-        #]
-        #description = "Plots can be reproduced with the following command line:"
-        #page.addCommandLineBlock(" ".join(code), description, "plots-command-line-{}".format(res_id))
 
         # plots
         for i in range(1, summary_imfs + 1):
@@ -233,53 +213,6 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
         page.closeCard()
 
     page.closeDiv()
-
-    # summary plots
-    # if os.path.exists(os.path.join(res_path, "comparison")):
-    #    page.addSection("Summary")
-
-    #    # summary command line
-    #    code = [
-    #        COMPARISON_SCRIPT_NAME,
-    #        "--ipath {}".format(res_path)
-    #    ]
-    #    description = "This summary can be reproduced with the following command line:"
-    #    page.addCommandLineBlock(" ".join(code), description, "command-line-summary")
-
-    #    # imfs
-    #    for i in range(1, SUMMARY_IMFS + 1):
-    #        page.openDiv(**{"id_": "imf-{}-summary".format(i)})
-    #        page.addSubsection("Imf {}".format(i))
-
-    #        summary_name = os.path.join(res_path, "comparison",
-    #                                    "imf_{}_summary_{}.png".format(i, "_".join(tc_name.split(":"))))
-    #        summary_name_first_batch = os.path.join(res_path, "comparison",
-    #                                                "imf_{}_summary_{}_batch_1.png".format(i, "_".join(tc_name.split(":"))))
-    #        mf_summary_name = os.path.join(res_path, "comparison",
-    #                                       "imf_{}_summary_{}_mean_freq.png".format(i, "_".join(tc_name.split(":"))))
-    #        corr_summary_name = os.path.join(res_path, "comparison",
-    #                                         "imf_{}_corr_summary_{}.png".format(i, "_".join(tc_name.split(":"))))
-    #        summary_to_save = os.path.join(curr_plots_folder, "imf-{}-summary.png".format(i))
-    #        mf_summary_to_save = os.path.join(curr_plots_folder, "imf-{}-mf-summary.png".format(i))
-    #        corr_summary_to_save = os.path.join(curr_plots_folder, "imf-{}-corr-summary.png".format(i))
-
-    #        if os.path.exists(summary_name):
-    #            os.system("cp {} {}".format(summary_name, summary_to_save))
-    #            page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-summary.png".format(i)),
-    #                         "imf-{}-summary".format(i))
-    #        elif os.path.exists(summary_name_first_batch):
-    #            os.system("cp {} {}".format(summary_name_first_batch, summary_to_save))
-    #            page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-summary.png".format(i)),
-    #                         "imf-{}-summary".format(i))
-    #        if os.path.exists(mf_summary_name):
-    #            os.system("cp {} {}".format(mf_summary_name, mf_summary_to_save))
-    #            page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-mf-summary.png".format(i)),
-    #                         "imf-{}-mf-summary".format(i))
-    #        if os.path.exists(corr_summary_name):
-    #            os.system("cp {} {}".format(corr_summary_name, corr_summary_to_save))
-    #            page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-corr-summary.png".format(i)),
-    #                         "imf-{}-corr-summary".format(i))
-    #        page.closeDiv()
 
     html_file = os.path.join(curr_folder, "index.html")
     page.savePage(html_file)

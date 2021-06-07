@@ -22,6 +22,7 @@ from astropy.time import Time
 from gwpy.timeseries import TimeSeries
 from gwpy.segments import Segment
 from ..utils import file_utils, signal_utils
+from ..common import defines
 
 
 def plot_imfs_arg(arg):
@@ -44,7 +45,7 @@ def corr_thr(arg):
             return 1.0
 
 
-def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title,
+def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps, samp_freq, title,
              plot_name, save_path, event_time="center", save_ext="png", figsize=None):
     """Plot of the instantaneous amplitude and predictor.
     
@@ -58,7 +59,7 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title,
         imf instantaneous amplitude
     imf_ia_name : str
         imf instantaneous amplitude name
-    gps1 : int
+    gps : int
         gps of the event
     samp_freq : float
         sampling frequency
@@ -76,11 +77,10 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps1, samp_freq, title,
     figsize : tuple[int], optional
         figure size (default : None)
     """
-    ev_pos = ["start", "center", "end"]
-    if event_time not in ev_pos:
-        raise ValueError("Event time can only be: {}".format(", ".join(ev_pos)))
+    if event_time not in defines.EVENT_LOCATION:
+        raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
 
-    t1 = Time(gps1, format="gps")
+    t1 = Time(gps, format="gps")
     t2 = Time(t1, format="iso", scale="utc")
     gps_date = "Time [seconds] from {} UTC ({:.1f})\n".format(t2.value.split(".")[0], t1.value)
 
@@ -159,7 +159,7 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
                          event_time=event_time, save_ext=save_ext, figsize=figsize)
             
             
-def plot_omegagram_download(pred, pred_name, target_name, gps1, gps2, plot_name, save_path,
+def plot_omegagram_download(pred, pred_name, target_name, gps, seconds, plot_name, save_path,
                             norm=False, harmonics=None, event_time="center", save_ext="png",
                             figsize=None):
     """Omegagram plot with download of the target channel.
@@ -172,10 +172,10 @@ def plot_omegagram_download(pred, pred_name, target_name, gps1, gps2, plot_name,
         name of the predictor channel
     target_name : str
         name of the channel from which compute the omegagram
-    gps1 : int
-        gps start
-    gps2 : int
-        gps end
+    gps : int
+        gps of the event
+    seconds : int
+        how many seconds to plot
     plot_name : str
         plot name
     save_path : str
@@ -195,15 +195,17 @@ def plot_omegagram_download(pred, pred_name, target_name, gps1, gps2, plot_name,
     if harmonics is None:
         harmonics = [1, 2, 3, 4, 5]
 
-    ev_pos = ["start", "center", "end"]
-    if event_time not in ev_pos:
-        raise ValueError("Event time can only be: {}".format(", ".join(ev_pos)))
+    if event_time not in defines.EVENT_LOCATION:
+        raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
 
-    epoch = gps1
+    gps1 = gps
+    gps2 = gps + seconds
     if event_time == "center":
-        epoch = (gps1 + gps2) // 2
+        gps1 = gps - seconds // 2
+        gps2 = gps + seconds // 2
     elif event_time == "end":
-        epoch = gps2
+        gps1 = gps - seconds
+        gps2 = gps
     if norm:
         correction_factor = 10.0 / np.max(pred)
     else:
@@ -220,7 +222,7 @@ def plot_omegagram_download(pred, pred_name, target_name, gps1, gps2, plot_name,
         plot_t_min = gps1 - gps2
         plot_t_max = 0
 
-    t1 = Time(epoch, format="gps")
+    t1 = Time(gps, format="gps")
     t2 = Time(t1, format="iso", scale="utc")
     gps_date = "Time [seconds] from {} UTC ({:.1f})\n".format(t2.value.split(".")[0], t1.value)
 
@@ -228,7 +230,7 @@ def plot_omegagram_download(pred, pred_name, target_name, gps1, gps2, plot_name,
     ts = TimeSeries.get(target_name, gps1, gps2).astype("float64")
     if ":" in target_name and target_name.split(":")[0][0] == "V":
         ts = TimeSeries(ts.value, times=np.arange(gps1, gps2 + ts.dt.value, ts.dt.value, dtype=float), dtype=float)
-    ts.times = ts.times.value - epoch
+    ts.times = ts.times.value - gps
     tsq = ts.q_transform(outseg=Segment(plot_t_min, plot_t_max + 0.2), tres=0.2, fres=0.2, whiten=True)
 
     plot_f_min = tsq.yindex[0].value
@@ -253,7 +255,7 @@ def plot_omegagram_download(pred, pred_name, target_name, gps1, gps2, plot_name,
     plt.close("all")
         
         
-def plot_omegagram(pred, pred_name, target, target_name, gps1, gps2, fs, plot_name, save_path,
+def plot_omegagram(pred, pred_name, target, target_name, gps, seconds, fs, plot_name, save_path,
                    norm=False, harmonics=None, event_time="center", save_ext="png", figsize=None):
     """Omegagram plot.
     
@@ -267,10 +269,10 @@ def plot_omegagram(pred, pred_name, target, target_name, gps1, gps2, fs, plot_na
         channel from which compute the omegagram
     target_name : str
         name of the target channel
-    gps1 : int
-        gps start
-    gps2 : int
-        gps end
+    gps : int
+        gps of the event
+    seconds : int
+        how many seconds to plot
     fs : int
         sampling frequency
     plot_name : str
@@ -292,15 +294,17 @@ def plot_omegagram(pred, pred_name, target, target_name, gps1, gps2, fs, plot_na
     if harmonics is None:
         harmonics = [1, 2, 3, 4, 5]
 
-    ev_pos = ["start", "center", "end"]
-    if event_time not in ev_pos:
-        raise ValueError("Event time can only be: {}".format(", ".join(ev_pos)))
+    if event_time not in defines.EVENT_LOCATION:
+        raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
 
-    epoch = gps1
+    gps1 = gps
+    gps2 = gps + seconds
     if event_time == "center":
-        epoch = (gps1 + gps2) // 2
+        gps1 = gps - seconds // 2
+        gps2 = gps + seconds // 2
     elif event_time == "end":
-        epoch = gps2
+        gps1 = gps - seconds
+        gps2 = gps
     if norm:
         correction_factor = 10.0 / np.max(pred)
     else:
@@ -317,13 +321,13 @@ def plot_omegagram(pred, pred_name, target, target_name, gps1, gps2, fs, plot_na
         plot_t_min = gps1 - gps2
         plot_t_max = 0
 
-    t1 = Time(epoch, format="gps")
+    t1 = Time(gps, format="gps")
     t2 = Time(t1, format="iso", scale="utc")
     gps_date = "Time [seconds] from {} UTC ({:.1f})\n".format(t2.value.split(".")[0], t1.value)
 
     ts_l2 = pred * correction_factor
     ts = TimeSeries(target, times=np.arange(gps1, gps1 + len(target) / fs, 1 / fs, dtype=float), dtype=float)
-    ts.times = ts.times.value - epoch
+    ts.times = ts.times.value - gps
     tsq = ts.q_transform(outseg=Segment(plot_t_min, plot_t_max + 0.2), tres=0.2, fres=0.2, whiten=True)
 
     plot_f_min = tsq.yindex[0].value
@@ -484,7 +488,7 @@ def plot_mean_freq_summary(x_vals, y_vals, x_labels, title, plot_name, save_path
     plt.close("all")
 
 
-def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, event_time="center", save_ext="png", figsize=None):
+def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize=None):
     """Plot imfs in the given folders.
 
     Parameters
@@ -497,9 +501,6 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, event_time="center", sa
         correlation value above which to plot imfs (default : -1.0)
     combos : bool, optional
         if True, plot also combinations of imfs with the same channel name (default : False)
-    event_time : str
-        position of the event's gps in the analysed period.
-        Can be `start`, `center`, or `end` (default : center)
     save_ext : str, optional
         plots extension (default : png)
     figsize : tuple[int], optional
@@ -516,13 +517,14 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, event_time="center", sa
         preds = file_utils.load_predictors(res_folder)
 
         target_channel = yf.get_target_channel()
-        gps_start, gps_end = yf.get_gps()
+        gps_event = yf.get_gps()
+        event_time = yf.get_event_position()
         fs = yf.get_sampling_frequency()
-        gps_event = gps_start
-        if event_time == "center":
-            gps_event = (gps_start + gps_end) // 2
-        elif event_time == "end":
-            gps_event = gps_end
+        #gps_event = gps_start
+        #if event_time == "center":
+        #    gps_event = (gps_start + gps_end) // 2
+        #elif event_time == "end":
+        #    gps_event = gps_end
 
         if imfs == "max_corr":
             n_imf = yf.get_max_corr_imf() - 1
@@ -563,7 +565,7 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, event_time="center", sa
                                       event_time=event_time, save_ext=save_ext, figsize=figsize)
 
 
-def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None, event_time="center",
+def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None,
                     save_ext="png", figsize=None):
     """Plot omegagrams in the given folders.
 
@@ -577,9 +579,6 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None, event_tim
         correlation value above which to plot omegagrams (default : -1.0)
     harmonics : list[int]
         harmonics for the culprit (default : [1, 2, 3, 4, 5])
-    event_time : str
-        position of the event's gps in the analysed period.
-        Can be `start`, `center`, or `end` (default : center)
     save_ext : str, optional
         plots extension (default : png)
     figsize : tuple[int], optional
@@ -598,20 +597,22 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None, event_tim
         preds = file_utils.load_predictors(res_folder)
 
         target_channel = yf.get_target_channel()
-        gps_start, gps_end = yf.get_gps()
+        gps = yf.get_gps()
+        seconds = yf.get_seconds()
+        event_time = yf.get_event_position()
 
         if imfs == "max_corr":
             n_imf = yf.get_max_corr_imf() - 1
             predictor_name = yf.get_max_corr_channel()
             if yf.get_max_corr() >= omegagram_thr:
-                plot_omegagram_download(preds[:, n_imf], predictor_name, target_channel, gps_start,
-                                        gps_end, "max_corr_omegagram", res_folder, harmonics=harmonics,
+                plot_omegagram_download(preds[:, n_imf], predictor_name, target_channel, gps,
+                                        seconds, "max_corr_omegagram", res_folder, harmonics=harmonics,
                                         event_time=event_time, save_ext=save_ext, figsize=figsize)
         elif imfs_to_plot == "all":
             for n_imf in range(yf.get_imfs_count()):
                 if yf.get_corr_of_imf(n_imf + 1) >= omegagram_thr:
                     plot_omegagram_download(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1),
-                                            target_channel, gps_start, gps_end,
+                                            target_channel, gps, seconds,
                                             "imf_{}_omegagram".format(n_imf + 1), res_folder,
                                             harmonics=harmonics, event_time=event_time,
                                             save_ext=save_ext, figsize=figsize)
@@ -620,7 +621,7 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None, event_tim
                 if n_imf + 1 in imfs_to_plot:
                     if yf.get_corr_of_imf(n_imf + 1) >= omegagram_thr:
                         plot_omegagram_download(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1),
-                                                target_channel, gps_start, gps_end,
+                                                target_channel, gps, seconds,
                                                 "imf_{}_omegagram".format(n_imf + 1), res_folder,
                                                 harmonics=harmonics, event_time=event_time,
                                                 save_ext=save_ext, figsize=figsize)
