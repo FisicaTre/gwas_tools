@@ -288,7 +288,7 @@ def get_imfs(target_channel, fs, norm=True):
     numpy ndarray
         `target_channel` imfs matrix
     """
-    imfs = pytvfemd.tvfemd(target_channel, MODES=1)
+    imfs = pytvfemd.tvfemd(target_channel)
     fs_int = int(fs)
     imfs = imfs[(defines.EXTRA_SECONDS * fs_int):-(defines.EXTRA_SECONDS * fs_int), :]
     if norm:

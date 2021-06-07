@@ -8,4 +8,4 @@ scipy
 yaml
 matplotlib
 astropy
-pytvfemd
+pytvfemd>=0.2
