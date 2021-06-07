@@ -642,27 +642,20 @@ def save_envelopes(envelopes, file_name, out_path):
     f_imfs.close()
 
 
-def summary_table(folders, comparison, table_name, event_time="center"):
+def summary_table(folders, comparison, table_name):
     """Comparison plots of results.
 
     Parameters
     ----------
     folders : list[str]
-        paths to the file needed for the plots
+        paths to the files needed for the plots
     comparison : str, list[int]
         imfs for comparison, can be "max_corr", or list
     table_name : str
         name of the output csv
-    event_time : str
-        position of the event's gps in the analysed period.
-        Can be `start`, `center`, or `end` (default : center)
     """
     if len(folders) == 0:
         return
-
-    ev_pos = ["start", "center", "end"]
-    if event_time not in ev_pos:
-        raise ValueError("Event time can only be: {}".format(", ".join(ev_pos)))
 
     folders_path = os.path.sep.join(folders[0].split(os.path.sep)[:-1])
     cpath = os.path.join(folders_path, "comparison")
@@ -678,13 +671,7 @@ def summary_table(folders, comparison, table_name, event_time="center"):
         for folder in folders:
             if is_valid_folder(folder):
                 yf = YmlFile(folder)
-                g = yf.get_gps()
-                if event_time == "start":
-                    gps.append(g[0])
-                elif event_time == "center":
-                    gps.append((g[0] + g[1]) // 2)
-                elif event_time == "end":
-                    gps.append(g[1])
+                gps.append(yf.get_gps())
 
                 try:
                     culprits.append(yf.get_max_corr_channel())
@@ -719,13 +706,7 @@ def summary_table(folders, comparison, table_name, event_time="center"):
         for folder in folders:
             if is_valid_folder(folder):
                 yf = YmlFile(folder)
-                g = yf.get_gps()
-                if event_time == "start":
-                    gps.append(g[0])
-                elif event_time == "center":
-                    gps.append((g[0] + g[1]) // 2)
-                elif event_time == "end":
-                    gps.append(g[1])
+                gps.append(yf.get_gps())
 
                 for i in comparison:
                     try:
