@@ -164,6 +164,14 @@ def daily_correlations_page(res_path, date, tc_name, aux_ch, save_path):
                 page.openCard(gps_date, color_key, res_id)
 
                 # parameters table
+                seconds = res_file.get_seconds()
+                event_pos = res_file.get_event_position()
+                gps_start = gps_event
+                if event_pos == "center":
+                    gps_start = gps_event - seconds // 2
+                elif event_pos == "end":
+                    gps_start = gps_event - seconds
+                gps_end = gps_start + seconds
                 page.parametersTable(parameters, int(gps_start), int(gps_end))
 
                 # plots
