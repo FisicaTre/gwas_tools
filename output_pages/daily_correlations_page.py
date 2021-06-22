@@ -92,8 +92,8 @@ def daily_correlations_page(res_path, date, tc_name, aux_ch, save_path):
         hour_dict[ih] = []
 
     for gf in res_folders:
-        gps_times = gf.split(os.path.sep)[-1].split("_")
-        gps_event = (int(gps_times[0]) + int(gps_times[1])) // 2
+        yf = file_utils.YmlFile(gf)
+        gps_event = yf.get_gps()
         t1 = Time(gps_event, format="gps")
         t2 = Time(t1, format="iso", scale="utc")
         h = int("{}".format(t2).split(" ")[1].split(":")[0])
@@ -123,7 +123,9 @@ def daily_correlations_page(res_path, date, tc_name, aux_ch, save_path):
             for gps_path in hour_dict[hh]:
                 res_file = file_utils.YmlFile(gps_path)
                 parameters = [
-                    ("GPS", ",".join([str(g) for g in res_file.get_gps()])),
+                    ("GPS", res_file.get_gps()),
+                    ("Seconds", res_file.get_seconds()),
+                    ("Event position", res_file.get_event_position()),
                     ("Target channel", res_file.get_target_channel()),
                     ("Channels list", res_file.get_channels_list()),
                     ("Output path", res_file.get_output_path()),
@@ -147,9 +149,8 @@ def daily_correlations_page(res_path, date, tc_name, aux_ch, save_path):
                             if res_file.get_corr_of_imf(i) >= COLOR_THRESHOLD:
                                 above_thr = True
 
-                gps_start, gps_end = res_file.get_gps()
-                gps_event = (gps_start + gps_end) // 2
-                res_id = "{:d}-{:d}".format(gps_start, gps_end)
+                gps_event = res_file.get_gps()
+                res_id = "{:d}".format(gps_event)
                 t1 = Time(gps_event, format="gps")
                 t2 = Time(t1, format="iso", scale="utc")
                 gps_date = "{} UTC (GPS: {:d})\n".format(t2, gps_event)
