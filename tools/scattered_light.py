@@ -63,25 +63,18 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     ch_f.close()
 
     # create folder for results if it does not exist
-    #start_end = gps.split(",")
-    #if len(start_end) != 2:
-    #    raise ValueError("GPS start or end time not provided.")
-
-    #odir_name = "{}_{}".format(start_end[0], start_end[1])
     odir_name = "{:d}".format(gps)
     out_path = os.path.join(out_path, odir_name)
     if not os.path.isdir(out_path):
         os.makedirs(out_path, exist_ok=True)
         
     # build time series matrix
-    gps_start = gps - seconds // 2
-    gps_end = gps + seconds // 2
-    if event == "start":
-        gps_start = gps
-        gps_end = gps + seconds
-    elif event == "end":
-        gps_start = gps - seconds
-        gps_end = gps
+    gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps, seconds, event)
+    lock_channel_name = signal_utils.get_lock_channel_name_for_ifo(target_channel_name.split(":")[0])
+    if lock_channel_name is not None:
+        lock_channel_data = signal_utils.get_instrument_lock_data(lock_channel_name, gps_start, gps_end)
+        if not np.all(lock_channel_data == 1):
+            return None
 
     data, fs = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
                                                            gps_start, gps_end, fs, verbose=True)

@@ -297,6 +297,30 @@ def get_imfs(target_channel, fs, norm=True):
     return imfs
 
 
+def get_instrument_lock_data(lock_channel, gps_start, gps_end, **kwargs):
+    """Get data for instrument lock channel.
+
+    Parameters
+    ----------
+    lock_channel : str
+        name of the instrument lock channel
+    gps_start : int
+        starting GPS
+    gps_end : int
+        ending GPS
+    kwargs : dict
+        gwpy.TimeSeriesDict keys
+
+    Returns
+    -------
+    lock_data : numpy ndarray
+        instrument lock data for the period [`gps_start`, `gps_end`]
+    """
+    lock_data = TimeSeriesDict.get([lock_channel], gps_start, gps_end, **kwargs)
+
+    return lock_data[lock_channel].value
+
+
 def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start, gps_end,
                                    fs=None, verbose=False, frametype=None):
     """Get data from `gwpy` function `TimeSeriesDict.get`.
@@ -390,3 +414,56 @@ def get_correlation_between(x, y):
     r_corr = -999.0 if np.isnan(r_corr) else r_corr
 
     return r_corr
+
+
+def get_gps_interval_extremes(gps, duration, event_type):
+    """Get the extremes of the gps interval, based on interval duration and event type.
+
+    Parameters
+    ----------
+    gps : int
+        GPS of the event
+    duration : int
+        duration of the interval
+    event_type : str
+        event type
+
+    Returns
+    -------
+    start : int
+        left extreme of the interval
+    end : int
+        right extreme of the interval
+    """
+    if event_type not in defines.EVENT_LOCATION:
+        raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
+
+    start = gps - duration // 2
+    end = gps + duration // 2
+    if event_type == "start":
+        start = gps
+        end = gps + duration
+    elif event_type == "end":
+        start = gps - duration
+        end = gps
+
+    return start, end
+
+
+def get_lock_channel_name_for_ifo(ifo):
+    """Get the name of the lock channel for the specific interferometer.
+
+    Parameters
+    ----------
+    ifo : str
+        interferometer id
+
+    Returns
+    -------
+    lock_ch_name : str
+        name of the lock channel for the specific interferometer
+    """
+    if ifo == "V1":
+        return defines.LCK_CH_VIRGO
+    else:
+        return None
