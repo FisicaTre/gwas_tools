@@ -126,12 +126,16 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     for n_imf in range(len(max_vals)):
         try:
             ch_str.append(channels_list[max_channels[n_imf]])
+        except:
+            ch_str.append("Not found")
+        try:
             ch_corr.append(max_vals[n_imf])
+        except:
+            ch_corr.append(-999.0)
+        try:
             ch_m_fr.append(signal_utils.mean_frequency(channels_list[max_channels[n_imf]], gps_start,
                                                        gps_end, bandpass_limits=(0.03, 10)))
         except:
-            ch_str.append("Not found")
-            ch_corr.append(-999.0)
             ch_m_fr.append(0.0)
     out_file.write_correlation_section(ch_str, ch_corr, ch_m_fr)
 
