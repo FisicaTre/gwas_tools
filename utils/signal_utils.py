@@ -22,6 +22,8 @@ from scipy.signal import kaiserord, lfilter, firwin, butter, freqz
 from scipy.signal import hilbert
 from scipy.stats import pearsonr
 import pytvfemd
+import glob
+import os
 from ..common import defines
 
 LAMBDA = 1.064
@@ -319,6 +321,85 @@ def get_instrument_lock_data(lock_channel, gps_start, gps_end, **kwargs):
     lock_data = TimeSeriesDict.get([lock_channel], gps_start, gps_end, **kwargs)
 
     return lock_data[lock_channel].value
+
+
+def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
+                            target_channel, channels, start_gps, end_gps,
+                            samp_freq=None, **kwargs):
+    """Get data from `gwf` files.
+
+    Parameters
+    ----------
+    gwf_path : str
+        path to `gwf` files
+    sep : str
+        separator character in a `gwf` file name
+    start_gps_pos : int
+        index (starting from 0) of the starting gps value in a `gwf` file name
+    n_gps_pos : int
+        index (starting from 0) of the number of seconds value in a `gwf` file name
+    target_channel : str
+        name of the target channel
+    channels : list[str]
+        list of auxiliary channels names
+    start_gps : int
+        starting GPS
+    end_gps : int
+        ending GPS
+    samp_freq : float, optional
+        desired sampling frequency for the channels (default : None)
+    kwargs : dict
+        gwpy.TimeSeriesDict keys
+
+    Returns
+    -------
+    numpy ndarray
+        matrix with channels values, first column
+        corresponds to the target channel
+    float
+        common sampling frequency of the channels
+        in the matrix
+    """
+    if samp_freq is None:
+        samp_freq = np.inf
+
+    channels_list = [target_channel] + channels
+
+    gwf_files = glob.glob(os.path.join(gwf_path, '*.gwf'))
+    gwf_to_read = []
+    if len(gwf_files) > 0:
+        for gwf_file in gwf_files:
+            flds = os.path.split(gwf_file)[1].split(sep)
+            if start_gps < int(flds[start_gps_pos]) + int(flds[n_gps_pos]) and end_gps >= int(flds[start_gps_pos]):
+                gwf_to_read.append(gwf_file)
+
+    gwf_to_read = sorted(gwf_to_read)
+    data = {}
+    for i, f in enumerate(gwf_to_read):
+        flds = os.path.split(f)[1].split(sep)
+        s = max(start_gps, int(flds[start_gps_pos]))
+        e = min(end_gps, int(flds[start_gps_pos]) + int(flds[n_gps_pos]))
+        d = TimeSeriesDict.read(f, channels_list, start=s, end=e, **kwargs)
+
+        if i == 0:
+            dict_fs = np.min([d[ch_name].channel.sample_rate.value for ch_name in channels_list])
+            if dict_fs < samp_freq:
+                samp_freq = dict_fs
+        d.resample(samp_freq)
+
+        if i == 0:
+            for k in d.keys():
+                data[k] = d[k].value
+        else:
+            for k in data.keys():
+                data[k] = np.concatenate((data[k], d[k].value), axis=None)
+
+    data_mtx = np.zeros((data[target_channel].value.shape[0], len(channels_list)), dtype=float)
+    data_mtx[:, 0] = data[target_channel].value
+    for i in range(1, len(channels_list)):
+        data_mtx[:, i] = data[channels_list[i]].value
+
+    return data_mtx, samp_freq
 
 
 def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start, gps_end,
