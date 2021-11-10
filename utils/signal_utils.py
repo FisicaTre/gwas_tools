@@ -24,6 +24,7 @@ from scipy.stats import pearsonr
 import pytvfemd
 import glob
 import os
+import re
 from ..common import defines
 
 LAMBDA = 1.064
@@ -365,7 +366,13 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
 
     channels_list = [target_channel] + channels
 
-    gwf_files = glob.glob(os.path.join(gwf_path, '*.gwf'))
+    # gwf_files = glob.glob(os.path.join(gwf_path, '*.gwf'))
+    gwf_files = []
+    with open(gwf_path, "r") as gwf:
+        for line in gwf:
+            l = line.rstrip()
+            gwf_files.append(re.split(r"\s+", l)[0])
+
     gwf_to_read = []
     if len(gwf_files) > 0:
         for gwf_file in gwf_files:
