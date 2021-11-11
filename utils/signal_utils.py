@@ -376,14 +376,14 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
     gwf_to_read = []
     if len(gwf_files) > 0:
         for gwf_file in gwf_files:
-            flds = os.path.split(gwf_file)[1].split(sep)
+            flds = os.path.split(gwf_file)[1].split(".")[0].split(sep)
             if start_gps < int(flds[start_gps_pos]) + int(flds[n_gps_pos]) and end_gps >= int(flds[start_gps_pos]):
                 gwf_to_read.append(gwf_file)
 
     gwf_to_read = sorted(gwf_to_read)
     data = {}
     for i, f in enumerate(gwf_to_read):
-        flds = os.path.split(f)[1].split(sep)
+        flds = os.path.split(f)[1].split(".")[0].split(sep)
         s = max(start_gps, int(flds[start_gps_pos]))
         e = min(end_gps, int(flds[start_gps_pos]) + int(flds[n_gps_pos]))
         d = TimeSeriesDict.read(f, channels_list, start=s, end=e, **kwargs)
