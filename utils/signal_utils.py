@@ -401,10 +401,10 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
             for k in data.keys():
                 data[k] = np.concatenate((data[k], d[k].value), axis=None)
 
-    data_mtx = np.zeros((data[target_channel].value.shape[0], len(channels_list)), dtype=float)
-    data_mtx[:, 0] = data[target_channel].value
+    data_mtx = np.zeros((data[target_channel].shape[0], len(channels_list)), dtype=float)
+    data_mtx[:, 0] = data[target_channel]
     for i in range(1, len(channels_list)):
-        data_mtx[:, i] = data[channels_list[i]].value
+        data_mtx[:, i] = data[channels_list[i]]
 
     return data_mtx, samp_freq
 
