@@ -42,7 +42,7 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         channels list
     out_path : str
         output path where to save results
-    f_lowpass : float
+    f_lowpass : float or str
         lowpass filter frequency
     event : str
         position of the event's gps in the analysed period.
@@ -56,6 +56,9 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     """
     if event not in defines.EVENT_LOCATION:
         raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
+    if not isinstance(f_lowpass, int) or not isinstance(f_lowpass, float) or f_lowpass not in defines.LOWP_FREQ_OPTS:
+        raise ValueError("Lowpass frequency must be a float or one of these "
+                         "strings : {}".format(", ".join(defines.LOWP_FREQ_OPTS)))
 
     # initialize variables
     ch_f = open(channels_file, "r")
@@ -81,6 +84,13 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
 
     # predictors
     predictor = signal_utils.get_predictors(data[:, 1:], fs, smooth_win=smooth_win, n_scattering=n_scattering)
+
+    # compute lowpass frequency in case it is a string
+    if isinstance(f_lowpass, str):
+        if f_lowpass == "average":
+            f_lowpass = np.max([np.mean(predictor[:, i]) for i in range(predictor.shape[1])])
+        elif f_lowpass == "max":
+            f_lowpass = np.max([np.max(predictor[:, i]) for i in range(predictor.shape[1])])
 
     # target channel
     target_channel = signal_utils.butter_lowpass_filter(data[:, 0], f_lowpass, fs)

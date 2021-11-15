@@ -38,6 +38,7 @@ MEAN_FREQ_KEY = "mean_freq"
 # common parameters
 EXTRA_SECONDS = 1
 EVENT_LOCATION = ["start", "center", "end"]
+LOWP_FREQ_OPTS = ["average", "max"]
 
 # lock channels
 LCK_CH_VIRGO = "V1:DQ_META_ITF_Mode"
