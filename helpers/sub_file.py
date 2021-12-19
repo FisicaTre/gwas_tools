@@ -43,12 +43,12 @@ class SubFile(object):
         self.addBlankLine()
         self.sub_text.append("universe = {}".format(universe))
 
-    def addBlankLine(self):
+    def add_blank_line(self):
         """Add blank line to .sub file.
         """
         self.sub_text.append("")
 
-    def addExecutable(self, exec_name):
+    def add_executable(self, exec_name):
         """Add `executable` to .sub file.
         
         Parameters
@@ -56,10 +56,10 @@ class SubFile(object):
         exec_name : str
             executable name
         """
-        self.addBlankLine()
+        self.add_blank_line()
         self.sub_text.append("executable = {}".format(exec_name))
 
-    def addArguments(self, args):
+    def add_arguments(self, args):
         """Add `arguments` to .sub file.
         
         Parameters
@@ -67,10 +67,10 @@ class SubFile(object):
         args : str
             arguments as a single string
         """
-        self.addBlankLine()
+        self.add_blank_line()
         self.sub_text.append("arguments = \" {} \"".format(args))
 
-    def addAccountingGroupInfo(self, group, user):
+    def add_accounting_group_info(self, group, user):
         """Add `accounting_group` and `accounting_group_user` to .sub file.
         
         Parameters
@@ -80,11 +80,11 @@ class SubFile(object):
         user : str
             accounting group user
         """
-        self.addBlankLine()
+        self.add_blank_line()
         self.sub_text.append("accounting_group = {}".format(group))
         self.sub_text.append("accounting_group_user = {}".format(user))
 
-    def addSpecs(self, ncpu, memory, disk=None):
+    def add_specs(self, ncpu, memory, disk=None):
         """Add `request_cpus`, `request_memory`, and optional `request_disk` to .sub file.
         
         Parameters
@@ -96,13 +96,13 @@ class SubFile(object):
         disk : int
             requested disk space (default : None)
         """
-        self.addBlankLine()
+        self.add_blank_line()
         if disk is not None:
             self.sub_text.append("request_disk = {:d}".format(disk))
         self.sub_text.append("request_cpus = {:d}".format(ncpu))
         self.sub_text.append("request_memory = {:d}".format(memory))
 
-    def addLogs(self, output, error, to_append=None):
+    def add_logs(self, output, error, to_append=None):
         """Add `output` and `error` to .sub file.
         
         Parameters
@@ -121,7 +121,7 @@ class SubFile(object):
         err_name = ["err", "$(Process)"] + to_append
         out_path = os.path.join(output, ".".join(out_name))
         err_path = os.path.join(error, ".".join(err_name))
-        self.addBlankLine()
+        self.add_blank_line()
         self.sub_text.append("output = {}".format(out_path))
         self.sub_text.append("error = {}".format(err_path))
 
@@ -138,7 +138,7 @@ class SubFile(object):
     def save(self):
         """Save .sub file to `name`.
         """
-        self.addBlankLine()
+        self.add_blank_line()
         self.sub_text.append("notification = never")
         self.sub_text.append("getenv = True")
         self.sub_text.append("queue 1")

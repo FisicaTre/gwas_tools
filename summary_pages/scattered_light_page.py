@@ -78,32 +78,32 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
         "--date {}".format("".join(date.split("-")))
     ]
     description = "This page can be reproduced with the following command line:"
-    page.addCommandLineBlock(" ".join(code), description, "pipeline-command-line")
+    page.add_command_line_block(" ".join(code), description, "pipeline-command-line")
 
     # info
-    page.addSection("Info")
-    page.openDiv(**{"id_": "info-list"})
+    page.add_section("Info")
+    page.open_div(**{"id_": "info-list"})
 
     if len(res_folders) > 0:
         os.system("{} {} {}".format(COPY_OR_MOVE, ch_list_file, curr_folder))
         os.system("{} {} {}".format(COPY_OR_MOVE, gps_file, curr_folder))
 
     info_dict = {
-        "Environment": page.getFormattedCode(sys.prefix),
+        "Environment": page.get_formatted_code(sys.prefix),
         "Target channel": tc_name,
-        "GPS list": page.getFormattedLink(os.path.basename(gps_file),
-                                          **{"href": os.path.basename(gps_file),
-                                             "download": os.path.basename(gps_file)}),
-        "Channels list": page.getFormattedLink(os.path.basename(ch_list_file),
-                                               **{"href": os.path.basename(ch_list_file),
-                                                  "download": os.path.basename(ch_list_file)})
+        "GPS list": page.get_formatted_link(os.path.basename(gps_file),
+                                            **{"href": os.path.basename(gps_file),
+                                               "download": os.path.basename(gps_file)}),
+        "Channels list": page.get_formatted_link(os.path.basename(ch_list_file),
+                                                 **{"href": os.path.basename(ch_list_file),
+                                                    "download": os.path.basename(ch_list_file)})
     }
-    page.addBulletList(info_dict)
-    page.closeDiv()
+    page.add_bullet_list(info_dict)
+    page.close_div()
 
     # results
-    page.addSection("Results")
-    page.openDiv(**{"id_": "results"})
+    page.add_section("Results")
+    page.open_div(**{"id_": "results"})
     for gps_folder in res_folders:
         gps_path = os.path.join(res_path, gps_folder)
         res_file = file_utils.YmlFile(gps_path)
@@ -140,10 +140,7 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
                 elif COLOR_THRESHOLD_MIN <= imf_i_corr < COLOR_THRESHOLD_MAX:
                     above_thr_min = True
 
-        #gps_start, gps_end = res_file.get_gps()
-        #gps_event = (gps_start + gps_end) // 2
         gps_event = res_file.get_gps()
-        #res_id = "{:d}-{:d}".format(gps_start, gps_end)
         res_id = "{:d}".format(gps_event)
         t1 = Time(gps_event, format="gps")
         t2 = Time(t1, format="iso", scale="utc")
@@ -157,7 +154,7 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
             color_key = "success"
 
         # card
-        page.openCard(gps_date, color_key, res_id)
+        page.open_card(gps_date, color_key, res_id)
 
         # parameters table
         seconds = res_file.get_seconds()
@@ -168,51 +165,51 @@ def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_p
         elif event_pos == "end":
             gps_start = gps_event - seconds
         gps_end = gps_start + seconds
-        page.parametersTable(parameters, int(gps_start), int(gps_end))
+        page.parameters_table(parameters, int(gps_start), int(gps_end))
 
         # plots
         for i in range(1, summary_imfs + 1):
             if i in imfs_data.keys():
-                page.openDiv(**{"id_": "imf-{}-{}".format(i, res_id)})
-                page.addSubsection("Imf {}".format(i))
+                page.open_div(**{"id_": "imf-{}-{}".format(i, res_id)})
+                page.add_subsection("Imf {}".format(i))
 
                 omegagram = imfs_data[i].pop("omegagram")
                 combo_file = imfs_data[i].pop("combo")
 
-                page.openDiv(**{"id_": "imf-{}-{}-info".format(i, res_id)})
-                page.addBulletList(imfs_data[i])
-                page.closeDiv()
+                page.open_div(**{"id_": "imf-{}-{}-info".format(i, res_id)})
+                page.add_bullet_list(imfs_data[i])
+                page.close_div()
 
                 imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
                 imf_to_save = os.path.join(curr_plots_folder, "imf-{}-{}.png".format(i, res_id))
                 os.system("{} {} {}".format(COPY_OR_MOVE, imf_plot_name, imf_to_save))
-                page.openDiv(**{"id_": "imf-{}-{}-plot".format(i, res_id)})
-                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
-                             "imf-{}-{}".format(i, res_id))
-                page.closeDiv()
+                page.open_div(**{"id_": "imf-{}-{}-plot".format(i, res_id)})
+                page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
+                              "imf-{}-{}".format(i, res_id))
+                page.close_div()
 
                 if combo_file != "":
                     combo_to_save = os.path.join(curr_plots_folder, "combo-{}-{}.png".format(i, res_id))
                     os.system("{} {} {}".format(COPY_OR_MOVE, combo_file, combo_to_save))
-                    page.openDiv(**{"id_": "combo-{}-{}-plot".format(i, res_id)})
-                    page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "combo-{}-{}.png".format(i, res_id)),
-                                 "combo-{}-{}".format(i, res_id))
-                    page.closeDiv()
+                    page.open_div(**{"id_": "combo-{}-{}-plot".format(i, res_id)})
+                    page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "combo-{}-{}.png".format(i, res_id)),
+                                  "combo-{}-{}".format(i, res_id))
+                    page.close_div()
 
                 if omegagram:
                     omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
                     omegagram_to_save = os.path.join(curr_plots_folder, "omegagram-{}-{}.png".format(i, res_id))
                     os.system("{} {} {}".format(COPY_OR_MOVE, omegagram_plot_name, omegagram_to_save))
-                    page.openDiv(**{"id_": "omegagram-{}-{}-plot".format(i, res_id)})
-                    page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
-                                 "omegagram-{}-{}".format(i, res_id))
-                    page.closeDiv()
+                    page.open_div(**{"id_": "omegagram-{}-{}-plot".format(i, res_id)})
+                    page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
+                                  "omegagram-{}-{}".format(i, res_id))
+                    page.close_div()
 
-                page.closeDiv()
+                page.close_div()
 
-        page.closeCard()
+        page.close_card()
 
-    page.closeDiv()
+    page.close_div()
 
     html_file = os.path.join(curr_folder, "index.html")
-    page.savePage(html_file)
+    page.save_page(html_file)

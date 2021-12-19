@@ -31,12 +31,12 @@ class DagFile(object):
         self.name = name
         self.dag_text = []
 
-    def addBlankLine(self):
+    def add_blank_line(self):
         """Add blank line to .dag file.
         """
         self.dag_text.append("")
 
-    def addJob(self, job_number, sub_file, retry=1, args=None):
+    def add_job(self, job_number, sub_file, retry=1, args=None):
         """Add job block to .dag file.
 
         Parameters
@@ -56,9 +56,9 @@ class DagFile(object):
             args_list = ["{}=\"{}\"".format(key, args[key]) for key in args.keys()]
             args_str = " ".join(args_list)
             self.dag_text.append("VARS {} {}".format(job_number, args_str))
-        self.addBlankLine()
+        self.add_blank_line()
 
-    def addPostScript(self, job_number, script, args=None):
+    def add_post_script(self, job_number, script, args=None):
         """Add post block to .dag file.
 
         Parameters
@@ -75,9 +75,9 @@ class DagFile(object):
 
         args_list = " ".join(args)
         self.dag_text.append("SCRIPT POST {} {} {}".format(job_number, script, args_list))
-        self.addBlankLine()
+        self.add_blank_line()
 
-    def setParent(self, parents, children):
+    def set_parent(self, parents, children):
         """List parent jobs to be followed by children jobs.
 
         Parameters
@@ -90,7 +90,7 @@ class DagFile(object):
         parent_list = " ".join([str(p) for p in parents])
         child_list = " ".join([str(c) for c in children])
         self.dag_text.append("PARENT {} CHILD {}".format(parent_list, child_list))
-        self.addBlankLine()
+        self.add_blank_line()
 
     def save(self):
         """Save .dag file to `name`.

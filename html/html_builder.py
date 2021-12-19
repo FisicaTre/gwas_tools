@@ -30,14 +30,6 @@ CSS_FILES = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/fon
              "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/solid.min.css",
              "https://cdn.jsdelivr.net/npm/gwbootstrap@1.3.1/lib/gwbootstrap.min.css"]
 
-# JS_FILES = ["https://code.jquery.com/jquery-3.5.1.min.js",
-#             "https://code.jquery.com/ui/1.12.1/jquery-ui.min.js",
-#             "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js",
-#             "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js",
-#             "https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js",
-#             "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js",
-#             "https://cdn.jsdelivr.net/npm/gwbootstrap@1.3.1/lib/gwbootstrap-extra.min.js"]
-
 JS_FILES = ["https://code.jquery.com/jquery-3.5.1.min.js",
             "https://cdnjs.cloudflare.com/ajax/libs/jquery.lazy/1.7.11/jquery.lazy.min.js",
             "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js",
@@ -62,7 +54,7 @@ class HtmlBuilder(object):
         if title != "":
             self.page.h1(title, class_="mt-2 mb-2")
 
-    def addParagraph(self, text, **kwargs):
+    def add_paragraph(self, text, **kwargs):
         """Add <p>.
         
         Parameters
@@ -74,7 +66,7 @@ class HtmlBuilder(object):
         """
         self.page.p(text, **kwargs)
 
-    def addLink(self, text, **kwargs):
+    def add_link(self, text, **kwargs):
         """Add <a>.
         
         Parameters
@@ -86,7 +78,7 @@ class HtmlBuilder(object):
         """
         self.page.a(text, **kwargs)
 
-    def getFormattedLink(self, text, **kwargs):
+    def get_formatted_link(self, text, **kwargs):
         """Return <a> with formatted text.
 
         Parameters
@@ -108,7 +100,7 @@ class HtmlBuilder(object):
 
         return link
 
-    def getFormattedCode(self, text):
+    def get_formatted_code(self, text):
         """Return text in <code> tag.
 
         Parameters
@@ -123,7 +115,7 @@ class HtmlBuilder(object):
         """
         return "<code>{}</code>".format(text)
 
-    def openDiv(self, **kwargs):
+    def open_div(self, **kwargs):
         """Add <div>.
         
         Parameters
@@ -133,12 +125,12 @@ class HtmlBuilder(object):
         """
         self.page.div(**kwargs)
 
-    def closeDiv(self):
+    def close_div(self):
         """Add </div>.
         """
         self.page.div.close()
 
-    def addSection(self, title):
+    def add_section(self, title):
         """Add <p> with bold text magnified to 180%.
         
         Parameters
@@ -146,10 +138,10 @@ class HtmlBuilder(object):
         title : str
             <p> text
         """
-        self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:180%;",
-                                                               "class": "mt-2 mb-2"})
+        self.add_paragraph("<strong>" + title + "</strong>", **{"style": "font-size:180%;",
+                                                                "class": "mt-2 mb-2"})
 
-    def addSubsection(self, title):
+    def add_subsection(self, title):
         """Add <p> with bold text magnified to 150%.
         
         Parameters
@@ -157,10 +149,10 @@ class HtmlBuilder(object):
         title : str
             <p> text
         """
-        self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:150%;",
-                                                               "class": "mt-2 mb-2"})
+        self.add_paragraph("<strong>" + title + "</strong>", **{"style": "font-size:150%;",
+                                                                "class": "mt-2 mb-2"})
 
-    def addSubsubsection(self, title):
+    def add_subsubsection(self, title):
         """Add <p> with bold text magnified to 120%.
         
         Parameters
@@ -168,10 +160,10 @@ class HtmlBuilder(object):
         title : str
             <p> text
         """
-        self.addParagraph("<strong>" + title + "</strong>", **{"style": "font-size:120%;",
-                                                               "class": "mt-2 mb-2"})
+        self.add_paragraph("<strong>" + title + "</strong>", **{"style": "font-size:120%;",
+                                                                "class": "mt-2 mb-2"})
 
-    def addBulletList(self, items):
+    def add_bullet_list(self, items):
         """Add bullet list.
         
         Parameters
@@ -184,7 +176,7 @@ class HtmlBuilder(object):
         self.page.li(items_list)
         self.page.ul.close()
 
-    def parametersTable(self, parameters, start, end):
+    def parameters_table(self, parameters, start, end):
         """Add parameters analysis table.
 
         Parameters
@@ -196,14 +188,14 @@ class HtmlBuilder(object):
         end : int
             end GPS
         """
-        self.addSubsection("Parameters")
-        self.openDiv(**{"class_": "row"})
-        self.openDiv(**{"class_": "col-md-9 col-sm-12"})
+        self.add_subsubsection("Parameters")
+        self.open_div(**{"class_": "row"})
+        self.open_div(**{"class_": "col-md-9 col-sm-12"})
         self.page.add(htmlio.parameter_table(parameters, start, end))
-        self.closeDiv()
-        self.closeDiv()
+        self.close_div()
+        self.close_div()
 
-    def addCommandLine(self, code):
+    def add_command_line(self, code):
         """Add box with command line.
         
         Parameters
@@ -211,13 +203,13 @@ class HtmlBuilder(object):
         code : str
             command line
         """
-        self.openDiv(**{"class_": "highlight", "style_": "background: #f8f8f8"})
+        self.open_div(**{"class_": "highlight", "style_": "background: #f8f8f8"})
         self.page.pre(**{"style": "line-height: 125%;"})
         self.page.span(code)
         self.page.pre.close()
-        self.closeDiv()
+        self.close_div()
 
-    def addCommandLineBlock(self, code, description, block_id):
+    def add_command_line_block(self, code, description, block_id):
         """Add box with command line with a paragraph above.
 
         Parameters
@@ -229,14 +221,14 @@ class HtmlBuilder(object):
         block_id : str
             div block id
         """
-        self.openDiv(**{"id_": "{}-section".format(block_id)})
-        self.addParagraph(description, **{"class_": "mb-2"})
-        self.openDiv(**{"id_": "{}".format(block_id)})
-        self.addCommandLine(code)
-        self.closeDiv()
-        self.closeDiv()
+        self.open_div(**{"id_": "{}-section".format(block_id)})
+        self.add_paragraph(description, **{"class_": "mb-2"})
+        self.open_div(**{"id_": "{}".format(block_id)})
+        self.add_command_line(code)
+        self.close_div()
+        self.close_div()
 
-    def openCard(self, title, color, target_id):
+    def open_card(self, title, color, target_id):
         """Open a card element.
 
         Parameters
@@ -248,28 +240,28 @@ class HtmlBuilder(object):
         target_id : str
             id to link body to header
         """
-        self.openDiv(**{"class_": "card border-{} mb-1 shadow-sm".format(color)})
+        self.open_div(**{"class_": "card border-{} mb-1 shadow-sm".format(color)})
 
         # header
-        self.openDiv(**{"class_": "card-header text-white bg-{}".format(color)})
-        self.addLink(title,
-                     **{"class": "btn card-link cis-link",
-                        "data-toggle": "collapse",
-                        "data-target": "#{}".format(target_id)})
-        self.closeDiv()
+        self.open_div(**{"class_": "card-header text-white bg-{}".format(color)})
+        self.add_link(title,
+                      **{"class": "btn card-link cis-link",
+                         "data-toggle": "collapse",
+                         "data-target": "#{}".format(target_id)})
+        self.close_div()
 
         # body
-        self.openDiv(**{"id_": target_id, "class_": "collapse"})
-        self.openDiv(**{"class_": "card-body"})
+        self.open_div(**{"id_": target_id, "class_": "collapse"})
+        self.open_div(**{"class_": "card-body"})
 
-    def closeCard(self):
+    def close_card(self):
         """Close a card element.
         """
-        self.closeDiv()
-        self.closeDiv()
-        self.closeDiv()
+        self.close_div()
+        self.close_div()
+        self.close_div()
 
-    def addPlot(self, plot_name, plot_id):
+    def add_plot(self, plot_name, plot_id):
         """Add plot.
         
         Parameters
@@ -291,7 +283,7 @@ class HtmlBuilder(object):
                          "style": "height: 50%; width: 50%; object-fit: contain"})
         self.page.a.close()
 
-    def addFooter(self):
+    def add_footer(self):
         """Add footer with package and page creator information.
         """
         source = os.path.join(REPO_BASE, PACKAGE_NAME)
@@ -299,26 +291,26 @@ class HtmlBuilder(object):
 
         self.page.twotags.append("footer")
         markup.element("footer", case=self.page.case, parent=self.page)(class_="footer")
-        self.openDiv(**{"class_": "container"})
-        self.openDiv(**{"class_": "row"})
-        self.openDiv(**{"class_": "col-sm-3 icon-bar"})
+        self.open_div(**{"class_": "container"})
+        self.open_div(**{"class_": "row"})
+        self.open_div(**{"class_": "col-sm-3 icon-bar"})
         self.page.a(markup.oneliner.i('', class_='fas fa-code'), href=source,
                     title='View {} source code'.format(PACKAGE_NAME), target='_blank')
         self.page.a(markup.oneliner.i('', class_='fas fa-ticket-alt'), href=issues,
                     title='Report a problem', target='_blank')
-        self.closeDiv()
+        self.close_div()
 
-        self.openDiv(**{"class_": "col-sm-6"})
+        self.open_div(**{"class_": "col-sm-6"})
         now = datetime.datetime.now()
         tz = reference.LocalTimezone().tzname(now)
         date = now.strftime('%H:%M {} on %d %B %Y'.format(tz))
-        self.addParagraph("Created by {0} at {1}".format(getuser(), date))
-        self.closeDiv()
-        self.closeDiv()
-        self.closeDiv()
+        self.add_paragraph("Created by {0} at {1}".format(getuser(), date))
+        self.close_div()
+        self.close_div()
+        self.close_div()
         markup.element("footer", case=self.page.case, parent=self.page).close()
 
-    def savePage(self, path, add_footer=True):
+    def save_page(self, path, add_footer=True):
         """Save page.
         
         Parameters
@@ -328,9 +320,9 @@ class HtmlBuilder(object):
         add_footer : bool, optional
             add footer (default : True)
         """
-        self.closeDiv()
+        self.close_div()
         if add_footer:
-            self.addFooter()
+            self.add_footer()
         if not self.page._full:
             self.page.body.close()
             self.page.html.close()

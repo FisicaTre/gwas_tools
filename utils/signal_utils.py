@@ -22,7 +22,6 @@ from scipy.signal import kaiserord, lfilter, firwin, butter, freqz
 from scipy.signal import hilbert
 from scipy.stats import pearsonr
 import pytvfemd
-import glob
 import os
 import re
 from ..common import defines
@@ -74,16 +73,6 @@ def lowpass(x, cutoff):
     x_low = x.lowpass(1 / cutoff).value
 
     return x_low
-    # passband_ripple = 60
-    # passband_ripple_db = (10 ** (passband_ripple / 20) - 1) / (10 ** (passband_ripple / 20) + 1)
-    # cutoff_norm = cutoff / (f_samp / 2)
-    # width_percentage = -0.98 * steepness + 0.99
-    # width = width_percentage * (1 - cutoff_norm)
-    # num_taps, beta = kaiserord(passband_ripple, width)
-    # taps = firwin(num_taps, cutoff_norm, window=('kaiser', beta))
-    # filtered_x = lfilter(taps, 1.0, x)
-
-    # return filtered_x
 
 
 def butter_lowpass(cutoff, f_samp, order=3):
@@ -135,29 +124,6 @@ def butter_lowpass_filter(x, cutoff, f_samp, order=3):
     return y
 
 
-def mean_frequency_wa(x, f):
-    """Array mean frequency.
-    
-    Parameters
-    ----------
-    x : numpy array
-        input array
-    f : float
-        sampling frequency
-        
-    Returns
-    -------
-    float
-        mean frequency
-    """
-    spec = np.abs(np.fft.rfft(x))
-    freq = np.fft.rfftfreq(len(x), d=1 / f)
-    amp = spec / spec.sum()
-    mean_f = (freq * amp).sum()
-
-    return mean_f
-
-
 def mean_frequency(channel_name, start, end, bandpass_limits=None, verbose=False):
     """Mean frequency of a signal (highest peak in the spectrum).
 
@@ -189,28 +155,6 @@ def mean_frequency(channel_name, start, end, bandpass_limits=None, verbose=False
     mf = asd.frequencies[mf_idx]
 
     return mf.value[0]
-
-
-def mean_amplitude(x, f):
-    """Array mean amplitude.
-    
-    Parameters
-    ----------
-    x : numpy array
-        input array
-    f : float
-        sampling frequency
-        
-    Returns
-    -------
-    float
-        mean amplitude
-    """
-    dft = (2 / len(x)) * np.fft.rfft(x)
-    freq = np.fft.rfftfreq(len(x), d=1 / f)
-    mean_f_idx = np.argmin(np.abs(freq - mean_frequency(x, f)))
-
-    return np.abs(dft[mean_f_idx])
 
 
 def get_predictor(time, ts, N=1, smooth_win=None):
@@ -268,8 +212,6 @@ def get_predictors(channels, fs, smooth_win=None, n_scattering=1):
     predictors = n_scattering * (2 / LAMBDA) * np.abs(v_mat)
     fs_int = int(fs)
     predictors = predictors[(defines.EXTRA_SECONDS * fs_int):-(defines.EXTRA_SECONDS * fs_int), :]
-    # for i in range(predictors.shape[1]):
-    #     predictors[:, i] = butter_lowpass_filter(predictors[:, i], f_lowpass, fs)
 
     return predictors
 
@@ -366,7 +308,6 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
 
     channels_list = [target_channel] + channels
 
-    # gwf_files = glob.glob(os.path.join(gwf_path, '*.gwf'))
     gwf_files = []
     with open(gwf_path, "r") as gwf:
         for line in gwf:

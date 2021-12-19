@@ -59,33 +59,33 @@ def daily_correlations_page(res_path, date, tc_name, aux_ch, save_path):
     page = hb.HtmlBuilder(title=title, **{"style": "body { background-color: white; }"})
 
     # info
-    page.addSection("Info")
-    page.openDiv(**{"id_": "info-list"})
+    page.add_section("Info")
+    page.open_div(**{"id_": "info-list"})
 
     info_dict = {
-        "Environment": page.getFormattedCode(sys.prefix),
+        "Environment": page.get_formatted_code(sys.prefix),
         "Target channel": tc_name,
         "Auxiliary channel": aux_ch
     }
-    page.addBulletList(info_dict)
-    page.closeDiv()
+    page.add_bullet_list(info_dict)
+    page.close_div()
 
     # correlation plot
     if os.path.exists(os.path.join(res_path, "comparison")):
-        page.addSection("Correlation between {} and {}".format(tc_name, aux_ch))
+        page.add_section("Correlation between {} and {}".format(tc_name, aux_ch))
 
         for i in range(1, SUMMARY_IMFS + 1):
             ts_corr_name = os.path.join(res_path, "comparison", "imf_{}_ts_corr.png".format(i))
             if os.path.exists(ts_corr_name):
-                page.openDiv(**{"id_": "imf-{}-summary".format(i)})
-                page.addSubsection("Imf {}".format(i))
+                page.open_div(**{"id_": "imf-{}-summary".format(i)})
+                page.add_subsection("Imf {}".format(i))
 
                 ts_corr_to_save = os.path.join(curr_plots_folder, "imf-{}-ts-corr.png".format(i))
 
                 os.system("{} {} {}".format(COPY_OR_MOVE, ts_corr_name, ts_corr_to_save))
-                page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-ts-corr.png".format(i)),
-                             "imf-{}-ts-corr".format(i))
-                page.closeDiv()
+                page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-ts-corr.png".format(i)),
+                              "imf-{}-ts-corr".format(i))
+                page.close_div()
 
     hour_dict = {}
     for ih in range(24):
@@ -100,25 +100,25 @@ def daily_correlations_page(res_path, date, tc_name, aux_ch, save_path):
         hour_dict[h].append(gf)
 
     # results
-    page.addSection("Single GPS results")
+    page.add_section("Single GPS results")
 
-    page.openDiv(**{"id_": "info-color"})
+    page.open_div(**{"id_": "info-color"})
 
     info_color_dict = {
         "Yellow": "Correlation between {} and {}".format(COLOR_THRESHOLD_MIN, COLOR_THRESHOLD),
         "Red": "Correlation greater than {}".format(COLOR_THRESHOLD)
     }
-    page.addBulletList(info_color_dict)
-    page.closeDiv()
+    page.add_bullet_list(info_color_dict)
+    page.close_div()
 
-    page.openDiv(**{"id_": "results"})
+    page.open_div(**{"id_": "results"})
 
     for hh in hour_dict.keys():
         if len(hour_dict[hh]) > 0:
             date_h = "{} {:02d}:00:00".format(page_date.strftime('%Y-%m-%d'), hh)
 
             # main card
-            page.openCard(date_h, "primary", "main-card-{:d}".format(hh))
+            page.open_card(date_h, "primary", "main-card-{:d}".format(hh))
 
             for gps_path in hour_dict[hh]:
                 res_file = file_utils.YmlFile(gps_path)
@@ -161,7 +161,7 @@ def daily_correlations_page(res_path, date, tc_name, aux_ch, save_path):
                     color_key = "warning"
 
                 # card
-                page.openCard(gps_date, color_key, res_id)
+                page.open_card(gps_date, color_key, res_id)
 
                 # parameters table
                 seconds = res_file.get_seconds()
@@ -172,44 +172,44 @@ def daily_correlations_page(res_path, date, tc_name, aux_ch, save_path):
                 elif event_pos == "end":
                     gps_start = gps_event - seconds
                 gps_end = gps_start + seconds
-                page.parametersTable(parameters, int(gps_start), int(gps_end))
+                page.parameters_table(parameters, int(gps_start), int(gps_end))
 
                 # plots
                 for i in range(1, SUMMARY_IMFS + 1):
                     if i in imfs_data.keys():
-                        page.openDiv(**{"id_": "imf-{}-{}".format(i, res_id)})
-                        page.addSubsection("Imf {}".format(i))
+                        page.open_div(**{"id_": "imf-{}-{}".format(i, res_id)})
+                        page.add_subsection("Imf {}".format(i))
 
                         omegagram = imfs_data[i].pop("omegagram")
 
-                        page.openDiv(**{"id_": "imf-{}-{}-info".format(i, res_id)})
-                        page.addBulletList(imfs_data[i])
-                        page.closeDiv()
+                        page.open_div(**{"id_": "imf-{}-{}-info".format(i, res_id)})
+                        page.add_bullet_list(imfs_data[i])
+                        page.close_div()
 
                         imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
                         imf_to_save = os.path.join(curr_plots_folder, "imf-{}-{}.png".format(i, res_id))
                         os.system("{} {} {}".format(COPY_OR_MOVE, imf_plot_name, imf_to_save))
-                        page.openDiv(**{"id_": "imf-{}-{}-plot".format(i, res_id)})
-                        page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
-                                     "imf-{}-{}".format(i, res_id))
-                        page.closeDiv()
+                        page.open_div(**{"id_": "imf-{}-{}-plot".format(i, res_id)})
+                        page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
+                                      "imf-{}-{}".format(i, res_id))
+                        page.close_div()
 
                         if omegagram:
                             omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
                             omegagram_to_save = os.path.join(curr_plots_folder, "omegagram-{}-{}.png".format(i, res_id))
                             os.system("{} {} {}".format(COPY_OR_MOVE, omegagram_plot_name, omegagram_to_save))
-                            page.openDiv(**{"id_": "omegagram-{}-{}-plot".format(i, res_id)})
-                            page.addPlot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
-                                         "omegagram-{}-{}".format(i, res_id))
-                            page.closeDiv()
+                            page.open_div(**{"id_": "omegagram-{}-{}-plot".format(i, res_id)})
+                            page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
+                                          "omegagram-{}-{}".format(i, res_id))
+                            page.close_div()
 
-                        page.closeDiv()
+                        page.close_div()
 
-                page.closeCard()
+                page.close_card()
 
-            page.closeCard()
+            page.close_card()
 
-    page.closeDiv()
+    page.close_div()
 
     html_file = os.path.join(curr_folder, "index.html")
-    page.savePage(html_file)
+    page.save_page(html_file)

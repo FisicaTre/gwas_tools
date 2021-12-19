@@ -25,7 +25,7 @@ from ..utils import file_utils, signal_utils
 from ..common import defines
 
 
-def plot_imfs_arg(arg):
+def __plot_imfs_arg(arg):
     if arg in ["all", "max_corr"]:
         return arg
     elif isinstance(arg, list):
@@ -34,7 +34,7 @@ def plot_imfs_arg(arg):
         return None
 
 
-def corr_thr(arg):
+def __corr_thr(arg):
     arg = float(arg)
     if -1.0 <= arg <= 1.0:
         return arg
@@ -506,10 +506,10 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize
     figsize : tuple[int], optional
         figure size
     """
-    imfs_to_plot = plot_imfs_arg(imfs)
+    imfs_to_plot = __plot_imfs_arg(imfs)
     if imfs_to_plot is None:
         return
-    imf_thr = corr_thr(imf_thr)
+    imf_thr = __corr_thr(imf_thr)
 
     for res_folder in folders:
         yf = file_utils.YmlFile(res_folder)
@@ -520,11 +520,6 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize
         gps_event = yf.get_gps()
         event_time = yf.get_event_position()
         fs = yf.get_sampling_frequency()
-        #gps_event = gps_start
-        #if event_time == "center":
-        #    gps_event = (gps_start + gps_end) // 2
-        #elif event_time == "end":
-        #    gps_event = gps_end
 
         if imfs == "max_corr":
             n_imf = yf.get_max_corr_imf() - 1
@@ -587,10 +582,10 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None,
     if harmonics is None:
         harmonics = [1, 2, 3, 4, 5]
 
-    imfs_to_plot = plot_imfs_arg(imfs)
+    imfs_to_plot = __plot_imfs_arg(imfs)
     if imfs_to_plot is None:
         return
-    omegagram_thr = corr_thr(omegagram_thr)
+    omegagram_thr = __corr_thr(omegagram_thr)
 
     for res_folder in folders:
         yf = file_utils.YmlFile(res_folder)
