@@ -216,7 +216,7 @@ def get_predictors(channels, fs, smooth_win=None, n_scattering=1):
     return predictors
 
 
-def get_imfs(target_channel, fs, norm=True):
+def get_imfs(target_channel, fs, norm=True, max_imf=None):
     """Get imfs with pytvfemd.
 
     Parameters
@@ -227,17 +227,27 @@ def get_imfs(target_channel, fs, norm=True):
         `target_channel` sampling frequency
     norm : bool, optional
         normalize imfs (default : True)
+    max_imf : int
+        maximum number of imfs to be extracted (default : None)
 
     Returns
     -------
     numpy ndarray
         `target_channel` imfs matrix
     """
-    imfs = pytvfemd.tvfemd(target_channel)
+    is_max_imf_none = max_imf is None
+    if is_max_imf_none:
+        max_imf = 1000
+
+    imfs = pytvfemd.tvfemd(target_channel, max_imf=max_imf + 1)
     fs_int = int(fs)
     imfs = imfs[(defines.EXTRA_SECONDS * fs_int):-(defines.EXTRA_SECONDS * fs_int), :]
     if norm:
         imfs = (imfs - np.nanmean(imfs, axis=0)) / np.nanstd(imfs, axis=0)
+
+    n_imfs = imfs.shape[1]
+    if not is_max_imf_none and n_imfs == max_imf + 1:
+        imfs = imfs[:, :-1].reshape((imfs.shape[0], n_imfs - 1))
 
     return imfs
 
@@ -380,23 +390,41 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
         common sampling frequency of the channels
         in the matrix
     """
+    from gwpy.io import datafind as io_datafind
+
     if fs is None:
         fs = np.inf
 
-    if frametype is None:
-        data_dict = TimeSeriesDict.get([target_channel_name] + channels_list,
-                                       gps_start - defines.EXTRA_SECONDS,
-                                       gps_end + defines.EXTRA_SECONDS,
-                                       verbose=verbose)
+    frametype_tc = io_datafind.find_frametype(target_channel_name, gpstime=gps_start, allow_tape=True)
+    frametype_cl = io_datafind.find_frametype(channels_list[0], gpstime=gps_start, allow_tape=True)
+
+    if frametype_tc is None:
+        tc_dict = TimeSeriesDict.get([target_channel_name],
+                                     gps_start - defines.EXTRA_SECONDS,
+                                     gps_end + defines.EXTRA_SECONDS,
+                                     verbose=verbose, resample=fs)
     else:
-        data_dict = TimeSeriesDict.get([target_channel_name] + channels_list,
+        tc_dict = TimeSeriesDict.get([target_channel_name],
+                                     gps_start - defines.EXTRA_SECONDS,
+                                     gps_end + defines.EXTRA_SECONDS,
+                                     verbose=verbose, frametype=frametype_tc, resample=fs)
+
+    if frametype_cl is None:
+        data_dict = TimeSeriesDict.get(channels_list,
                                        gps_start - defines.EXTRA_SECONDS,
                                        gps_end + defines.EXTRA_SECONDS,
-                                       verbose=verbose, frametype=frametype)
-    dict_fs = np.min([data_dict[ch_name].channel.sample_rate.value for ch_name in channels_list])
-    if dict_fs < fs:
-        fs = dict_fs
-    data_dict.resample(fs)
+                                       verbose=verbose, resample=fs)
+    else:
+        data_dict = TimeSeriesDict.get(channels_list,
+                                       gps_start - defines.EXTRA_SECONDS,
+                                       gps_end + defines.EXTRA_SECONDS,
+                                       verbose=verbose, frametype=frametype_cl, resample=fs)
+
+    # dict_fs = np.min([data_dict[ch_name].channel.sample_rate.value for ch_name in channels_list])
+    # if dict_fs < fs:
+    #    fs = dict_fs
+    # data_dict.resample(fs)
+
     data = np.zeros((data_dict[target_channel_name].value.shape[0], len(channels_list) + 1), dtype=float)
     data[:, 0] = data_dict[target_channel_name].value
     for i in range(1, len(channels_list) + 1):

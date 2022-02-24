@@ -389,6 +389,23 @@ class YmlFile(object):
                         defines.CORR_KEY: float(corrs[i]), defines.MEAN_FREQ_KEY: float(mean_freqs[i])}
             self.content[defines.CORR_SECT_KEY].append(tmp_dict)
 
+    def write_seismic_channels(self, seismic_dict):
+        """Write seismic channels values.
+
+        Parameters
+        ----------
+        seismic_dict : dict
+            seismic channels values (key : channel name, value : channel value)
+        """
+        self.content["seismic"] = {}
+        for k in seismic_dict.keys():
+            self.content["seismic"][k] = float(seismic_dict[k])
+
+    def get_seismic_channels(self):
+        """Get seismic channels section.
+        """
+        return self.content["seismic"]
+
     def write_2nd_best_correlation_section(self, channels, corrs, mean_freqs):
         """Write correlation section corresponding to the second
         best culprit of each imf to file.

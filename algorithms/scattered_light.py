@@ -19,6 +19,8 @@ import os
 import numpy as np
 from ..utils import signal_utils, file_utils
 from ..common import defines
+from gwpy.timeseries import TimeSeriesDict
+from gwpy.io import datafind as io_datafind
 
 
 def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
@@ -163,6 +165,26 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     #            ch_2_corr.append(-999.0)
     #            ch_2_m_fr.append(0.0)
     #    out_file.write_2nd_best_correlation_section(ch_2_str, ch_2_corr, ch_2_m_fr)
+
+    frametype = io_datafind.find_frametype("L1:ISI-GND_STS_ETMX_X_BLRMS_100M_300M", gpstime=gps)
+    seism_channels = ["L1:ISI-GND_STS_ETMX_X_BLRMS_100M_300M",
+                      "L1:ISI-GND_STS_ETMY_Y_BLRMS_100M_300M",
+                      "L1:ISI-GND_STS_ETMX_Z_BLRMS_100M_300M",
+                      "L1:ISI-GND_STS_ETMX_X_BLRMS_30M_100M",
+                      "L1:ISI-GND_STS_ETMX_Y_BLRMS_30M_100M",
+                      "L1:ISI-GND_STS_ETMX_Z_BLRMS_30M_100M",
+                      "L1:ISI-GND_STS_ETMX_X_DQ",
+                      "L1:ISI-GND_STS_ETMX_Y_DQ",
+                      "L1:ISI-GND_STS_ETMX_Z_DQ"]
+    try:
+        seismometers = TimeSeriesDict.get(seism_channels, gps_start, gps_end, verbose=True, frametype=frametype,
+                                          resample=3)
+    except:
+        seismometers = TimeSeriesDict.get(seism_channels, gps_start, gps_end, verbose=True, frametype=frametype)
+    seis_dict = {}
+    for s in seism_channels:
+        seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
+    out_file.write_seismic_channels(seis_dict)
 
     out_file.save(out_path)
 
