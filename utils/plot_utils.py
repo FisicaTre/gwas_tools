@@ -26,7 +26,7 @@ from ..common import defines
 
 
 def __plot_imfs_arg(arg):
-    if arg in ["all", "max_corr"]:
+    if arg == "all":
         return arg
     elif isinstance(arg, list):
         return arg
@@ -496,7 +496,7 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize
     folders : list[str]
         paths to the file needed for the plots
     imfs : str, list[int]
-        imfs to plot, can be "all", "max_corr", or list of integers
+        imfs to plot, can be "all", or a list of integers
     imf_thr : float, optional
         correlation value above which to plot imfs (default : -1.0)
     combos : bool, optional
@@ -521,15 +521,7 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize
         event_time = yf.get_event_position()
         fs = yf.get_sampling_frequency()
 
-        if imfs == "max_corr":
-            n_imf = yf.get_max_corr_imf() - 1
-            predictor_name = yf.get_max_corr_channel()
-            if yf.get_max_corr() >= imf_thr:
-                plot_imf(preds[:, n_imf], predictor_name, ia[:, n_imf], target_channel,
-                         gps_event, fs, "$\\rho$ = {:.4f}".format(yf.get_max_corr()),
-                         "max_corr_culprit", res_folder, event_time=event_time,
-                         save_ext=save_ext, figsize=figsize)
-        elif imfs_to_plot == "all":
+        if imfs_to_plot == "all":
             for n_imf in range(yf.get_imfs_count()):
                 if yf.get_corr_of_imf(n_imf + 1) >= imf_thr:
                     plot_imf(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1), ia[:, n_imf], target_channel,
@@ -569,7 +561,7 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None,
     folders : list[str]
         paths to the file needed for the plots
     imfs : str, list[int]
-        imfs to consider, can be "all", "max_corr", or list of integers
+        imfs to consider, can be "all", or a list of integers
     omegagram_thr : float, optional
         correlation value above which to plot omegagrams (default : -1.0)
     harmonics : list[int]
@@ -596,14 +588,7 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None,
         seconds = yf.get_seconds()
         event_time = yf.get_event_position()
 
-        if imfs == "max_corr":
-            n_imf = yf.get_max_corr_imf() - 1
-            predictor_name = yf.get_max_corr_channel()
-            if yf.get_max_corr() >= omegagram_thr:
-                plot_omegagram_download(preds[:, n_imf], predictor_name, target_channel, gps,
-                                        seconds, "max_corr_omegagram", res_folder, harmonics=harmonics,
-                                        event_time=event_time, save_ext=save_ext, figsize=figsize)
-        elif imfs_to_plot == "all":
+        if imfs_to_plot == "all":
             for n_imf in range(yf.get_imfs_count()):
                 if yf.get_corr_of_imf(n_imf + 1) >= omegagram_thr:
                     plot_omegagram_download(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1),

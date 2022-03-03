@@ -175,58 +175,6 @@ class YmlFile(object):
         except:
             raise ValueError("Value not found.")
 
-    def get_max_corr_imf(self):
-        """Number of max correlated imf.
-
-        Returns
-        -------
-        int
-            max correlated imf number
-        """
-        try:
-            return self.content[defines.MAX_CORR_SECT_KEY][defines.IMF_KEY]
-        except:
-            raise ValueError("Value not found.")
-
-    def get_max_corr_channel(self):
-        """Max correlated channel.
-
-        Returns
-        -------
-        str
-            max correlated channel
-        """
-        try:
-            return self.content[defines.MAX_CORR_SECT_KEY][defines.CHANNEL_KEY]
-        except:
-            raise ValueError("Value not found.")
-
-    def get_max_corr(self):
-        """Max correlation.
-
-        Returns
-        -------
-        float
-            max correlation
-        """
-        try:
-            return self.content[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY]
-        except:
-            raise ValueError("Value not found.")
-
-    def get_max_corr_mean_freq(self):
-        """Mean frequency of max correlated channel.
-
-        Returns
-        -------
-        float
-            mean frequency of max correlated channel
-        """
-        try:
-            return self.content[defines.MAX_CORR_SECT_KEY][defines.MEAN_FREQ_KEY]
-        except:
-            raise ValueError("Value not found.")
-
     def get_imfs_count(self):
         """Get number of found imfs.
 
@@ -350,26 +298,6 @@ class YmlFile(object):
         self.content[defines.PARAMS_SECT_KEY][defines.LOWPASS_FREQ_KEY] = float(f_lowpass)
         self.content[defines.PARAMS_SECT_KEY][defines.SCATTERING_KEY] = int(n_scattering)
         self.content[defines.PARAMS_SECT_KEY][defines.SMOOTH_WIN_KEY] = int(smooth_win)
-
-    def write_max_corr_section(self, n_imf, max_ch_str, max_corr, mean_freq):
-        """Write max correlation section to file.
-
-        Parameters
-        ----------
-        n_imf : int
-            imf number
-        max_ch_str : str
-            channel with max correlation
-        max_corr : float
-            max correlation value
-        mean_freq : float
-            mean frequency of the channel with max correlation
-        """
-        self.content[defines.MAX_CORR_SECT_KEY] = {}
-        self.content[defines.MAX_CORR_SECT_KEY][defines.IMF_KEY] = int(n_imf)
-        self.content[defines.MAX_CORR_SECT_KEY][defines.CHANNEL_KEY] = max_ch_str
-        self.content[defines.MAX_CORR_SECT_KEY][defines.CORR_KEY] = float(max_corr)
-        self.content[defines.MAX_CORR_SECT_KEY][defines.MEAN_FREQ_KEY] = float(mean_freq)
 
     def write_correlation_section(self, channels, corrs, mean_freqs):
         """Write correlation section to file.
@@ -666,8 +594,8 @@ def summary_table(folders, comparison, table_name):
     ----------
     folders : list[str]
         paths to the files needed for the plots
-    comparison : str, list[int]
-        imfs for comparison, can be "max_corr", or list
+    comparison : list[int]
+        imfs for comparison
     table_name : str
         name of the output csv
     """
@@ -679,68 +607,35 @@ def summary_table(folders, comparison, table_name):
     if not os.path.isdir(cpath):
         os.makedirs(cpath, exist_ok=True)
 
-    if comparison == "max_corr":
-        gps = []
-        culprits = []
-        corrs = []
-        m_freqs = []
+    gps = []
+    culprits = {}
+    corrs = {}
+    m_freqs = {}
 
-        for folder in folders:
-            if is_valid_folder(folder):
-                yf = YmlFile(folder)
-                gps.append(yf.get_gps())
+    for i in comparison:
+        culprits[i] = []
+        corrs[i] = []
+        m_freqs[i] = []
 
+    for folder in folders:
+        if is_valid_folder(folder):
+            yf = YmlFile(folder)
+            gps.append(yf.get_gps())
+
+            for i in comparison:
                 try:
-                    culprits.append(yf.get_max_corr_channel())
-                    corrs.append(yf.get_max_corr())
-                    m_freqs.append(yf.get_max_corr_mean_freq())
+                    culprits[i].append(yf.get_channel_of_imf(i))
+                    corrs[i].append(yf.get_corr_of_imf(i))
+                    m_freqs[i].append(yf.get_mean_freq_of_imf(i))
                 except:
-                    culprits.append(np.nan)
-                    corrs.append(np.nan)
-                    m_freqs.append(np.nan)
+                    culprits[i].append(np.nan)
+                    corrs[i].append(np.nan)
+                    m_freqs[i].append(np.nan)
 
-        df = pd.DataFrame({"gps": gps,
-                           "culprit": culprits,
-                           "corr": corrs,
-                           "mean_freq": m_freqs
-                           })
-        df.to_csv(os.path.join(cpath, table_name), index=False)
-    elif isinstance(comparison, list):
-        try:
-            comparison = [int(i) for i in comparison]
-        except:
-            raise ValueError("`comparison` must be `max_corr` or list[int]")
-        gps = []
-        culprits = {}
-        corrs = {}
-        m_freqs = {}
-
-        for i in comparison:
-            culprits[i] = []
-            corrs[i] = []
-            m_freqs[i] = []
-
-        for folder in folders:
-            if is_valid_folder(folder):
-                yf = YmlFile(folder)
-                gps.append(yf.get_gps())
-
-                for i in comparison:
-                    try:
-                        culprits[i].append(yf.get_channel_of_imf(i))
-                        corrs[i].append(yf.get_corr_of_imf(i))
-                        m_freqs[i].append(yf.get_mean_freq_of_imf(i))
-                    except:
-                        culprits[i].append(np.nan)
-                        corrs[i].append(np.nan)
-                        m_freqs[i].append(np.nan)
-
-        df_dict = {"gps": gps}
-        for i in comparison:
-            df_dict["culprit_{:d}".format(i)] = culprits[i]
-            df_dict["corr_{:d}".format(i)] = corrs[i]
-            df_dict["mean_freq_{:d}".format(i)] = m_freqs[i]
-        df = pd.DataFrame(df_dict)
-        df.to_csv(os.path.join(cpath, table_name), index=False)
-    else:
-        raise ValueError("`comparison` must be `max_corr` or list[int]")
+    df_dict = {"gps": gps}
+    for i in comparison:
+        df_dict["culprit_{:d}".format(i)] = culprits[i]
+        df_dict["corr_{:d}".format(i)] = corrs[i]
+        df_dict["mean_freq_{:d}".format(i)] = m_freqs[i]
+    df = pd.DataFrame(df_dict)
+    df.to_csv(os.path.join(cpath, table_name), index=False)

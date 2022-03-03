@@ -75,7 +75,7 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         
     # build time series matrix
     gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps, seconds, event)
-    lock_channel_name = signal_utils.get_lock_channel_name_for_ifo(target_channel_name.split(":")[0])
+    lock_channel_name = signal_utils.get_lock_channel_name_for_ifo(signal_utils.get_ifo_of_channel(target_channel_name))
     if lock_channel_name is not None:
         lock_channel_data = signal_utils.get_instrument_lock_data(lock_channel_name, gps_start, gps_end)
         if not np.all(lock_channel_data == 1):
@@ -98,7 +98,7 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     target_channel = signal_utils.butter_lowpass_filter(data[:, 0], f_lowpass, fs)
 
     # tvf-emd
-    imfs = signal_utils.get_imfs(target_channel, fs)
+    imfs = signal_utils.get_imfs(target_channel, fs, max_imf=1)
 
     # correlations
     corrs = np.zeros((imfs.shape[1], predictor.shape[1]), dtype=float)
@@ -119,19 +119,10 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     #    max_vals_2 = [np.max([n for n in corrs[i, :] if n != np.max(corrs[i, :])]) for i in range(corrs.shape[0])]
     #    max_channels_2 = [np.where(corrs[i, :] == max_vals_2[i])[0][0] for i in range(corrs.shape[0])]
 
-    max_channel = int(np.argmax(max_vals))
-    try:
-        max_ch_str = channels_list[max_channels[max_channel]]
-        mean_freq = signal_utils.mean_frequency(max_ch_str, gps_start, gps_end, bandpass_limits=(0.03, 10))
-    except:
-        max_ch_str = "Not found"
-        mean_freq = 0.0
-
     # output file
     out_file = file_utils.YmlFile()
     out_file.write_parameters(gps, seconds, event, target_channel_name, channels_file,
                               out_path, fs, f_lowpass, n_scattering, smooth_win)
-    out_file.write_max_corr_section(max_channel + 1, max_ch_str, max_vals[max_channel], mean_freq)
     ch_str = []
     ch_corr = []
     ch_m_fr = []

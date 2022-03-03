@@ -31,7 +31,7 @@ COLOR_THRESHOLD = 0.7
 COPY_OR_MOVE = "cp"
 
 
-def daily_correlations_page(res_path, date, tc_name, aux_ch, save_path):
+def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
     """Output page for daily correlations analysis.
 
     Parameters

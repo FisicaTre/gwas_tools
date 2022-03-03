@@ -38,7 +38,7 @@ COLOR_THRESHOLD_MAX = 0.7
 COPY_OR_MOVE = "cp"
 
 
-def scattered_light_page(res_path, date, tc_name, ch_list_file, gps_file, save_path,
+def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path,
                          summary_imfs=2):
     """Output page for scattered light analysis.
 
