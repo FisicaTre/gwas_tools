@@ -23,6 +23,7 @@ from datetime import datetime
 from astropy.time import Time
 from ..html import html_builder as hb
 from ..utils import file_utils
+from ..common import defines
 
 
 #SAVE_PATH = os.path.expandvars("$HOME/public_html/daily/")
@@ -81,7 +82,7 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
     page.add_command_line_block(" ".join(code), description, "pipeline-command-line")
 
     # info
-    page.add_section("Info")
+    page.add_section(defines.INFO_SECTION)
     page.open_div(**{"id_": "info-list"})
 
     if len(res_folders) > 0:
@@ -89,35 +90,35 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
         os.system("{} {} {}".format(COPY_OR_MOVE, gps_file, curr_folder))
 
     info_dict = {
-        "Environment": page.get_formatted_code(sys.prefix),
-        "Target channel": tc_name,
-        "GPS list": page.get_formatted_link(os.path.basename(gps_file),
-                                            **{"href": os.path.basename(gps_file),
-                                               "download": os.path.basename(gps_file)}),
-        "Channels list": page.get_formatted_link(os.path.basename(ch_list_file),
-                                                 **{"href": os.path.basename(ch_list_file),
-                                                    "download": os.path.basename(ch_list_file)})
+        defines.ENV_NAME: page.get_formatted_code(sys.prefix),
+        defines.TARGET_CH_NAME: tc_name,
+        defines.GPS_LIST_NAME: page.get_formatted_link(os.path.basename(gps_file),
+                                                       **{"href": os.path.basename(gps_file),
+                                                          "download": os.path.basename(gps_file)}),
+        defines.CH_LIST_NAME: page.get_formatted_link(os.path.basename(ch_list_file),
+                                                      **{"href": os.path.basename(ch_list_file),
+                                                         "download": os.path.basename(ch_list_file)})
     }
     page.add_bullet_list(info_dict)
     page.close_div()
 
     # results
-    page.add_section("Results")
+    page.add_section(defines.RESULTS_SECTION)
     page.open_div(**{"id_": "results"})
     for gps_folder in res_folders:
         gps_path = os.path.join(res_path, gps_folder)
         res_file = file_utils.YmlFile(gps_path)
         parameters = [
-            ("GPS", res_file.get_gps()),
-            ("Seconds", res_file.get_seconds()),
-            ("Event position", res_file.get_event_position()),
-            ("Target channel", res_file.get_target_channel()),
-            ("Channels list", res_file.get_channels_list()),
-            ("Output path", res_file.get_output_path()),
-            ("Sampling frequency", res_file.get_sampling_frequency()),
-            ("Lowpass frequency", res_file.get_lowpass_frequency()),
-            ("Scattering factor", res_file.get_scattering_factor()),
-            ("Smoothing window", res_file.get_smoothing_window())
+            (defines.GPS_PARAM, res_file.get_gps()),
+            (defines.SECONDS_PARAM, res_file.get_seconds()),
+            (defines.EVENT_PARAM, res_file.get_event_position()),
+            (defines.TARGET_CH_PARAM, res_file.get_target_channel()),
+            (defines.CH_LIST_PARAM, res_file.get_channels_list()),
+            (defines.OUT_PATH_PARAM, res_file.get_output_path()),
+            (defines.SAMP_FREQ_PARAM, res_file.get_sampling_frequency()),
+            (defines.LOWPASS_FREQ_PARAM, res_file.get_lowpass_frequency()),
+            (defines.SCATTERING_PARAM, res_file.get_scattering_factor()),
+            (defines.SMOOTH_WIN_PARAM, res_file.get_smoothing_window())
         ]
         imfs_data = {}
         above_thr_max = False
@@ -125,15 +126,16 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
         for i in range(1, summary_imfs + 1):
             if res_file.get_imfs_count() >= i:
                 imfs_data[i] = {}
-                imfs_data[i]["Culprit"] = res_file.get_channel_of_imf(i)
-                imfs_data[i]["Mean frequency"] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
-                imfs_data[i]["omegagram"] = os.path.exists(os.path.join(gps_path, "imf_{:d}_omegagram.png".format(i)))
-                imfs_data[i]["combo"] = ""
+                imfs_data[i][defines.CULPRIT_STR] = res_file.get_channel_of_imf(i)
+                imfs_data[i][defines.MEAN_FREQ_STR] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
+                imfs_data[i][defines.OMEGAGRAM_STR] = os.path.exists(os.path.join(gps_path,
+                                                                                  "imf_{:d}_omegagram.png".format(i)))
+                imfs_data[i][defines.COMBO_STR] = ""
 
                 regex = "[_+]{:d}[_+]".format(i)
                 for cf in glob.glob(os.path.join(gps_path, "combo_imf_*_culprit.png")):
                     if re.search(regex, cf):
-                        imfs_data[i]["combo"] = cf
+                        imfs_data[i][defines.COMBO_STR] = cf
                 imf_i_corr = res_file.get_corr_of_imf(i)
                 if imf_i_corr >= COLOR_THRESHOLD_MAX:
                     above_thr_max = True
@@ -173,8 +175,8 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
                 page.open_div(**{"id_": "imf-{}-{}".format(i, res_id)})
                 page.add_subsection("Imf {}".format(i))
 
-                omegagram = imfs_data[i].pop("omegagram")
-                combo_file = imfs_data[i].pop("combo")
+                omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
+                combo_file = imfs_data[i].pop(defines.COMBO_STR)
 
                 page.open_div(**{"id_": "imf-{}-{}-info".format(i, res_id)})
                 page.add_bullet_list(imfs_data[i])
@@ -211,5 +213,5 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
 
     page.close_div()
 
-    html_file = os.path.join(curr_folder, "index.html")
+    html_file = os.path.join(curr_folder, defines.PAGE_NAME)
     page.save_page(html_file)

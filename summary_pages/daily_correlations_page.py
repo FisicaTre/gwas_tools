@@ -21,6 +21,7 @@ from datetime import datetime
 from astropy.time import Time
 from ..html import html_builder as hb
 from ..utils import file_utils
+from ..common import defines
 
 
 #SAVE_PATH = os.path.expandvars("/data/dev/web/detchar/daily_corr/")
@@ -59,23 +60,23 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
     page = hb.HtmlBuilder(title=title, **{"style": "body { background-color: white; }"})
 
     # info
-    page.add_section("Info")
+    page.add_section(defines.INFO_SECTION)
     page.open_div(**{"id_": "info-list"})
 
     info_dict = {
-        "Environment": page.get_formatted_code(sys.prefix),
-        "Target channel": tc_name,
-        "Auxiliary channel": aux_ch
+        defines.ENV_NAME: page.get_formatted_code(sys.prefix),
+        defines.TARGET_CH_NAME: tc_name,
+        defines.AUXILIARY_CH_NAME: aux_ch
     }
     page.add_bullet_list(info_dict)
     page.close_div()
 
     # correlation plot
-    if os.path.exists(os.path.join(res_path, "comparison")):
+    if os.path.exists(os.path.join(res_path, defines.COMPARISON_FOLDER)):
         page.add_section("Correlation between {} and {}".format(tc_name, aux_ch))
 
         for i in range(1, SUMMARY_IMFS + 1):
-            ts_corr_name = os.path.join(res_path, "comparison", "imf_{}_ts_corr.png".format(i))
+            ts_corr_name = os.path.join(res_path, defines.COMPARISON_FOLDER, "imf_{}_ts_corr.png".format(i))
             if os.path.exists(ts_corr_name):
                 page.open_div(**{"id_": "imf-{}-summary".format(i)})
                 page.add_subsection("Imf {}".format(i))
@@ -100,13 +101,13 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
         hour_dict[h].append(gf)
 
     # results
-    page.add_section("Single GPS results")
+    page.add_section(defines.SINGLE_GPS_SECTION)
 
     page.open_div(**{"id_": "info-color"})
 
     info_color_dict = {
-        "Yellow": "Correlation between {} and {}".format(COLOR_THRESHOLD_MIN, COLOR_THRESHOLD),
-        "Red": "Correlation greater than {}".format(COLOR_THRESHOLD)
+        defines.WARNING_STR: "Correlation between {} and {}".format(COLOR_THRESHOLD_MIN, COLOR_THRESHOLD),
+        defines.ALERT_STR: "Correlation greater than {}".format(COLOR_THRESHOLD)
     }
     page.add_bullet_list(info_color_dict)
     page.close_div()
@@ -123,16 +124,16 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
             for gps_path in hour_dict[hh]:
                 res_file = file_utils.YmlFile(gps_path)
                 parameters = [
-                    ("GPS", res_file.get_gps()),
-                    ("Seconds", res_file.get_seconds()),
-                    ("Event position", res_file.get_event_position()),
-                    ("Target channel", res_file.get_target_channel()),
-                    ("Channels list", res_file.get_channels_list()),
-                    ("Output path", res_file.get_output_path()),
-                    ("Sampling frequency", res_file.get_sampling_frequency()),
-                    ("Lowpass frequency", res_file.get_lowpass_frequency()),
-                    ("Scattering factor", res_file.get_scattering_factor()),
-                    ("Smoothing window", res_file.get_smoothing_window())
+                    (defines.GPS_PARAM, res_file.get_gps()),
+                    (defines.SECONDS_PARAM, res_file.get_seconds()),
+                    (defines.EVENT_PARAM, res_file.get_event_position()),
+                    (defines.TARGET_CH_PARAM, res_file.get_target_channel()),
+                    (defines.CH_LIST_PARAM, res_file.get_channels_list()),
+                    (defines.OUT_PATH_PARAM, res_file.get_output_path()),
+                    (defines.SAMP_FREQ_PARAM, res_file.get_sampling_frequency()),
+                    (defines.LOWPASS_FREQ_PARAM, res_file.get_lowpass_frequency()),
+                    (defines.SCATTERING_PARAM, res_file.get_scattering_factor()),
+                    (defines.SMOOTH_WIN_PARAM, res_file.get_smoothing_window())
                 ]
                 imfs_data = {}
                 above_thr = False
@@ -141,10 +142,10 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
                         imfs_exists = os.path.exists(os.path.join(gps_path, "imf_{}_culprit.png".format(i)))
                         if imfs_exists:
                             imfs_data[i] = {}
-                            imfs_data[i]["Culprit"] = res_file.get_channel_of_imf(i)
-                            imfs_data[i]["Mean frequency"] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
-                            imfs_data[i]["omegagram"] = os.path.exists(os.path.join(gps_path,
-                                                                                    "imf_{:d}_omegagram.png".format(i)))
+                            imfs_data[i][defines.CULPRIT_STR] = res_file.get_channel_of_imf(i)
+                            imfs_data[i][defines.MEAN_FREQ_STR] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
+                            imfs_data[i][defines.OMEGAGRAM_STR] = os.path.exists(os.path.join(gps_path,
+                                                                                              "imf_{:d}_omegagram.png".format(i)))
 
                             if res_file.get_corr_of_imf(i) >= COLOR_THRESHOLD:
                                 above_thr = True
@@ -180,7 +181,7 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
                         page.open_div(**{"id_": "imf-{}-{}".format(i, res_id)})
                         page.add_subsection("Imf {}".format(i))
 
-                        omegagram = imfs_data[i].pop("omegagram")
+                        omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
 
                         page.open_div(**{"id_": "imf-{}-{}-info".format(i, res_id)})
                         page.add_bullet_list(imfs_data[i])
@@ -211,5 +212,5 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
 
     page.close_div()
 
-    html_file = os.path.join(curr_folder, "index.html")
+    html_file = os.path.join(curr_folder, defines.PAGE_NAME)
     page.save_page(html_file)

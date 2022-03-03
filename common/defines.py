@@ -35,9 +35,37 @@ CORR_KEY = "corr"
 MEAN_FREQ_KEY = "mean_freq"
 
 # common parameters
+COMPARISON_FOLDER = "comparison"
 EXTRA_SECONDS = 1
 EVENT_LOCATION = ["start", "center", "end"]
 LOWP_FREQ_OPTS = ["average", "max"]
 
 # lock channels
 LCK_CH_VIRGO = "V1:DQ_META_ITF_Mode"
+
+# html
+INFO_SECTION = "info"
+ENV_NAME = "Environment"
+TARGET_CH_NAME = "Target channel"
+AUXILIARY_CH_NAME = "Auxiliary channel"
+GPS_LIST_NAME = "GPS list"
+CH_LIST_NAME = "Channels list"
+SINGLE_GPS_SECTION = "Single GPS results"
+RESULTS_SECTION = "Results"
+WARNING_STR = "Yellow"
+ALERT_STR = "Red"
+GPS_PARAM = "GPS"
+SECONDS_PARAM = "Seconds"
+EVENT_PARAM = "Event position"
+TARGET_CH_PARAM = "Target channel"
+CH_LIST_PARAM = "Channels list"
+OUT_PATH_PARAM = "Output path"
+SAMP_FREQ_PARAM = "Sampling frequency"
+LOWPASS_FREQ_PARAM = "Lowpass frequency"
+SCATTERING_PARAM = "Scattering factor"
+SMOOTH_WIN_PARAM = "Smoothing window"
+CULPRIT_STR = "Culprit"
+MEAN_FREQ_STR = "Mean frequency"
+OMEGAGRAM_STR = "omegagram"
+COMBO_STR = "combo"
+PAGE_NAME = "index.html"
