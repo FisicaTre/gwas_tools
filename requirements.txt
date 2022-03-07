@@ -5,7 +5,7 @@ MarkupPy
 pytz
 pandas
 scipy
-yaml
+pyYAML
 matplotlib
 astropy
 pytvfemd>=0.2
