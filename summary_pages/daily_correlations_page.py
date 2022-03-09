@@ -14,6 +14,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+# TODO : get plots directly from the analysis folders
+# TODO : save page in the root folder of the analysis
 
 import os
 import sys

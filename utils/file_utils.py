@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+# TODO : add method to retrieve combos data
 
 import scipy.io
 import yaml
@@ -316,6 +317,24 @@ class YmlFile(object):
             tmp_dict = {defines.IMF_KEY: int(i + 1), defines.CHANNEL_KEY: channels[i],
                         defines.CORR_KEY: float(corrs[i]), defines.MEAN_FREQ_KEY: float(mean_freqs[i])}
             self.content[defines.CORR_SECT_KEY].append(tmp_dict)
+
+    def write_combo_section(self, imfs, channels, corrs):
+        """Write combo section to file.
+
+        Parameters
+        ----------
+        imfs : list[list[int]]
+            list of imfs lists belonging to the same channel
+        channels : list[str]
+            list of culprits for each combo
+        corrs : list[float]
+            list of correlations for each combo
+        """
+        self.content[defines.COMBO_SECT_KEY] = []
+        for i in range(len(channels)):
+            tmp_dict = {defines.IMF_KEY: imfs[i], defines.CHANNEL_KEY: channels[i],
+                        defines.CORR_KEY: float(corrs[i])}
+            self.content[defines.COMBO_SECT_KEY].append(tmp_dict)
 
     def write_seismic_channels(self, seismic_dict):
         """Write seismic channels values.

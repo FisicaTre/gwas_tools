@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+# TODO : add script to correlate raw DARM with predictors
 
-__version__ = "0.7.1"
+__version__ = "0.8.0"
 __author__ = "Stefano Bianchi"

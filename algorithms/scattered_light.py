@@ -14,6 +14,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+# TODO : automate seismic part
+# TODO : rewrite lock part
 
 import os
 import numpy as np
@@ -24,12 +26,13 @@ from gwpy.io import datafind as io_datafind
 
 
 def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
-                    event="center", fs=256, n_scattering=1, smooth_win=50):
+                    event="center", fs=256, n_scattering=1, smooth_win=50,
+                    combos=False, seismic=False, save_data=True, check_lock=False):
     """Analysis for scattered light identification.
     The script outputs a folder named as the input gps,
     with inside three files:
-        - target channel instantaneous amplitudes (*.imf)
-        - most correlated predictor for each imf (*.predictors)
+        - target channel instantaneous amplitudes (*.imf, optional)
+        - most correlated predictor for each imf (*.predictors, optional)
         - output.yml, a summary of the analysis' results
 
     Parameters
@@ -48,13 +51,21 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         lowpass filter frequency
     event : str
         position of the event's gps in the analysed period.
-        Can be `start`, `center`, or `end` (default : center)
+        Can be `start`, `center`, or `end` (default : `center`)
     fs : float, optional
         channels resample frequency (default : 256)
     n_scattering : int, optional
         number of signal bounces (default : 1)
     smooth_win : int, optional
         signals smoothing window (default : 50)
+    combos : bool, optional
+        if True, combos are computed (default : False)
+    seismic : bool, optional
+        if True, seismic channels data are saved to output file (default : False)
+    save_data : bool, optional
+        if True, instantaneous amplitudes and predictors are saved to file (defaults : True)
+    check_lock : bool, optional
+        if True, lock channel status is checked, and if it is not always locked, the analysis is not performed (default : False)
     """
     if event not in defines.EVENT_LOCATION:
         raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
@@ -75,11 +86,12 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         
     # build time series matrix
     gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps, seconds, event)
-    lock_channel_name = signal_utils.get_lock_channel_name_for_ifo(signal_utils.get_ifo_of_channel(target_channel_name))
-    if lock_channel_name is not None:
-        lock_channel_data = signal_utils.get_instrument_lock_data(lock_channel_name, gps_start, gps_end)
-        if not np.all(lock_channel_data == 1):
-            return None
+    if check_lock:
+        lock_channel_name = signal_utils.get_lock_channel_name_for_ifo(signal_utils.get_ifo_of_channel(target_channel_name))
+        if lock_channel_name is not None:
+            lock_channel_data = signal_utils.get_instrument_lock_data(lock_channel_name, gps_start, gps_end)
+            if not np.all(lock_channel_data == 1):
+                return None
 
     data, fs = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
                                                            gps_start, gps_end, fs, verbose=True)
@@ -110,7 +122,9 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         for l in range(predictor.shape[1]):
             corrs[k, l] = signal_utils.get_correlation_between(predictor[:, l], upper_env)
 
-    file_utils.save_envelopes(envelopes, "_".join(target_channel_name.split(":")), out_path)
+    if save_data:
+        # save instantaneous amplitudes
+        file_utils.save_envelopes(envelopes, "_".join(target_channel_name.split(":")), out_path)
 
     # max correlations
     max_vals = np.max(corrs, axis=1)
@@ -142,6 +156,11 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
             ch_m_fr.append(0.0)
     out_file.write_correlation_section(ch_str, ch_corr, ch_m_fr)
 
+    selected_predictors = predictor[:, max_channels]
+    if combos:
+        combos_imfs, combos_channels, combos_corrs = signal_utils.get_combos(ch_str, envelopes, selected_predictors)
+        out_file.write_combo_section(combos_imfs, combos_channels, combos_corrs)
+
     # if len(channels_list) > 1:
     #    ch_2_str = []
     #    ch_2_corr = []
@@ -157,27 +176,29 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     #            ch_2_m_fr.append(0.0)
     #    out_file.write_2nd_best_correlation_section(ch_2_str, ch_2_corr, ch_2_m_fr)
 
-    frametype = io_datafind.find_frametype("L1:ISI-GND_STS_ETMX_X_BLRMS_100M_300M", gpstime=gps)
-    seism_channels = ["L1:ISI-GND_STS_ETMX_X_BLRMS_100M_300M",
-                      "L1:ISI-GND_STS_ETMY_Y_BLRMS_100M_300M",
-                      "L1:ISI-GND_STS_ETMX_Z_BLRMS_100M_300M",
-                      "L1:ISI-GND_STS_ETMX_X_BLRMS_30M_100M",
-                      "L1:ISI-GND_STS_ETMX_Y_BLRMS_30M_100M",
-                      "L1:ISI-GND_STS_ETMX_Z_BLRMS_30M_100M",
-                      "L1:ISI-GND_STS_ETMX_X_DQ",
-                      "L1:ISI-GND_STS_ETMX_Y_DQ",
-                      "L1:ISI-GND_STS_ETMX_Z_DQ"]
-    try:
-        seismometers = TimeSeriesDict.get(seism_channels, gps_start, gps_end, verbose=True, frametype=frametype,
-                                          resample=3)
-    except:
-        seismometers = TimeSeriesDict.get(seism_channels, gps_start, gps_end, verbose=True, frametype=frametype)
-    seis_dict = {}
-    for s in seism_channels:
-        seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
-    out_file.write_seismic_channels(seis_dict)
+    if seismic:
+        frametype = io_datafind.find_frametype("L1:ISI-GND_STS_ETMX_X_BLRMS_100M_300M", gpstime=gps)
+        seism_channels = ["L1:ISI-GND_STS_ETMX_X_BLRMS_100M_300M",
+                          "L1:ISI-GND_STS_ETMY_Y_BLRMS_100M_300M",
+                          "L1:ISI-GND_STS_ETMX_Z_BLRMS_100M_300M",
+                          "L1:ISI-GND_STS_ETMX_X_BLRMS_30M_100M",
+                          "L1:ISI-GND_STS_ETMX_Y_BLRMS_30M_100M",
+                          "L1:ISI-GND_STS_ETMX_Z_BLRMS_30M_100M",
+                          "L1:ISI-GND_STS_ETMX_X_DQ",
+                          "L1:ISI-GND_STS_ETMX_Y_DQ",
+                          "L1:ISI-GND_STS_ETMX_Z_DQ"]
+        try:
+            seismometers = TimeSeriesDict.get(seism_channels, gps_start, gps_end, verbose=True, frametype=frametype,
+                                              resample=3)
+        except:
+            seismometers = TimeSeriesDict.get(seism_channels, gps_start, gps_end, verbose=True, frametype=frametype)
+        seis_dict = {}
+        for s in seism_channels:
+            seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
+        out_file.write_seismic_channels(seis_dict)
 
     out_file.save(out_path)
 
-    # save predictors
-    file_utils.save_predictors(predictor[:, max_channels], "_".join(target_channel_name.split(":")), out_path)
+    if save_data:
+        # save predictors
+        file_utils.save_predictors(selected_predictors, "_".join(target_channel_name.split(":")), out_path)

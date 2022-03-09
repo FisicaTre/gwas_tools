@@ -14,6 +14,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+# TODO : add seismic channels names for both Virgo and LIGO
+# TODO : add lock channel for LIGO
 
 # output.yml keys
 PARAMS_SECT_KEY = "parameters"
@@ -33,6 +35,7 @@ IMF_KEY = "imf"
 CHANNEL_KEY = "channel"
 CORR_KEY = "corr"
 MEAN_FREQ_KEY = "mean_freq"
+COMBO_SECT_KEY = "combos"
 
 # common parameters
 COMPARISON_FOLDER = "comparison"

@@ -252,6 +252,44 @@ def get_imfs(target_channel, fs, norm=True, max_imf=None):
     return imfs
 
 
+def get_combos(ch_str, envelopes, predictors):
+    """Get correlation of combos for a given set of channels.
+
+    Parameters
+    ----------
+    ch_str : list[str]
+        channels correlated with each imf (the first channel corresponds to the first imf, and so on)
+    envelopes : numpy array
+        imf instantaneous amplitudes matrix
+    predictors : numpy array
+        predictors matrix
+
+    Returns
+    -------
+    combos_imfs : list[list[int]]
+        list of imfs lists belonging to the same channel
+    combos_channels : list[str]
+        list of culprits for each combo
+    combos_corrs : list[float]
+        list of correlations for each combo
+    """
+    combos_imfs = []
+    combos_channels = []
+    combos_corrs = []
+    seen = set()
+    uniq = [x for x in ch_str if x not in seen and not seen.add(x)]
+    for u in uniq:
+        idxs = np.where(np.array(ch_str) == u)[0]
+        if len(idxs) != 1:
+            sum_envelope = np.sum(envelopes[:, idxs], axis=1)
+            c = get_correlation_between(sum_envelope, predictors[:, idxs[0]])
+            combos_imfs.append([idx + 1 for idx in idxs])
+            combos_channels.append(u)
+            combos_corrs.append(c)
+
+    return combos_imfs, combos_channels, combos_corrs
+
+
 def get_ifo_of_channel(channel):
     """Get interferometer label for the input channel.
 
