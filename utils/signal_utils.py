@@ -18,6 +18,7 @@
 import numpy as np
 from gwpy.timeseries import TimeSeries
 from gwpy.timeseries import TimeSeriesDict
+from gwpy.segments import DataQualityFlag
 from scipy.signal import kaiserord, lfilter, firwin, butter, freqz
 from scipy.signal import hilbert
 from scipy.stats import pearsonr
@@ -306,7 +307,7 @@ def get_ifo_of_channel(channel):
     return channel.split(":")[0]
 
 
-def get_instrument_lock_data(lock_channel, gps_start, gps_end, **kwargs):
+def get_instrument_lock_data(lock_channel, gps_start, gps_end):
     """Get data for instrument lock channel.
 
     Parameters
@@ -317,17 +318,18 @@ def get_instrument_lock_data(lock_channel, gps_start, gps_end, **kwargs):
         starting GPS
     gps_end : int
         ending GPS
-    kwargs : dict
-        gwpy.TimeSeriesDict keys
 
     Returns
     -------
-    lock_data : numpy ndarray
-        instrument lock data for the period [`gps_start`, `gps_end`]
+    lock_data : gwpy.Segment
+        for L1 : segments of instrument active periods in [`gps_start`, `gps_end`]
     """
-    lock_data = TimeSeriesDict.get([lock_channel], gps_start, gps_end, **kwargs)
+    lock_data = []
+    if get_ifo_of_channel(lock_channel) == "L1":
+        lock_data = DataQualityFlag.query(lock_channel, gps_start, gps_end)
+        lock_data = lock_data.active
 
-    return lock_data[lock_channel].value
+    return lock_data
 
 
 def __get_gwf_files_of_interest(gwf_path, start_gps, end_gps, sep, start_gps_pos, n_gps_pos):

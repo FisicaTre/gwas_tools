@@ -14,8 +14,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# TODO : automate seismic part
-# TODO : rewrite lock part
 
 import os
 import numpy as np
@@ -83,16 +81,21 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     out_path = os.path.join(out_path, odir_name)
     if not os.path.isdir(out_path):
         os.makedirs(out_path, exist_ok=True)
-        
-    # build time series matrix
+
     gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps, seconds, event)
+    ifo = signal_utils.get_ifo_of_channel(target_channel_name)
+
     if check_lock:
-        lock_channel_name = signal_utils.get_lock_channel_name_for_ifo(signal_utils.get_ifo_of_channel(target_channel_name))
+        lock_channel_name = signal_utils.get_lock_channel_name_for_ifo(ifo)
         if lock_channel_name is not None:
             lock_channel_data = signal_utils.get_instrument_lock_data(lock_channel_name, gps_start, gps_end)
-            if not np.all(lock_channel_data == 1):
-                return None
+            if ifo == "L1":
+                if len(lock_channel_data) != 1 or lock_channel_data[0][0] != gps_start or lock_channel_data[0][-1] != gps_end:
+                    return None
+            # if not np.all(lock_channel_data == 1):
+            #    return None
 
+    # build time series matrix
     data, fs = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
                                                            gps_start, gps_end, fs, verbose=True)
 
@@ -177,25 +180,18 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     #    out_file.write_2nd_best_correlation_section(ch_2_str, ch_2_corr, ch_2_m_fr)
 
     if seismic:
-        frametype = io_datafind.find_frametype("L1:ISI-GND_STS_ETMX_X_BLRMS_100M_300M", gpstime=gps)
-        seism_channels = ["L1:ISI-GND_STS_ETMX_X_BLRMS_100M_300M",
-                          "L1:ISI-GND_STS_ETMY_Y_BLRMS_100M_300M",
-                          "L1:ISI-GND_STS_ETMX_Z_BLRMS_100M_300M",
-                          "L1:ISI-GND_STS_ETMX_X_BLRMS_30M_100M",
-                          "L1:ISI-GND_STS_ETMX_Y_BLRMS_30M_100M",
-                          "L1:ISI-GND_STS_ETMX_Z_BLRMS_30M_100M",
-                          "L1:ISI-GND_STS_ETMX_X_DQ",
-                          "L1:ISI-GND_STS_ETMX_Y_DQ",
-                          "L1:ISI-GND_STS_ETMX_Z_DQ"]
-        try:
-            seismometers = TimeSeriesDict.get(seism_channels, gps_start, gps_end, verbose=True, frametype=frametype,
-                                              resample=3)
-        except:
-            seismometers = TimeSeriesDict.get(seism_channels, gps_start, gps_end, verbose=True, frametype=frametype)
-        seis_dict = {}
-        for s in seism_channels:
-            seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
-        out_file.write_seismic_channels(seis_dict)
+        if ifo == "L1":
+            frametype = io_datafind.find_frametype(defines.LIGO_SEISMIC_CHANNELS[0], gpstime=gps)
+            try:
+                seismometers = TimeSeriesDict.get(defines.LIGO_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True,
+                                                  frametype=frametype, resample=3)
+            except:
+                seismometers = TimeSeriesDict.get(defines.LIGO_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True,
+                                                  frametype=frametype)
+            seis_dict = {}
+            for s in defines.LIGO_SEISMIC_CHANNELS:
+                seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
+            out_file.write_seismic_channels(seis_dict)
 
     out_file.save(out_path)
 

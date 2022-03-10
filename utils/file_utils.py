@@ -14,7 +14,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# TODO : add method to retrieve combos data
 
 import scipy.io
 import yaml
@@ -336,6 +335,11 @@ class YmlFile(object):
                         defines.CORR_KEY: float(corrs[i])}
             self.content[defines.COMBO_SECT_KEY].append(tmp_dict)
 
+    def get_combos(self):
+        """Get combos section.
+        """
+        return self.content[defines.COMBO_SECT_KEY]
+
     def write_seismic_channels(self, seismic_dict):
         """Write seismic channels values.
 
@@ -344,14 +348,14 @@ class YmlFile(object):
         seismic_dict : dict
             seismic channels values (key : channel name, value : channel value)
         """
-        self.content["seismic"] = {}
+        self.content[defines.SEISMIC_SECT_KEY] = {}
         for k in seismic_dict.keys():
-            self.content["seismic"][k] = float(seismic_dict[k])
+            self.content[defines.SEISMIC_SECT_KEY][k] = float(seismic_dict[k])
 
     def get_seismic_channels(self):
         """Get seismic channels section.
         """
-        return self.content["seismic"]
+        return self.content[defines.SEISMIC_SECT_KEY]
 
     def write_2nd_best_correlation_section(self, channels, corrs, mean_freqs):
         """Write correlation section corresponding to the second
