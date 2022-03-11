@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# TODO : rewrite plot_combinations
+# TODO : replace plot names with functions from file_utils
 
 import os
 import numpy as np
@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 from astropy.time import Time
 from gwpy.timeseries import TimeSeries
 from gwpy.segments import Segment
-from ..utils import file_utils, signal_utils
+from ..utils import file_utils
 from ..common import defines
 
 
@@ -116,14 +116,14 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps, samp_freq, title,
     plt.close("all")
     
     
-def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1, samp_freq,
+def plot_combinations(plot_combos, ias, predictors, target_channel_name, gps1, samp_freq,
                       out_path, event_time="center", save_ext="png", thr=-1.0, figsize=None):
     """Plot sum of more instantaneous amplitudes and the predictor.
     
     Parameters
     ----------
-    plot_channels : list of str
-        channels names
+    plot_combos : dict
+        combos dict, as retrieved from yml file
     ias : numpy array
         imf instantaneous amplitudes matrix
     predictors : numpy array
@@ -146,18 +146,22 @@ def plot_combinations(plot_channels, ias, predictors, target_channel_name, gps1,
     figsize : tuple[int], optional
         figure size
     """
-    seen = set()
-    uniq = [x for x in plot_channels if x not in seen and not seen.add(x)]
-    for u in uniq:
-        plot_idxs = np.where(plot_channels == u)[0]
-        if len(plot_idxs) != 1:
-            sum_envelope = np.sum(ias[:, plot_idxs], axis=1)
-            c = signal_utils.get_correlation_between(sum_envelope, predictors[:, plot_idxs[0]])
-            if c > thr:
-                plot_imf(predictors[:, plot_idxs[0]], u, sum_envelope, target_channel_name + " (combo)",
-                         gps1, samp_freq, "$\\rho$ = {:.4f}".format(c),
-                         "combo_imf_{}_culprit".format("+".join([str(i + 1) for i in plot_idxs])), out_path,
-                         event_time=event_time, save_ext=save_ext, figsize=figsize)
+    # seen = set()
+    # uniq = [x for x in plot_channels if x not in seen and not seen.add(x)]
+    # for u in uniq:
+    #    plot_idxs = np.where(plot_channels == u)[0]
+    #    if len(plot_idxs) != 1:
+
+    for idx, imf_list in enumerate(plot_combos[defines.IMF_KEY]):
+        imf_idxs = [i - 1 for i in imf_list]
+        sum_envelope = np.sum(ias[:, imf_idxs], axis=1)
+        c = plot_combos[defines.CORR_KEY][idx]
+        if c > thr:
+            plot_imf(predictors[:, imf_idxs[0]], plot_combos[defines.CHANNEL_KEY][idx],
+                     sum_envelope, target_channel_name + " (combo)",
+                     gps1, samp_freq, "$\\rho$ = {:.2f}".format(c),
+                     "combo_imf_{}_culprit".format("+".join(imf_list)), out_path,
+                     event_time=event_time, save_ext=save_ext, figsize=figsize)
             
             
 def plot_omegagram_download(pred, pred_name, target_name, gps, seconds, plot_name, save_path,
@@ -353,140 +357,140 @@ def plot_omegagram(pred, pred_name, target, target_name, gps, seconds, fs, plot_
     plt.close("all")
         
 
-def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True,
-                      batch=10, mean_freqs=None, save_ext="png"):
-    """Summary histogram of culprits found for a certain imf.
-    
-    Parameters
-    ----------
-    culprits : list of str
-        channels names
-    title : str
-        plot title
-    plot_name : str
-        plot name
-    save_path : str
-        save path
-    dsort : bool, optional
-        descending order sort (default : True)
-    batch : int, optional
-        maximum number of points per plot (default : 10)
-    mean_freqs : dict, optional
-        dict {channel_name: [mean_freqs]} for mean frequencies histograms (default : None)
-    save_ext : str, optional
-        plot extension (default : png)
-    """
-    culprits = np.array(culprits)
-    seen = set()
-    uniq = [x for x in culprits if x not in seen and not seen.add(x)]
-    counts = []
-    for u in uniq:
-        counts.append(len(np.where(culprits == u)[0]))
-    
-    if dsort:
-        uniq = [x for _, x in sorted(zip(counts, uniq), reverse=True)]
-        counts = sorted(counts, reverse=True)
-    
-    if len(counts) <= batch:
-        plt.figure()
-        plt.bar(np.arange(len(counts)), counts, width=0.8)
-        plt.xticks(np.arange(len(counts)), uniq, rotation=45, horizontalalignment="right")
-        plt.ylabel("Channel occurrence")
-        plt.title(title)
-        plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
-        plt.close("all")
-    else:
-        n = len(counts) // batch
-        for i in range(n):
-            plt.figure()
-            plt.bar(np.arange(len(counts[i*batch:(i+1)*batch])), counts[i*batch:(i+1)*batch], width=0.8)
-            plt.xticks(np.arange(len(counts[i*batch:(i+1)*batch])), uniq[i*batch:(i+1)*batch],
-                       rotation=45, horizontalalignment="right")
-            plt.ylabel("Channel occurrence")
-            plt.title(title)
-            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + "." + save_ext),
-                        bbox_inches="tight", dpi=300)
-            plt.close("all")
-        if len(counts) % batch != 0:
-            plt.figure()
-            plt.bar(np.arange(len(counts[n*batch:])), counts[n*batch:], width=0.8)
-            plt.xticks(np.arange(len(counts[n*batch:])), uniq[n*batch:],
-                       rotation=45, horizontalalignment="right")
-            plt.ylabel("Channel occurrence")
-            plt.title(title)
-            plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + "." + save_ext),
-                        bbox_inches="tight", dpi=300)
-            plt.close("all")
-
-    if mean_freqs is not None:
-        mf_x = []
-        mf_y = []
-        for i, key in enumerate(uniq[:batch]):
-            mf_x += [i for _ in range(len(mean_freqs[key]))]
-            mf_y += mean_freqs[key]
-        plot_mean_freq_summary(mf_x, mf_y, uniq, title, plot_name + "_mean_freq", save_path, save_ext=save_ext)
-
-
-def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, save_ext="png"):
-    """Summary of correlations for each GPS for a certain imf.
-    
-    Parameters
-    ----------
-    gps_list : list
-        gps
-    corr_list : list
-        correlations
-    title : str
-        plot title
-    plot_name : str
-        plot name
-    save_path : str
-        save path
-    save_ext : str, optional
-        plot extension (default : png)
-    """
-    t1 = Time(gps_list[0], format="gps")
-    t2 = Time(t1, format="iso", scale="utc")
-    gps_date = "{:d} ({} UTC)\n".format(gps_list[0], t2)
-    x_values = [x - gps_list[0] for x in gps_list]
-
-    plt.figure()
-    plt.bar(x_values, corr_list, width=0.8)
-    plt.ylim(-1, 1)
-    plt.ylabel("$\\rho$")
-    plt.xlabel("t [s]\nfrom " + gps_date)
-    plt.title(title)
-    plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
-    plt.close("all")
+# def plot_imfs_summary(culprits, title, plot_name, save_path, dsort=True,
+#                       batch=10, mean_freqs=None, save_ext="png"):
+#     """Summary histogram of culprits found for a certain imf.
+#
+#     Parameters
+#     ----------
+#     culprits : list of str
+#         channels names
+#     title : str
+#         plot title
+#     plot_name : str
+#         plot name
+#     save_path : str
+#         save path
+#     dsort : bool, optional
+#         descending order sort (default : True)
+#     batch : int, optional
+#         maximum number of points per plot (default : 10)
+#     mean_freqs : dict, optional
+#         dict {channel_name: [mean_freqs]} for mean frequencies histograms (default : None)
+#     save_ext : str, optional
+#         plot extension (default : png)
+#     """
+#     culprits = np.array(culprits)
+#     seen = set()
+#     uniq = [x for x in culprits if x not in seen and not seen.add(x)]
+#     counts = []
+#     for u in uniq:
+#         counts.append(len(np.where(culprits == u)[0]))
+#
+#     if dsort:
+#         uniq = [x for _, x in sorted(zip(counts, uniq), reverse=True)]
+#         counts = sorted(counts, reverse=True)
+#
+#     if len(counts) <= batch:
+#         plt.figure()
+#         plt.bar(np.arange(len(counts)), counts, width=0.8)
+#         plt.xticks(np.arange(len(counts)), uniq, rotation=45, horizontalalignment="right")
+#         plt.ylabel("Channel occurrence")
+#         plt.title(title)
+#         plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
+#         plt.close("all")
+#     else:
+#         n = len(counts) // batch
+#         for i in range(n):
+#             plt.figure()
+#             plt.bar(np.arange(len(counts[i*batch:(i+1)*batch])), counts[i*batch:(i+1)*batch], width=0.8)
+#             plt.xticks(np.arange(len(counts[i*batch:(i+1)*batch])), uniq[i*batch:(i+1)*batch],
+#                        rotation=45, horizontalalignment="right")
+#             plt.ylabel("Channel occurrence")
+#             plt.title(title)
+#             plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(i + 1) + "." + save_ext),
+#                         bbox_inches="tight", dpi=300)
+#             plt.close("all")
+#         if len(counts) % batch != 0:
+#             plt.figure()
+#             plt.bar(np.arange(len(counts[n*batch:])), counts[n*batch:], width=0.8)
+#             plt.xticks(np.arange(len(counts[n*batch:])), uniq[n*batch:],
+#                        rotation=45, horizontalalignment="right")
+#             plt.ylabel("Channel occurrence")
+#             plt.title(title)
+#             plt.savefig(os.path.join(save_path, plot_name + "_batch_" + str(n + 1) + "." + save_ext),
+#                         bbox_inches="tight", dpi=300)
+#             plt.close("all")
+#
+#     if mean_freqs is not None:
+#         mf_x = []
+#         mf_y = []
+#         for i, key in enumerate(uniq[:batch]):
+#             mf_x += [i for _ in range(len(mean_freqs[key]))]
+#             mf_y += mean_freqs[key]
+#         plot_mean_freq_summary(mf_x, mf_y, uniq, title, plot_name + "_mean_freq", save_path, save_ext=save_ext)
 
 
-def plot_mean_freq_summary(x_vals, y_vals, x_labels, title, plot_name, save_path, save_ext="png"):
-    """Summary of mean frequencies for a channel and a certain imf.
-    
-    Parameters
-    ----------
-    x_vals : list
-        list of integers for channel number
-    y_vals : list
-        mean_frequencies
-    x_labels : list[str]
-        channels names corresponding to `x_vals`
-    title : str
-        plot title
-    plot_name : str
-        plot name
-    save_path : str
-        save path
-    save_ext : str, optional
-        plot extension (default : str)
-    """
-    plt.figure()
-    plt.scatter(x_vals, y_vals)
-    plt.ylabel("Mean frequency [Hz]")
-    plt.xticks(np.arange(len(x_labels)), x_labels, rotation=45, horizontalalignment="right")
-    plt.title(title)
-    plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
-    plt.close("all")
+# def plot_corr_summary(gps_list, corr_list, title, plot_name, save_path, save_ext="png"):
+#     """Summary of correlations for each GPS for a certain imf.
+#
+#     Parameters
+#     ----------
+#     gps_list : list
+#         gps
+#     corr_list : list
+#         correlations
+#     title : str
+#         plot title
+#     plot_name : str
+#         plot name
+#     save_path : str
+#         save path
+#     save_ext : str, optional
+#         plot extension (default : png)
+#     """
+#     t1 = Time(gps_list[0], format="gps")
+#     t2 = Time(t1, format="iso", scale="utc")
+#     gps_date = "{:d} ({} UTC)\n".format(gps_list[0], t2)
+#     x_values = [x - gps_list[0] for x in gps_list]
+#
+#     plt.figure()
+#     plt.bar(x_values, corr_list, width=0.8)
+#     plt.ylim(-1, 1)
+#     plt.ylabel("$\\rho$")
+#     plt.xlabel("t [s]\nfrom " + gps_date)
+#     plt.title(title)
+#     plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
+#     plt.close("all")
+
+
+# def plot_mean_freq_summary(x_vals, y_vals, x_labels, title, plot_name, save_path, save_ext="png"):
+#     """Summary of mean frequencies for a channel and a certain imf.
+#
+#     Parameters
+#     ----------
+#     x_vals : list
+#         list of integers for channel number
+#     y_vals : list
+#         mean_frequencies
+#     x_labels : list[str]
+#         channels names corresponding to `x_vals`
+#     title : str
+#         plot title
+#     plot_name : str
+#         plot name
+#     save_path : str
+#         save path
+#     save_ext : str, optional
+#         plot extension (default : str)
+#     """
+#     plt.figure()
+#     plt.scatter(x_vals, y_vals)
+#     plt.ylabel("Mean frequency [Hz]")
+#     plt.xticks(np.arange(len(x_labels)), x_labels, rotation=45, horizontalalignment="right")
+#     plt.title(title)
+#     plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
+#     plt.close("all")
 
 
 def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize=None):
@@ -495,7 +499,7 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize
     Parameters
     ----------
     folders : list[str]
-        paths to the file needed for the plots
+        paths to the files needed for the plots
     imfs : str, list[int]
         imfs to plot, can be "all", or a list of integers
     imf_thr : float, optional
@@ -526,12 +530,12 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize
             for n_imf in range(yf.get_imfs_count()):
                 if yf.get_corr_of_imf(n_imf + 1) >= imf_thr:
                     plot_imf(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1), ia[:, n_imf], target_channel,
-                             gps_event, fs, "$\\rho$ = {:.4f}".format(yf.get_corr_of_imf(n_imf + 1)),
+                             gps_event, fs, "$\\rho$ = {:.2f}".format(yf.get_corr_of_imf(n_imf + 1)),
                              "imf_{}_culprit".format(n_imf + 1), res_folder, event_time=event_time,
                              save_ext=save_ext, figsize=figsize)
             if combos:
-                ch_list = np.array([yf.get_channel_of_imf(el + 1) for el in range(yf.get_imfs_count())])
-                plot_combinations(ch_list, ia, preds, target_channel, gps_event,
+                # ch_list = np.array([yf.get_channel_of_imf(el + 1) for el in range(yf.get_imfs_count())])
+                plot_combinations(yf.get_combos(), ia, preds, target_channel, gps_event,
                                   fs, res_folder, thr=imf_thr, event_time=event_time,
                                   save_ext=save_ext, figsize=figsize)
         elif isinstance(imfs_to_plot, list):
@@ -540,15 +544,28 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize
                     if yf.get_corr_of_imf(n_imf + 1) >= imf_thr:
                         plot_imf(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1), ia[:, n_imf],
                                  target_channel, gps_event, fs,
-                                 "$\\rho$ = {:.4f}".format(yf.get_corr_of_imf(n_imf + 1)),
+                                 "$\\rho$ = {:.2f}".format(yf.get_corr_of_imf(n_imf + 1)),
                                  "imf_{}_culprit".format(n_imf + 1), res_folder, event_time=event_time,
                                  save_ext=save_ext, figsize=figsize)
             if combos:
-                ch_list = np.array(
-                    [yf.get_channel_of_imf(el + 1) for el in range(yf.get_imfs_count()) if el + 1 in imfs_to_plot])
-                if len(ch_list) != 0:
-                    imfs_list = [imf - 1 for imf in imfs_to_plot if imf <= yf.get_imfs_count()]
-                    plot_combinations(ch_list, ia[:, imfs_list], preds[:, imfs_list],
+                #ch_list = np.array(
+                #    [yf.get_channel_of_imf(el + 1) for el in range(yf.get_imfs_count()) if el + 1 in imfs_to_plot])
+                # if len(ch_list) != 0:
+                imfs_list = [imf for imf in imfs_to_plot if imf <= yf.get_imfs_count()]
+                if len(imfs_list) > 0:
+                    combos_dict = yf.get_combos()
+                    for i in range(len(combos_dict[defines.IMF_KEY])):
+                        is_ok = False
+                        for imf_i in combos_dict[defines.IMF_KEY][i]:
+                            if imf_i in imfs_list:
+                                is_ok = True
+                                break
+                        if not is_ok:
+                            _ = combos_dict[defines.IMF_KEY].pop(i)
+                            _ = combos_dict[defines.CHANNEL_KEY].pop(i)
+                            _ = combos_dict[defines.CORR_KEY].pop(i)
+                    # plot_combinations(ch_list, ia[:, imfs_list], preds[:, imfs_list],
+                    plot_combinations(combos_dict, ia, preds,
                                       target_channel, gps_event, fs, res_folder, thr=imf_thr,
                                       event_time=event_time, save_ext=save_ext, figsize=figsize)
 
@@ -560,7 +577,7 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None,
     Parameters
     ----------
     folders : list[str]
-        paths to the file needed for the plots
+        paths to the files needed for the plots
     imfs : str, list[int]
         imfs to consider, can be "all", or a list of integers
     omegagram_thr : float, optional

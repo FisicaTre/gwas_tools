@@ -16,6 +16,7 @@
 
 # TODO : get plots directly from the analysis folders
 # TODO : save page in the root folder of the analysis
+# TODO : replace **{key: value} with key=value
 
 import os
 import glob

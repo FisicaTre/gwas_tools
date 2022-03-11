@@ -14,8 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# TODO : get plots directly from the analysis folders
-# TODO : save page in the root folder of the analysis
+# TODO : replace **{key: value} with key=value
 
 import os
 import sys
@@ -26,15 +25,15 @@ from ..utils import file_utils
 from ..common import defines
 
 
-#SAVE_PATH = os.path.expandvars("/data/dev/web/detchar/daily_corr/")
-SAVE_PLOTS_FOLDER = "plots"
+# SAVE_PLOTS_FOLDER = "plots"
 SUMMARY_IMFS = 1
 COLOR_THRESHOLD_MIN = 0.5
 COLOR_THRESHOLD = 0.7
-COPY_OR_MOVE = "cp"
+PLOT_EXT = "png"
+# COPY_OR_MOVE = "cp"
 
 
-def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
+def generate_web_page(res_path, date, tc_name, aux_ch):
     """Output page for daily correlations analysis.
 
     Parameters
@@ -47,18 +46,16 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
         target channel name
     aux_ch : str
         auxiliary channel name
-    save_path : str
-        path where to store the page files
     """
-    res_folders = file_utils.get_results_folders(res_path, must_include=["*.png"])
+    res_folders = file_utils.get_results_folders(res_path, must_include=["*.{}".format(PLOT_EXT)])
 
     # title
-    page_date = datetime.strptime(date, "%Y-%m-%d")
-    curr_date = page_date.strftime('%Y%m%d')
-    curr_folder = os.path.join(save_path, curr_date, "_".join(tc_name.split(":")))
-    curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
-    os.system("mkdir -p {}".format(curr_plots_folder))
-    title = "Scattered light daily analysis ({})".format(page_date.strftime('%Y-%m-%d'))
+    page_date = datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d")
+    # curr_date = page_date.strftime('%Y%m%d')
+    # curr_folder = os.path.join(save_path, curr_date, "_".join(tc_name.split(":")))
+    # curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
+    # os.system("mkdir -p {}".format(curr_plots_folder))
+    title = "Scattered light daily analysis ({})".format(page_date)
     page = hb.HtmlBuilder(title=title, **{"style": "body { background-color: white; }"})
 
     # info
@@ -83,11 +80,11 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
                 page.open_div(**{"id_": "imf-{}-summary".format(i)})
                 page.add_subsection("Imf {}".format(i))
 
-                ts_corr_to_save = os.path.join(curr_plots_folder, "imf-{}-ts-corr.png".format(i))
+                # ts_corr_to_save = os.path.join(curr_plots_folder, "imf-{}-ts-corr.png".format(i))
 
-                os.system("{} {} {}".format(COPY_OR_MOVE, ts_corr_name, ts_corr_to_save))
-                page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-ts-corr.png".format(i)),
-                              "imf-{}-ts-corr".format(i))
+                # os.system("{} {} {}".format(COPY_OR_MOVE, ts_corr_name, ts_corr_to_save))
+                # page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-ts-corr.png".format(i)),
+                page.add_plot(ts_corr_name, "imf-{}-ts-corr".format(i))
                 page.close_div()
 
     hour_dict = {}
@@ -118,7 +115,7 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
 
     for hh in hour_dict.keys():
         if len(hour_dict[hh]) > 0:
-            date_h = "{} {:02d}:00:00".format(page_date.strftime('%Y-%m-%d'), hh)
+            date_h = "{} {:02d}:00:00".format(page_date, hh)
 
             # main card
             page.open_card(date_h, "primary", "main-card-{:d}".format(hh))
@@ -190,20 +187,20 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
                         page.close_div()
 
                         imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
-                        imf_to_save = os.path.join(curr_plots_folder, "imf-{}-{}.png".format(i, res_id))
-                        os.system("{} {} {}".format(COPY_OR_MOVE, imf_plot_name, imf_to_save))
+                        # imf_to_save = os.path.join(curr_plots_folder, "imf-{}-{}.png".format(i, res_id))
+                        # os.system("{} {} {}".format(COPY_OR_MOVE, imf_plot_name, imf_to_save))
                         page.open_div(**{"id_": "imf-{}-{}-plot".format(i, res_id)})
-                        page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
-                                      "imf-{}-{}".format(i, res_id))
+                        # page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
+                        page.add_plot(imf_plot_name, "imf-{}-{}".format(i, res_id))
                         page.close_div()
 
                         if omegagram:
                             omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
-                            omegagram_to_save = os.path.join(curr_plots_folder, "omegagram-{}-{}.png".format(i, res_id))
-                            os.system("{} {} {}".format(COPY_OR_MOVE, omegagram_plot_name, omegagram_to_save))
+                            # omegagram_to_save = os.path.join(curr_plots_folder, "omegagram-{}-{}.png".format(i, res_id))
+                            # os.system("{} {} {}".format(COPY_OR_MOVE, omegagram_plot_name, omegagram_to_save))
                             page.open_div(**{"id_": "omegagram-{}-{}-plot".format(i, res_id)})
-                            page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
-                                          "omegagram-{}-{}".format(i, res_id))
+                            # page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
+                            page.add_plot(omegagram_plot_name, "omegagram-{}-{}".format(i, res_id))
                             page.close_div()
 
                         page.close_div()
@@ -214,5 +211,6 @@ def generate_web_page(res_path, date, tc_name, aux_ch, save_path):
 
     page.close_div()
 
-    html_file = os.path.join(curr_folder, defines.PAGE_NAME)
+    # html_file = os.path.join(curr_folder, defines.PAGE_NAME)
+    html_file = os.path.join(res_path, defines.PAGE_NAME)
     page.save_page(html_file)

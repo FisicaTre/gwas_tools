@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+# TODO : functions to format plot names
 
 import scipy.io
 import yaml
@@ -626,7 +627,7 @@ def summary_table(folders, comparison, table_name):
         return
 
     folders_path = os.path.sep.join(folders[0].split(os.path.sep)[:-1])
-    cpath = os.path.join(folders_path, "comparison")
+    cpath = os.path.join(folders_path, defines.COMPARISON_FOLDER)
     if not os.path.isdir(cpath):
         os.makedirs(cpath, exist_ok=True)
 
