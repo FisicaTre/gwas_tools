@@ -1,13 +1,13 @@
-## gwadaptive_scattering  
+## gwadaptive_scattering (gwas)
 Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.
 
 #### Version
 
-v0.7.4
+v0.8.2
 
 ####  Requirements
 
-- Python 3.6+
+- Python 3.7+
 - [requirements.txt](requirements.txt)
 
 #### Description
@@ -18,9 +18,11 @@ v0.7.4
 - `utils`
   - utils functions to process signals, manage output files, and plot pipeline's results.
 - `summary_pages`
-  - functions to create the summary pages of currently used pipelines.
+  - functions to create the summary pages of the currently used pipelines.
 - `algorithms`
   - main algorithms of the currently used pipelines.
+- `automation`
+  - functions to create the main scripts to be executed on distributed computing systems.
 
 #### References
 - [Application to LIGO data](https://iopscience.iop.org/article/10.1088/1361-6382/aa8e6b/meta) 

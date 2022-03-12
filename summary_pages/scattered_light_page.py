@@ -16,7 +16,6 @@
 
 # TODO : get plots directly from the analysis folders
 # TODO : save page in the root folder of the analysis
-# TODO : replace **{key: value} with key=value
 
 import os
 import glob
@@ -35,15 +34,14 @@ SAVE_PLOTS_FOLDER = "plots"
 #PLOTS_SCRIPT_NAME = "./scattered_light_plots.py"
 #COMPARISON_SCRIPT_NAME = "./scattered_light_comparison.py"
 #HTML_SCRIPT_NAME = "./scattered_light_page.py"
-PIPELINE_SCRIPT_NAME = "./gwasr_pipeline.py"
+PIPELINE_SCRIPT_NAME = "./gwas"
 #SUMMARY_IMFS = 2
 COLOR_THRESHOLD_MIN = 0.5
 COLOR_THRESHOLD_MAX = 0.7
 COPY_OR_MOVE = "cp"
 
 
-def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path,
-                         summary_imfs=2):
+def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path, summary_imfs=2):
     """Output page for scattered light analysis.
 
     Parameters
@@ -72,7 +70,7 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
     curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
     os.system("mkdir -p {}".format(curr_plots_folder))
     title = "Scattered light analysis ({})".format(page_date.strftime('%Y-%m-%d'))
-    page = hb.HtmlBuilder(title=title, **{"style": "body { background-color: white; }"})
+    page = hb.HtmlBuilder(title=title, style="body { background-color: white; }")
 
     # pipeline code
     code = [
@@ -86,7 +84,7 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
 
     # info
     page.add_section(defines.INFO_SECTION)
-    page.open_div(**{"id_": "info-list"})
+    page.open_div(id_="info-list")
 
     if len(res_folders) > 0:
         os.system("{} {} {}".format(COPY_OR_MOVE, ch_list_file, curr_folder))
@@ -96,18 +94,18 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
         defines.ENV_NAME: page.get_formatted_code(sys.prefix),
         defines.TARGET_CH_NAME: tc_name,
         defines.GPS_LIST_NAME: page.get_formatted_link(os.path.basename(gps_file),
-                                                       **{"href": os.path.basename(gps_file),
-                                                          "download": os.path.basename(gps_file)}),
+                                                       href=os.path.basename(gps_file),
+                                                       download=os.path.basename(gps_file)),
         defines.CH_LIST_NAME: page.get_formatted_link(os.path.basename(ch_list_file),
-                                                      **{"href": os.path.basename(ch_list_file),
-                                                         "download": os.path.basename(ch_list_file)})
+                                                      href=os.path.basename(ch_list_file),
+                                                      download=os.path.basename(ch_list_file))
     }
     page.add_bullet_list(info_dict)
     page.close_div()
 
     # results
     page.add_section(defines.RESULTS_SECTION)
-    page.open_div(**{"id_": "results"})
+    page.open_div(id_="results")
     for gps_folder in res_folders:
         gps_path = os.path.join(res_path, gps_folder)
         res_file = file_utils.YmlFile(gps_path)
@@ -175,20 +173,20 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
         # plots
         for i in range(1, summary_imfs + 1):
             if i in imfs_data.keys():
-                page.open_div(**{"id_": "imf-{}-{}".format(i, res_id)})
+                page.open_div(id_="imf-{}-{}".format(i, res_id))
                 page.add_subsection("Imf {}".format(i))
 
                 omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
                 combo_file = imfs_data[i].pop(defines.COMBO_STR)
 
-                page.open_div(**{"id_": "imf-{}-{}-info".format(i, res_id)})
+                page.open_div(id_="imf-{}-{}-info".format(i, res_id))
                 page.add_bullet_list(imfs_data[i])
                 page.close_div()
 
                 imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
                 imf_to_save = os.path.join(curr_plots_folder, "imf-{}-{}.png".format(i, res_id))
                 os.system("{} {} {}".format(COPY_OR_MOVE, imf_plot_name, imf_to_save))
-                page.open_div(**{"id_": "imf-{}-{}-plot".format(i, res_id)})
+                page.open_div(id_="imf-{}-{}-plot".format(i, res_id))
                 page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
                               "imf-{}-{}".format(i, res_id))
                 page.close_div()
@@ -196,7 +194,7 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
                 if combo_file != "":
                     combo_to_save = os.path.join(curr_plots_folder, "combo-{}-{}.png".format(i, res_id))
                     os.system("{} {} {}".format(COPY_OR_MOVE, combo_file, combo_to_save))
-                    page.open_div(**{"id_": "combo-{}-{}-plot".format(i, res_id)})
+                    page.open_div(id_="combo-{}-{}-plot".format(i, res_id))
                     page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "combo-{}-{}.png".format(i, res_id)),
                                   "combo-{}-{}".format(i, res_id))
                     page.close_div()
@@ -205,7 +203,7 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
                     omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
                     omegagram_to_save = os.path.join(curr_plots_folder, "omegagram-{}-{}.png".format(i, res_id))
                     os.system("{} {} {}".format(COPY_OR_MOVE, omegagram_plot_name, omegagram_to_save))
-                    page.open_div(**{"id_": "omegagram-{}-{}-plot".format(i, res_id)})
+                    page.open_div(id_="omegagram-{}-{}-plot".format(i, res_id))
                     page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
                                   "omegagram-{}-{}".format(i, res_id))
                     page.close_div()

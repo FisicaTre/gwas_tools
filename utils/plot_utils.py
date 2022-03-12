@@ -14,7 +14,8 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# TODO : replace plot names with functions from file_utils
+# TODO : plot of summary plots
+# TODO : plot of seismic plots
 
 import os
 import numpy as np
@@ -46,8 +47,8 @@ def __corr_thr(arg):
             return 1.0
 
 
-def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps, samp_freq, title,
-             plot_name, save_path, event_time="center", save_ext="png", figsize=None):
+def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps, samp_freq,
+             title, plot_name, event_time="center", figsize=None):
     """Plot of the instantaneous amplitude and predictor.
     
     Parameters
@@ -67,14 +68,10 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps, samp_freq, title,
     title : str
         plot title
     plot_name : str
-        plot name
-    save_path : str
-        save path
+        plot name (full path)
     event_time : str
         position of the event's gps in the analysed period.
         Can be `start`, `center`, or `end` (default : center)
-    save_ext : str, optional
-        plot extension (default : png)
     figsize : tuple[int], optional
         figure size (default : None)
     """
@@ -112,7 +109,7 @@ def plot_imf(pred, pred_name, imf_ia, imf_ia_name, gps, samp_freq, title,
     ax1.grid(True)
     ax2.grid(False)
     plt.title(title)
-    plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
+    plt.savefig(plot_name, bbox_inches="tight", dpi=300)
     plt.close("all")
     
     
@@ -160,13 +157,12 @@ def plot_combinations(plot_combos, ias, predictors, target_channel_name, gps1, s
             plot_imf(predictors[:, imf_idxs[0]], plot_combos[defines.CHANNEL_KEY][idx],
                      sum_envelope, target_channel_name + " (combo)",
                      gps1, samp_freq, "$\\rho$ = {:.2f}".format(c),
-                     "combo_imf_{}_culprit".format("+".join(imf_list)), out_path,
-                     event_time=event_time, save_ext=save_ext, figsize=figsize)
+                     os.path.join(out_path, file_utils.combo_plot_name(imf_list, save_ext)),
+                     event_time=event_time, figsize=figsize)
             
             
-def plot_omegagram_download(pred, pred_name, target_name, gps, seconds, plot_name, save_path,
-                            norm=False, harmonics=None, event_time="center", save_ext="png",
-                            figsize=None):
+def plot_omegagram_download(pred, pred_name, target_name, gps, seconds, plot_name,
+                            norm=False, harmonics=None, event_time="center", figsize=None):
     """Omegagram plot with download of the target channel.
     
     Parameters
@@ -182,9 +178,7 @@ def plot_omegagram_download(pred, pred_name, target_name, gps, seconds, plot_nam
     seconds : int
         how many seconds to plot
     plot_name : str
-        plot name
-    save_path : str
-        save path
+        plot name (full path)
     norm : bool, optional
         normalize predictor to 10 Hz (default : False)
     harmonics : list[int], optional
@@ -192,8 +186,6 @@ def plot_omegagram_download(pred, pred_name, target_name, gps, seconds, plot_nam
     event_time : str
         position of the event's gps in the analysed period.
         Can be `start`, `center`, or `end` (default : center)
-    save_ext : str, optional
-        plot extension (default : png)
     figsize : tuple[int], optional
         figure size
     """
@@ -256,12 +248,12 @@ def plot_omegagram_download(pred, pred_name, target_name, gps, seconds, plot_nam
     ax.set_title("{} | Fringes: {}".format(target_name, pred_name), fontsize=16)
     cbar = ax.colorbar(clim=(0, 15), location="right")
     cbar.set_label("Normalized energy", fontsize=16)
-    plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
+    plt.savefig(plot_name, bbox_inches="tight", dpi=300)
     plt.close("all")
         
         
-def plot_omegagram(pred, pred_name, target, target_name, gps, seconds, fs, plot_name, save_path,
-                   norm=False, harmonics=None, event_time="center", save_ext="png", figsize=None):
+def plot_omegagram(pred, pred_name, target, target_name, gps, seconds, fs, plot_name,
+                   norm=False, harmonics=None, event_time="center", figsize=None):
     """Omegagram plot.
     
     Parameters
@@ -281,9 +273,7 @@ def plot_omegagram(pred, pred_name, target, target_name, gps, seconds, fs, plot_
     fs : int
         sampling frequency
     plot_name : str
-        plot name
-    save_path : str
-        save path
+        plot name (full path)
     norm : bool, optional
         normalize predictor to 10 Hz (default : False)
     harmonics : list[int], optional
@@ -291,8 +281,6 @@ def plot_omegagram(pred, pred_name, target, target_name, gps, seconds, fs, plot_
     event_time : str
         position of the event's gps in the analysed period.
         Can be `start`, `center`, or `end` (default : center)
-    save_ext : str, optional
-        plot extension (default : png)
     figsize : tuple[int], optional
         figure size
     """
@@ -353,7 +341,7 @@ def plot_omegagram(pred, pred_name, target, target_name, gps, seconds, fs, plot_
     ax.set_title("{} | Fringes: {}".format(target_name, pred_name), fontsize=16)
     cbar = ax.colorbar(clim=(0, 15), location="right")
     cbar.set_label("Normalized energy", fontsize=16)
-    plt.savefig(os.path.join(save_path, plot_name + "." + save_ext), bbox_inches="tight", dpi=300)
+    plt.savefig(plot_name, bbox_inches="tight", dpi=300)
     plt.close("all")
         
 
@@ -531,8 +519,8 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize
                 if yf.get_corr_of_imf(n_imf + 1) >= imf_thr:
                     plot_imf(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1), ia[:, n_imf], target_channel,
                              gps_event, fs, "$\\rho$ = {:.2f}".format(yf.get_corr_of_imf(n_imf + 1)),
-                             "imf_{}_culprit".format(n_imf + 1), res_folder, event_time=event_time,
-                             save_ext=save_ext, figsize=figsize)
+                             os.path.join(res_folder, file_utils.culprit_plot_name(n_imf + 1, save_ext)),
+                             event_time=event_time, figsize=figsize)
             if combos:
                 # ch_list = np.array([yf.get_channel_of_imf(el + 1) for el in range(yf.get_imfs_count())])
                 plot_combinations(yf.get_combos(), ia, preds, target_channel, gps_event,
@@ -545,8 +533,8 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize
                         plot_imf(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1), ia[:, n_imf],
                                  target_channel, gps_event, fs,
                                  "$\\rho$ = {:.2f}".format(yf.get_corr_of_imf(n_imf + 1)),
-                                 "imf_{}_culprit".format(n_imf + 1), res_folder, event_time=event_time,
-                                 save_ext=save_ext, figsize=figsize)
+                                 os.path.join(res_folder, file_utils.culprit_plot_name(n_imf + 1, save_ext)),
+                                 event_time=event_time, figsize=figsize)
             if combos:
                 #ch_list = np.array(
                 #    [yf.get_channel_of_imf(el + 1) for el in range(yf.get_imfs_count()) if el + 1 in imfs_to_plot])
@@ -570,8 +558,7 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, combos=False, save_ext="png", figsize
                                       event_time=event_time, save_ext=save_ext, figsize=figsize)
 
 
-def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None,
-                    save_ext="png", figsize=None):
+def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None, save_ext="png", figsize=None):
     """Plot omegagrams in the given folders.
 
     Parameters
@@ -611,15 +598,13 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None,
                 if yf.get_corr_of_imf(n_imf + 1) >= omegagram_thr:
                     plot_omegagram_download(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1),
                                             target_channel, gps, seconds,
-                                            "imf_{}_omegagram".format(n_imf + 1), res_folder,
-                                            harmonics=harmonics, event_time=event_time,
-                                            save_ext=save_ext, figsize=figsize)
+                                            os.path.join(res_folder, file_utils.omegagram_plot_name(n_imf + 1, save_ext)),
+                                            harmonics=harmonics, event_time=event_time, figsize=figsize)
         elif isinstance(imfs_to_plot, list):
             for n_imf in range(yf.get_imfs_count()):
                 if n_imf + 1 in imfs_to_plot:
                     if yf.get_corr_of_imf(n_imf + 1) >= omegagram_thr:
                         plot_omegagram_download(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1),
                                                 target_channel, gps, seconds,
-                                                "imf_{}_omegagram".format(n_imf + 1), res_folder,
-                                                harmonics=harmonics, event_time=event_time,
-                                                save_ext=save_ext, figsize=figsize)
+                                                os.path.join(res_folder, file_utils.omegagram_plot_name(n_imf + 1, save_ext)),
+                                                harmonics=harmonics, event_time=event_time, figsize=figsize)

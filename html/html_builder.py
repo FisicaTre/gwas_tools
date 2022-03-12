@@ -45,7 +45,7 @@ class HtmlBuilder(object):
     ----------
     title : str
         page title
-    kwargs : dict
+    kwargs : dict{str}
         general page attributes
     """
 
@@ -61,7 +61,7 @@ class HtmlBuilder(object):
         ----------
         text : str
             <p> text
-        kwargs : dict
+        kwargs : dict{str}
             <p> attributes
         """
         self.page.p(text, **kwargs)
@@ -73,7 +73,7 @@ class HtmlBuilder(object):
         ----------
         text : str
             <a> text
-        kwargs : dict
+        kwargs : dict{str}
             <a> attributes
         """
         self.page.a(text, **kwargs)
@@ -85,7 +85,7 @@ class HtmlBuilder(object):
         ----------
         text : str
             <a> text
-        kwargs : dict
+        kwargs : dict{str}
             <a> attributes
 
         Returns
@@ -120,7 +120,7 @@ class HtmlBuilder(object):
         
         Parameters
         ----------
-        kwargs : dict
+        kwargs : dict{str}
             <div> attributes
         """
         self.page.div(**kwargs)

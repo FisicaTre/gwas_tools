@@ -14,14 +14,13 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# TODO : replace **{key: value} with key=value
 
 import os
 import sys
 from datetime import datetime
 from astropy.time import Time
 from ..html import html_builder as hb
-from ..utils import file_utils
+from ..utils import file_utils, signal_utils
 from ..common import defines
 
 
@@ -56,11 +55,11 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
     # curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
     # os.system("mkdir -p {}".format(curr_plots_folder))
     title = "Scattered light daily analysis ({})".format(page_date)
-    page = hb.HtmlBuilder(title=title, **{"style": "body { background-color: white; }"})
+    page = hb.HtmlBuilder(title=title, style="body { background-color: white; }")
 
     # info
     page.add_section(defines.INFO_SECTION)
-    page.open_div(**{"id_": "info-list"})
+    page.open_div(id_="info-list")
 
     info_dict = {
         defines.ENV_NAME: page.get_formatted_code(sys.prefix),
@@ -75,16 +74,16 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
         page.add_section("Correlation between {} and {}".format(tc_name, aux_ch))
 
         for i in range(1, SUMMARY_IMFS + 1):
-            ts_corr_name = os.path.join(res_path, defines.COMPARISON_FOLDER, "imf_{}_ts_corr.png".format(i))
+            ts_corr_name = os.path.join(res_path, defines.COMPARISON_FOLDER, "imf_{:d}_ts_corr.{}".format(i, PLOT_EXT))
             if os.path.exists(ts_corr_name):
-                page.open_div(**{"id_": "imf-{}-summary".format(i)})
-                page.add_subsection("Imf {}".format(i))
+                page.open_div(id_="imf-{:d}-summary".format(i))
+                page.add_subsection("Imf {:d}".format(i))
 
                 # ts_corr_to_save = os.path.join(curr_plots_folder, "imf-{}-ts-corr.png".format(i))
 
                 # os.system("{} {} {}".format(COPY_OR_MOVE, ts_corr_name, ts_corr_to_save))
                 # page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-ts-corr.png".format(i)),
-                page.add_plot(ts_corr_name, "imf-{}-ts-corr".format(i))
+                page.add_plot(ts_corr_name, "imf-{:d}-ts-corr".format(i))
                 page.close_div()
 
     hour_dict = {}
@@ -102,16 +101,16 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
     # results
     page.add_section(defines.SINGLE_GPS_SECTION)
 
-    page.open_div(**{"id_": "info-color"})
+    page.open_div(id_="info-color")
 
     info_color_dict = {
-        defines.WARNING_STR: "Correlation between {} and {}".format(COLOR_THRESHOLD_MIN, COLOR_THRESHOLD),
-        defines.ALERT_STR: "Correlation greater than {}".format(COLOR_THRESHOLD)
+        defines.WARNING_STR: "Correlation between {:.1f} and {:.1f}".format(COLOR_THRESHOLD_MIN, COLOR_THRESHOLD),
+        defines.ALERT_STR: "Correlation greater than {:.1f}".format(COLOR_THRESHOLD)
     }
     page.add_bullet_list(info_color_dict)
     page.close_div()
 
-    page.open_div(**{"id_": "results"})
+    page.open_div(id_="results")
 
     for hh in hour_dict.keys():
         if len(hour_dict[hh]) > 0:
@@ -138,19 +137,19 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
                 above_thr = False
                 for i in range(1, SUMMARY_IMFS + 1):
                     if res_file.get_imfs_count() >= i:
-                        imfs_exists = os.path.exists(os.path.join(gps_path, "imf_{}_culprit.png".format(i)))
+                        imfs_exists = os.path.exists(os.path.join(gps_path, file_utils.culprit_plot_name(i, PLOT_EXT)))
                         if imfs_exists:
                             imfs_data[i] = {}
                             imfs_data[i][defines.CULPRIT_STR] = res_file.get_channel_of_imf(i)
                             imfs_data[i][defines.MEAN_FREQ_STR] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
                             imfs_data[i][defines.OMEGAGRAM_STR] = os.path.exists(os.path.join(gps_path,
-                                                                                              "imf_{:d}_omegagram.png".format(i)))
+                                                                                              file_utils.omegagram_plot_name(i, PLOT_EXT)))
 
                             if res_file.get_corr_of_imf(i) >= COLOR_THRESHOLD:
                                 above_thr = True
 
                 gps_event = res_file.get_gps()
-                res_id = "{:d}".format(gps_event)
+                res_id = str(gps_event)
                 t1 = Time(gps_event, format="gps")
                 t2 = Time(t1, format="iso", scale="utc")
                 gps_date = "{} UTC (GPS: {:d})\n".format(t2, gps_event)
@@ -164,43 +163,43 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
                 page.open_card(gps_date, color_key, res_id)
 
                 # parameters table
-                seconds = res_file.get_seconds()
-                event_pos = res_file.get_event_position()
-                gps_start = gps_event
-                if event_pos == "center":
-                    gps_start = gps_event - seconds // 2
-                elif event_pos == "end":
-                    gps_start = gps_event - seconds
-                gps_end = gps_start + seconds
+                # seconds = res_file.get_seconds()
+                # event_pos = res_file.get_event_position()
+                # gps_start = gps_event
+                # if event_pos == "center":
+                #    gps_start = gps_event - seconds // 2
+                # elif event_pos == "end":
+                #    gps_start = gps_event - seconds
+                # gps_end = gps_start + seconds
+                gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps_event, res_file.get_seconds(),
+                                                                            res_file.get_event_position())
                 page.parameters_table(parameters, int(gps_start), int(gps_end))
 
                 # plots
                 for i in range(1, SUMMARY_IMFS + 1):
                     if i in imfs_data.keys():
-                        page.open_div(**{"id_": "imf-{}-{}".format(i, res_id)})
+                        page.open_div(id_="imf-{:d}-{}-sect".format(i, res_id))
                         page.add_subsection("Imf {}".format(i))
-
-                        omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
-
-                        page.open_div(**{"id_": "imf-{}-{}-info".format(i, res_id)})
+                        page.open_div(id_="imf-{:d}-{}-info".format(i, res_id))
                         page.add_bullet_list(imfs_data[i])
                         page.close_div()
 
-                        imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
+                        imf_plot_name = os.path.join(gps_path, file_utils.culprit_plot_name(i, PLOT_EXT))  # "imf_{}_culprit.png".format(i))
                         # imf_to_save = os.path.join(curr_plots_folder, "imf-{}-{}.png".format(i, res_id))
                         # os.system("{} {} {}".format(COPY_OR_MOVE, imf_plot_name, imf_to_save))
-                        page.open_div(**{"id_": "imf-{}-{}-plot".format(i, res_id)})
+                        page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
                         # page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
-                        page.add_plot(imf_plot_name, "imf-{}-{}".format(i, res_id))
+                        page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
                         page.close_div()
 
+                        omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
                         if omegagram:
-                            omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
+                            omegagram_plot_name = os.path.join(gps_path, file_utils.omegagram_plot_name(i, PLOT_EXT))  # "imf_{}_omegagram.png".format(i))
                             # omegagram_to_save = os.path.join(curr_plots_folder, "omegagram-{}-{}.png".format(i, res_id))
                             # os.system("{} {} {}".format(COPY_OR_MOVE, omegagram_plot_name, omegagram_to_save))
-                            page.open_div(**{"id_": "omegagram-{}-{}-plot".format(i, res_id)})
+                            page.open_div(id_="omegagram-{:d}-{}-plot".format(i, res_id))
                             # page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
-                            page.add_plot(omegagram_plot_name, "omegagram-{}-{}".format(i, res_id))
+                            page.add_plot(omegagram_plot_name, "omegagram-{:d}-{}".format(i, res_id))
                             page.close_div()
 
                         page.close_div()

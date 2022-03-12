@@ -14,7 +14,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# TODO : functions to format plot names
 
 import scipy.io
 import yaml
@@ -663,3 +662,57 @@ def summary_table(folders, comparison, table_name):
         df_dict["mean_freq_{:d}".format(i)] = m_freqs[i]
     df = pd.DataFrame(df_dict)
     df.to_csv(os.path.join(cpath, table_name), index=False)
+
+
+def omegagram_plot_name(imf, ext):
+    """Name of the omegagram plots.
+
+    Parameters
+    ----------
+    imf : int
+        imf to which the omegagram corresponds
+    ext : str
+        plot extension
+
+    Returns
+    -------
+    plot_name : str
+        plot name
+    """
+    return "imf_{:d}_omegagram.{}".format(imf, ext)
+
+
+def culprit_plot_name(imf, ext):
+    """Name of the culprit plots.
+
+    Parameters
+    ----------
+    imf : int
+        imf to which the culprit corresponds
+    ext : str
+        plot extension
+
+    Returns
+    -------
+    plot_name : str
+        plot name
+    """
+    return "imf_{:d}_culprit.{}".format(imf, ext)
+
+
+def combo_plot_name(imf_list, ext):
+    """Name of the combo plots.
+
+    Parameters
+    ----------
+    imf_list : list[int]
+        list of imfs to which the culprit corresponds
+    ext : str
+        plot extension
+
+    Returns
+    -------
+    plot_name : str
+        plot name
+    """
+    return "combo_imf_{}_culprit.{}".format("+".join([str(i) for i in imf_list]), ext)

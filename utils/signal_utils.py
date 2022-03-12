@@ -576,13 +576,14 @@ def get_gps_interval_extremes(gps, duration, event_type):
         raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
 
     start = gps - duration // 2
-    end = gps + duration // 2
+    # end = gps + duration // 2
     if event_type == "start":
         start = gps
-        end = gps + duration
+        # end = gps + duration
     elif event_type == "end":
         start = gps - duration
-        end = gps
+        # end = gps
+    end = start + duration
 
     return start, end
 
