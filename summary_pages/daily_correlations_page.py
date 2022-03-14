@@ -24,12 +24,10 @@ from ..utils import file_utils, signal_utils
 from ..common import defines
 
 
-# SAVE_PLOTS_FOLDER = "plots"
 SUMMARY_IMFS = 1
 COLOR_THRESHOLD_MIN = 0.5
 COLOR_THRESHOLD = 0.7
 PLOT_EXT = "png"
-# COPY_OR_MOVE = "cp"
 
 
 def generate_web_page(res_path, date, tc_name, aux_ch):
@@ -50,10 +48,6 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
 
     # title
     page_date = datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d")
-    # curr_date = page_date.strftime('%Y%m%d')
-    # curr_folder = os.path.join(save_path, curr_date, "_".join(tc_name.split(":")))
-    # curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
-    # os.system("mkdir -p {}".format(curr_plots_folder))
     title = "Scattered light daily analysis ({})".format(page_date)
     page = hb.HtmlBuilder(title=title, style="body { background-color: white; }")
 
@@ -78,11 +72,6 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
             if os.path.exists(ts_corr_name):
                 page.open_div(id_="imf-{:d}-summary".format(i))
                 page.add_subsection("Imf {:d}".format(i))
-
-                # ts_corr_to_save = os.path.join(curr_plots_folder, "imf-{}-ts-corr.png".format(i))
-
-                # os.system("{} {} {}".format(COPY_OR_MOVE, ts_corr_name, ts_corr_to_save))
-                # page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-ts-corr.png".format(i)),
                 page.add_plot(ts_corr_name, "imf-{:d}-ts-corr".format(i))
                 page.close_div()
 
@@ -163,14 +152,6 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
                 page.open_card(gps_date, color_key, res_id)
 
                 # parameters table
-                # seconds = res_file.get_seconds()
-                # event_pos = res_file.get_event_position()
-                # gps_start = gps_event
-                # if event_pos == "center":
-                #    gps_start = gps_event - seconds // 2
-                # elif event_pos == "end":
-                #    gps_start = gps_event - seconds
-                # gps_end = gps_start + seconds
                 gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps_event, res_file.get_seconds(),
                                                                             res_file.get_event_position())
                 page.parameters_table(parameters, int(gps_start), int(gps_end))
@@ -184,21 +165,15 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
                         page.add_bullet_list(imfs_data[i])
                         page.close_div()
 
-                        imf_plot_name = os.path.join(gps_path, file_utils.culprit_plot_name(i, PLOT_EXT))  # "imf_{}_culprit.png".format(i))
-                        # imf_to_save = os.path.join(curr_plots_folder, "imf-{}-{}.png".format(i, res_id))
-                        # os.system("{} {} {}".format(COPY_OR_MOVE, imf_plot_name, imf_to_save))
+                        imf_plot_name = os.path.join(gps_path, file_utils.culprit_plot_name(i, PLOT_EXT))
                         page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
-                        # page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
                         page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
                         page.close_div()
 
                         omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
                         if omegagram:
-                            omegagram_plot_name = os.path.join(gps_path, file_utils.omegagram_plot_name(i, PLOT_EXT))  # "imf_{}_omegagram.png".format(i))
-                            # omegagram_to_save = os.path.join(curr_plots_folder, "omegagram-{}-{}.png".format(i, res_id))
-                            # os.system("{} {} {}".format(COPY_OR_MOVE, omegagram_plot_name, omegagram_to_save))
+                            omegagram_plot_name = os.path.join(gps_path, file_utils.omegagram_plot_name(i, PLOT_EXT))
                             page.open_div(id_="omegagram-{:d}-{}-plot".format(i, res_id))
-                            # page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
                             page.add_plot(omegagram_plot_name, "omegagram-{:d}-{}".format(i, res_id))
                             page.close_div()
 
@@ -210,6 +185,5 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
 
     page.close_div()
 
-    # html_file = os.path.join(curr_folder, defines.PAGE_NAME)
     html_file = os.path.join(res_path, defines.PAGE_NAME)
     page.save_page(html_file)

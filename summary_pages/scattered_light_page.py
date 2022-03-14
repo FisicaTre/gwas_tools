@@ -14,8 +14,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# TODO : get plots directly from the analysis folders
-# TODO : save page in the root folder of the analysis
 
 import os
 import glob
@@ -24,24 +22,17 @@ import sys
 from datetime import datetime
 from astropy.time import Time
 from ..html import html_builder as hb
-from ..utils import file_utils
+from ..utils import file_utils, signal_utils
 from ..common import defines
 
 
-#SAVE_PATH = os.path.expandvars("$HOME/public_html/daily/")
-SAVE_PLOTS_FOLDER = "plots"
-#SCRIPT_NAME = "./scattered_light.py"
-#PLOTS_SCRIPT_NAME = "./scattered_light_plots.py"
-#COMPARISON_SCRIPT_NAME = "./scattered_light_comparison.py"
-#HTML_SCRIPT_NAME = "./scattered_light_page.py"
 PIPELINE_SCRIPT_NAME = "./gwas"
-#SUMMARY_IMFS = 2
 COLOR_THRESHOLD_MIN = 0.5
 COLOR_THRESHOLD_MAX = 0.7
-COPY_OR_MOVE = "cp"
+PLOT_EXT = "png"
 
 
-def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path, summary_imfs=2):
+def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_imfs=2):
     """Output page for scattered light analysis.
 
     Parameters
@@ -56,20 +47,14 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
         channels list
     gps_file : str
         gps glitches list
-    save_path : str
-        path where to store the page files
     summary_imfs : int, optional
         imfs to show in the page
     """
-    res_folders = file_utils.get_results_folders(res_path, must_include=["imf_*_culprit.png"])
+    res_folders = file_utils.get_results_folders(res_path, must_include=["imf_*_culprit.{}".format(PLOT_EXT)])
 
     # title
-    page_date = datetime.strptime(date, "%Y-%m-%d")
-    curr_date = page_date.strftime('%Y%m%d')
-    curr_folder = os.path.join(save_path, curr_date, "_".join(tc_name.split(":")))
-    curr_plots_folder = os.path.join(curr_folder, SAVE_PLOTS_FOLDER)
-    os.system("mkdir -p {}".format(curr_plots_folder))
-    title = "Scattered light analysis ({})".format(page_date.strftime('%Y-%m-%d'))
+    page_date = datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d")
+    title = "Scattered light analysis ({})".format(page_date)
     page = hb.HtmlBuilder(title=title, style="body { background-color: white; }")
 
     # pipeline code
@@ -85,10 +70,6 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
     # info
     page.add_section(defines.INFO_SECTION)
     page.open_div(id_="info-list")
-
-    if len(res_folders) > 0:
-        os.system("{} {} {}".format(COPY_OR_MOVE, ch_list_file, curr_folder))
-        os.system("{} {} {}".format(COPY_OR_MOVE, gps_file, curr_folder))
 
     info_dict = {
         defines.ENV_NAME: page.get_formatted_code(sys.prefix),
@@ -130,11 +111,10 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
                 imfs_data[i][defines.CULPRIT_STR] = res_file.get_channel_of_imf(i)
                 imfs_data[i][defines.MEAN_FREQ_STR] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
                 imfs_data[i][defines.OMEGAGRAM_STR] = os.path.exists(os.path.join(gps_path,
-                                                                                  "imf_{:d}_omegagram.png".format(i)))
+                                                                                  file_utils.omegagram_plot_name(i, PLOT_EXT)))
                 imfs_data[i][defines.COMBO_STR] = ""
-
                 regex = "[_+]{:d}[_+]".format(i)
-                for cf in glob.glob(os.path.join(gps_path, "combo_imf_*_culprit.png")):
+                for cf in glob.glob(os.path.join(gps_path, file_utils.combo_plot_name(["*"], PLOT_EXT))):
                     if re.search(regex, cf):
                         imfs_data[i][defines.COMBO_STR] = cf
                 imf_i_corr = res_file.get_corr_of_imf(i)
@@ -160,52 +140,35 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
         page.open_card(gps_date, color_key, res_id)
 
         # parameters table
-        seconds = res_file.get_seconds()
-        event_pos = res_file.get_event_position()
-        gps_start = gps_event
-        if event_pos == "center":
-            gps_start = gps_event - seconds // 2
-        elif event_pos == "end":
-            gps_start = gps_event - seconds
-        gps_end = gps_start + seconds
+        gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps_event, res_file.get_seconds(),
+                                                                    res_file.get_event_position())
         page.parameters_table(parameters, int(gps_start), int(gps_end))
 
         # plots
         for i in range(1, summary_imfs + 1):
             if i in imfs_data.keys():
-                page.open_div(id_="imf-{}-{}".format(i, res_id))
-                page.add_subsection("Imf {}".format(i))
-
-                omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
-                combo_file = imfs_data[i].pop(defines.COMBO_STR)
-
-                page.open_div(id_="imf-{}-{}-info".format(i, res_id))
+                page.open_div(id_="imf-{:d}-{}-sect".format(i, res_id))
+                page.add_subsection("Imf {:d}".format(i))
+                page.open_div(id_="imf-{:d}-{}-info".format(i, res_id))
                 page.add_bullet_list(imfs_data[i])
                 page.close_div()
 
-                imf_plot_name = os.path.join(gps_path, "imf_{}_culprit.png".format(i))
-                imf_to_save = os.path.join(curr_plots_folder, "imf-{}-{}.png".format(i, res_id))
-                os.system("{} {} {}".format(COPY_OR_MOVE, imf_plot_name, imf_to_save))
-                page.open_div(id_="imf-{}-{}-plot".format(i, res_id))
-                page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "imf-{}-{}.png".format(i, res_id)),
-                              "imf-{}-{}".format(i, res_id))
+                imf_plot_name = os.path.join(gps_path, file_utils.culprit_plot_name(i, PLOT_EXT))
+                page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
+                page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
                 page.close_div()
 
+                combo_file = imfs_data[i].pop(defines.COMBO_STR)
                 if combo_file != "":
-                    combo_to_save = os.path.join(curr_plots_folder, "combo-{}-{}.png".format(i, res_id))
-                    os.system("{} {} {}".format(COPY_OR_MOVE, combo_file, combo_to_save))
-                    page.open_div(id_="combo-{}-{}-plot".format(i, res_id))
-                    page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "combo-{}-{}.png".format(i, res_id)),
-                                  "combo-{}-{}".format(i, res_id))
+                    page.open_div(id_="combo-{:d}-{}-plot".format(i, res_id))
+                    page.add_plot(combo_file, "combo-{:d}-{}".format(i, res_id))
                     page.close_div()
 
+                omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
                 if omegagram:
-                    omegagram_plot_name = os.path.join(gps_path, "imf_{}_omegagram.png".format(i))
-                    omegagram_to_save = os.path.join(curr_plots_folder, "omegagram-{}-{}.png".format(i, res_id))
-                    os.system("{} {} {}".format(COPY_OR_MOVE, omegagram_plot_name, omegagram_to_save))
-                    page.open_div(id_="omegagram-{}-{}-plot".format(i, res_id))
-                    page.add_plot(os.path.join(SAVE_PLOTS_FOLDER, "omegagram-{}-{}.png".format(i, res_id)),
-                                  "omegagram-{}-{}".format(i, res_id))
+                    omegagram_plot_name = os.path.join(gps_path, file_utils.omegagram_plot_name(i, PLOT_EXT))
+                    page.open_div(id_="omegagram-{:d}-{}-plot".format(i, res_id))
+                    page.add_plot(omegagram_plot_name, "omegagram-{:d}-{}".format(i, res_id))
                     page.close_div()
 
                 page.close_div()
@@ -214,5 +177,5 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, save_path
 
     page.close_div()
 
-    html_file = os.path.join(curr_folder, defines.PAGE_NAME)
+    html_file = os.path.join(res_path, defines.PAGE_NAME)
     page.save_page(html_file)

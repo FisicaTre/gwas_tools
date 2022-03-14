@@ -391,7 +391,7 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
 
     framelib = False
     try:
-        from virgotools.everything import *
+        from virgotools.everything import getChannel
         framelib = True
     except:
         pass
@@ -440,8 +440,7 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
     return data_mtx, samp_freq
 
 
-def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start, gps_end,
-                                   fs=None, verbose=False, frametype=None):
+def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start, gps_end, fs, verbose=False):
     """Get data from `gwpy` function `TimeSeriesDict.get`.
 
     Parameters
@@ -454,26 +453,18 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
         starting GPS
     gps_end : int
         ending GPS
-    fs : float, optional
-        desired sampling frequency for the channels (default : None)
+    fs : float
+        desired sampling frequency for the channels
     verbose : bool, optional
         verbosity option of TimeSeriesDict (default : False)
-    frametype : str, optional
-        frametype for desired data (default : None)
 
     Returns
     -------
-    numpy ndarray
+    data : numpy ndarray
         matrix with channels values, first column
         corresponds to the target channel
-    float
-        common sampling frequency of the channels
-        in the matrix
     """
     from gwpy.io import datafind as io_datafind
-
-    if fs is None:
-        fs = np.inf
 
     frametype_tc = io_datafind.find_frametype(target_channel_name, gpstime=gps_start, allow_tape=True)
     frametype_cl = io_datafind.find_frametype(channels_list[0], gpstime=gps_start, allow_tape=True)
@@ -482,7 +473,8 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
         tc_dict = TimeSeriesDict.get([target_channel_name],
                                      gps_start - defines.EXTRA_SECONDS,
                                      gps_end + defines.EXTRA_SECONDS,
-                                     verbose=verbose, resample=fs)
+                                     verbose=verbose)
+        tc_dict.resample(fs)
     else:
         tc_dict = TimeSeriesDict.get([target_channel_name],
                                      gps_start - defines.EXTRA_SECONDS,
@@ -493,24 +485,20 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
         data_dict = TimeSeriesDict.get(channels_list,
                                        gps_start - defines.EXTRA_SECONDS,
                                        gps_end + defines.EXTRA_SECONDS,
-                                       verbose=verbose, resample=fs)
+                                       verbose=verbose)
+        data_dict.resample(fs)
     else:
         data_dict = TimeSeriesDict.get(channels_list,
                                        gps_start - defines.EXTRA_SECONDS,
                                        gps_end + defines.EXTRA_SECONDS,
                                        verbose=verbose, frametype=frametype_cl, resample=fs)
 
-    # dict_fs = np.min([data_dict[ch_name].channel.sample_rate.value for ch_name in channels_list])
-    # if dict_fs < fs:
-    #    fs = dict_fs
-    # data_dict.resample(fs)
-
-    data = np.zeros((data_dict[target_channel_name].value.shape[0], len(channels_list) + 1), dtype=float)
-    data[:, 0] = data_dict[target_channel_name].value
+    data = np.zeros((tc_dict[target_channel_name].value.shape[0], len(channels_list) + 1), dtype=float)
+    data[:, 0] = tc_dict[target_channel_name].value
     for i in range(1, len(channels_list) + 1):
         data[:, i] = data_dict[channels_list[i - 1]].value
 
-    return data, fs
+    return data
 
 
 def upper_envelope(ts):
@@ -576,13 +564,10 @@ def get_gps_interval_extremes(gps, duration, event_type):
         raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
 
     start = gps - duration // 2
-    # end = gps + duration // 2
     if event_type == "start":
         start = gps
-        # end = gps + duration
     elif event_type == "end":
         start = gps - duration
-        # end = gps
     end = start + duration
 
     return start, end
@@ -603,5 +588,7 @@ def get_lock_channel_name_for_ifo(ifo):
     """
     if ifo.startswith("V"):
         return defines.LCK_CH_VIRGO
+    elif ifo.startswith("L"):
+        return defines.LCK_CH_LIGO
     else:
         return None

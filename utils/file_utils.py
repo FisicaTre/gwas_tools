@@ -705,7 +705,7 @@ def combo_plot_name(imf_list, ext):
 
     Parameters
     ----------
-    imf_list : list[int]
+    imf_list : list[int], list[str]
         list of imfs to which the culprit corresponds
     ext : str
         plot extension
@@ -716,3 +716,19 @@ def combo_plot_name(imf_list, ext):
         plot name
     """
     return "combo_imf_{}_culprit.{}".format("+".join([str(i) for i in imf_list]), ext)
+
+
+def seismic_plot_name(ext):
+    """Name of the seismic plots.
+
+    Parameters
+    ----------
+    ext : str
+        plot extension
+
+    Returns
+    -------
+    plot_name : str
+        plot name
+    """
+    return "seismic.{}".format(ext)

@@ -1,4 +1,4 @@
-#  scattered_light.py - this file is part of the gwadaptive_scattering package.
+#  raw_scattered_light.py - this file is part of the gwadaptive_scattering package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -19,18 +19,15 @@ import os
 import numpy as np
 from ..utils import signal_utils, file_utils
 from ..common import defines
-from gwpy.timeseries import TimeSeriesDict
-from gwpy.io import datafind as io_datafind
 
 
-def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
-                    event="center", fs=256, n_scattering=1, smooth_win=50,
-                    combos=False, seismic=False, save_data=True, check_lock=False):
-    """Analysis for scattered light identification.
+def raw_scattered_light(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
+                        event="center", fs=256, n_scattering=1, smooth_win=50,
+                        save_data=True, check_lock=False):
+    """Analysis for scattered light identification using raw target channel and not its imfs.
     The script outputs a folder named as the input gps,
-    with inside three files:
-        - target channel instantaneous amplitudes (*.imf, optional)
-        - most correlated predictor for each imf (*.predictors, optional)
+    with inside two files:
+        - most correlated predictor (*.predictors, optional)
         - output.yml, a summary of the analysis' results
 
     Parameters
@@ -56,10 +53,6 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         number of signal bounces (default : 1)
     smooth_win : int, optional
         signals smoothing window (default : 50)
-    combos : bool, optional
-        if True, combos are computed (default : False)
-    seismic : bool, optional
-        if True, seismic channels data are saved to output file (default : False)
     save_data : bool, optional
         if True, instantaneous amplitudes and predictors are saved to file (defaults : True)
     check_lock : bool, optional
@@ -110,89 +103,24 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     # target channel
     target_channel = signal_utils.butter_lowpass_filter(data[:, 0], f_lowpass, fs)
 
-    # tvf-emd
-    imfs = signal_utils.get_imfs(target_channel, fs, max_imf=1)
-
     # correlations
-    corrs = np.zeros((imfs.shape[1], predictor.shape[1]), dtype=float)
-    envelopes = np.zeros((imfs.shape[0] - 1, imfs.shape[1]), dtype=float)
-    for k in range(imfs.shape[1]):
-        upper_env = signal_utils.upper_envelope(imfs[:, k])[1:]
-        upper_env = signal_utils.smooth(upper_env, smooth_win)
-        envelopes[:, k] = upper_env
-        for l in range(predictor.shape[1]):
-            corrs[k, l] = signal_utils.get_correlation_between(predictor[:, l], upper_env)
-
-    if save_data:
-        # save instantaneous amplitudes
-        file_utils.save_envelopes(envelopes, "_".join(target_channel_name.split(":")), out_path)
+    corrs = np.zeros((predictor.shape[1], ), dtype=float)
+    for l in range(predictor.shape[1]):
+        corrs[l] = signal_utils.get_correlation_between(predictor[:, l], target_channel)
 
     # max correlations
-    max_vals = np.max(corrs, axis=1)
-    max_channels = np.argmax(corrs, axis=1)
-    # if len(channels_list) > 1:
-    #    max_vals_2 = [np.max([n for n in corrs[i, :] if n != np.max(corrs[i, :])]) for i in range(corrs.shape[0])]
-    #    max_channels_2 = [np.where(corrs[i, :] == max_vals_2[i])[0][0] for i in range(corrs.shape[0])]
+    max_val = np.max(corrs)
+    max_channel = np.argmax(corrs)
+    m_freq = signal_utils.mean_frequency(channels_list[max_channel], gps_start, gps_end, bandpass_limits=(0.03, 10))
 
     # output file
     out_file = file_utils.YmlFile()
     out_file.write_parameters(gps, seconds, event, target_channel_name, channels_file,
                               out_path, fs, f_lowpass, n_scattering, smooth_win)
-    ch_str = []
-    ch_corr = []
-    ch_m_fr = []
-    for n_imf in range(len(max_vals)):
-        try:
-            ch_str.append(channels_list[max_channels[n_imf]])
-        except:
-            ch_str.append("Not found")
-        try:
-            ch_corr.append(max_vals[n_imf])
-        except:
-            ch_corr.append(-999.0)
-        try:
-            ch_m_fr.append(signal_utils.mean_frequency(channels_list[max_channels[n_imf]], gps_start,
-                                                       gps_end, bandpass_limits=(0.03, 10)))
-        except:
-            ch_m_fr.append(0.0)
-    out_file.write_correlation_section(ch_str, ch_corr, ch_m_fr)
-
-    selected_predictors = predictor[:, max_channels]
-    if combos:
-        combos_imfs, combos_channels, combos_corrs = signal_utils.get_combos(ch_str, envelopes, selected_predictors)
-        out_file.write_combo_section(combos_imfs, combos_channels, combos_corrs)
-
-    # if len(channels_list) > 1:
-    #    ch_2_str = []
-    #    ch_2_corr = []
-    #    ch_2_m_fr = []
-    #    for n_imf in range(len(max_vals_2)):
-    #        try:
-    #            ch_2_str.append(channels_list[max_channels_2[n_imf]])
-    #            ch_2_corr.append(max_vals_2[n_imf])
-    #            ch_2_m_fr.append(signal_utils.mean_frequency(data[:, max_channels_2[n_imf] + 1], fs))
-    #        except:
-    #            ch_2_str.append("Not found")
-    #            ch_2_corr.append(-999.0)
-    #            ch_2_m_fr.append(0.0)
-    #    out_file.write_2nd_best_correlation_section(ch_2_str, ch_2_corr, ch_2_m_fr)
-
-    if seismic:
-        if ifo == "L1":
-            frametype = io_datafind.find_frametype(defines.LIGO_SEISMIC_CHANNELS[0], gpstime=gps)
-            if frametype is not None:
-                seismometers = TimeSeriesDict.get(defines.LIGO_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True,
-                                                  frametype=frametype, resample=3)
-            else:
-                seismometers = TimeSeriesDict.get(defines.LIGO_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True)
-                seismometers.resample(3)
-            seis_dict = {}
-            for s in defines.LIGO_SEISMIC_CHANNELS:
-                seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
-            out_file.write_seismic_channels(seis_dict)
-
+    out_file.write_correlation_section([channels_list[max_channel]], [max_val], [m_freq])
     out_file.save(out_path)
 
     if save_data:
         # save predictors
+        selected_predictors = predictor[:, max_channel]
         file_utils.save_predictors(selected_predictors, "_".join(target_channel_name.split(":")), out_path)
