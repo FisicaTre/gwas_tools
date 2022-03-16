@@ -14,6 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+# TODO : add new in algorithms scattered_light_gwf
 
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 __author__ = "Stefano Bianchi"

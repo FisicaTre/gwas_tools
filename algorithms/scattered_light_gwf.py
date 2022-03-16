@@ -1,4 +1,4 @@
-#  scattered_light.py - this file is part of the gwadaptive_scattering package.
+#  scattered_light_gwf.py - this file is part of the gwadaptive_scattering package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -23,9 +23,9 @@ from gwpy.timeseries import TimeSeriesDict
 from gwpy.io import datafind as io_datafind
 
 
-def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
-                    event="center", fs=256, n_scattering=1, smooth_win=50,
-                    combos=False, seismic=False, save_data=True, check_lock=False):
+def scattered_light_gwf(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
+                        event="center", fs=256, n_scattering=1, smooth_win=50,
+                        combos=False, seismic=False, save_data=True, check_lock=False):
     """Analysis for scattered light identification.
     The script outputs a folder named as the input gps,
     with inside three files:
@@ -97,8 +97,9 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
                     return None
 
     # build time series matrix
-    data, fs = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
-                                                           gps_start, gps_end, fs, verbose=True)
+    data, fs = signal_utils.get_data_from_gwf_files("", "", 0, 0,
+                                                    target_channel_name, channels_list,
+                                                    gps_start, gps_end, fs, verbose=True)
 
     # predictors
     predictor = signal_utils.get_predictors(data[:, 1:], fs, smooth_win=smooth_win, n_scattering=n_scattering)

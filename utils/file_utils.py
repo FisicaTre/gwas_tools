@@ -331,14 +331,18 @@ class YmlFile(object):
         """
         self.content[defines.COMBO_SECT_KEY] = []
         for i in range(len(channels)):
-            tmp_dict = {defines.IMF_KEY: imfs[i], defines.CHANNEL_KEY: channels[i],
+            tmp_dict = {defines.IMF_KEY: ",".join([str(imf) for imf in imfs[i]]), defines.CHANNEL_KEY: channels[i],
                         defines.CORR_KEY: float(corrs[i])}
             self.content[defines.COMBO_SECT_KEY].append(tmp_dict)
 
     def get_combos(self):
         """Get combos section.
         """
-        return self.content[defines.COMBO_SECT_KEY]
+        combos = self.content[defines.COMBO_SECT_KEY]
+        for i in range(len(combos)):
+            imfs = combos[i][defines.IMF_KEY]
+            combos[i][defines.IMF_KEY] = [int(imf) for imf in imfs.split(",")]
+        return combos
 
     def write_seismic_channels(self, seismic_dict):
         """Write seismic channels values.

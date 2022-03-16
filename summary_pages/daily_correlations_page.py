@@ -68,11 +68,11 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
         page.add_section("Correlation between {} and {}".format(tc_name, aux_ch))
 
         for i in range(1, SUMMARY_IMFS + 1):
-            ts_corr_name = os.path.join(res_path, defines.COMPARISON_FOLDER, "imf_{:d}_ts_corr.{}".format(i, PLOT_EXT))
-            if os.path.exists(ts_corr_name):
+            seismic_plot_name = os.path.join(res_path, defines.COMPARISON_FOLDER, file_utils.seismic_plot_name(PLOT_EXT))
+            if os.path.exists(seismic_plot_name):
                 page.open_div(id_="imf-{:d}-summary".format(i))
                 page.add_subsection("Imf {:d}".format(i))
-                page.add_plot(ts_corr_name, "imf-{:d}-ts-corr".format(i))
+                page.add_plot(seismic_plot_name, "imf-{:d}-seismic".format(i))
                 page.close_div()
 
     hour_dict = {}

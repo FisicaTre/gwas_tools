@@ -1,4 +1,4 @@
-#  raw_scattered_light.py - this file is part of the gwadaptive_scattering package.
+#  scattered_light_raw.py - this file is part of the gwadaptive_scattering package.
 #  Copyright (C) 2020- Stefano Bianchi
 #
 #  This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ from ..utils import signal_utils, file_utils
 from ..common import defines
 
 
-def raw_scattered_light(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
+def scattered_light_raw(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
                         event="center", fs=256, n_scattering=1, smooth_win=50,
                         save_data=True, check_lock=False):
     """Analysis for scattered light identification using raw target channel and not its imfs.
@@ -60,7 +60,7 @@ def raw_scattered_light(gps, seconds, target_channel_name, channels_file, out_pa
     """
     if event not in defines.EVENT_LOCATION:
         raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
-    if not isinstance(f_lowpass, int) or not isinstance(f_lowpass, float) or f_lowpass not in defines.LOWP_FREQ_OPTS:
+    if not isinstance(f_lowpass, int) and not isinstance(f_lowpass, float) and f_lowpass not in defines.LOWP_FREQ_OPTS:
         raise ValueError("Lowpass frequency must be a float or one of these "
                          "strings : {}".format(", ".join(defines.LOWP_FREQ_OPTS)))
 

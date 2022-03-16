@@ -6,7 +6,7 @@ def __imports(mode, plots=False, html=False):
         if plots:
             imports.append("from gwadaptive_scattering.utils import plot_utils")
     elif mode == "comparison":
-        imports.append("from gwadaptive_scattering.utils import file_utils")
+        imports.append("from gwadaptive_scattering.utils import file_utils, plot_utils, signal_utils")
         if html:
             imports.append("from gwadaptive_scattering.summary_pages import scattered_light_page")
 
@@ -107,14 +107,16 @@ def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1)
     lines = "{}\n".format(env)
     lines += "\n".join(__imports(mode, html=html))
     lines += "\n".join(__args(mode))
-    lines += "res_folders = file_utils.get_results_folders(args[\"ipath\"])"
+    lines += "\nres_folders = file_utils.get_results_folders(args[\"ipath\"])"
 
     if imfs is None:
         imfs = [1, 2]
-    lines += "file_utils.summary_table(res_folders, {}, \"summary_table.csv\")".format(imfs)
+    lines += "\nfile_utils.summary_table(res_folders, {}, \"summary_table.csv\")".format(imfs)
 
     if html:
-        lines += "scattered_light_page.generate_web_page(args[\"ipath\"], args[\"date\"], " \
+        lines += "\nplot_utils.plot_seismic_data(args[\"ipath\"], " \
+                 "signal_utils.get_ifo_of_channel(args[\"target_channel\"]))"
+        lines += "\nscattered_light_page.generate_web_page(args[\"ipath\"], args[\"date\"], " \
                  "args[\"target_channel\"], args[\"channels_list\"], args[\"gps_list\"], " \
                  "args[\"ipath\"], summary_imfs={:d})".format(summary_imfs)
 

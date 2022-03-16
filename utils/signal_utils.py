@@ -321,13 +321,17 @@ def get_instrument_lock_data(lock_channel, gps_start, gps_end):
 
     Returns
     -------
-    lock_data : gwpy.Segment
+    lock_data : gwpy.Segment, numpy ndarray
         for L1 : segments of instrument active periods in [`gps_start`, `gps_end`]
+        for V1 : numpy array of lock channel values in [`gps_start`, `gps_end`]
     """
     lock_data = []
     if get_ifo_of_channel(lock_channel) == "L1":
         lock_data = DataQualityFlag.query(lock_channel, gps_start, gps_end)
         lock_data = lock_data.active
+    elif get_ifo_of_channel(lock_channel) == "V1":
+        lock_data = TimeSeriesDict.get([lock_channel], gps_start, gps_end)
+        lock_data = lock_data[lock_channel].value
 
     return lock_data
 
@@ -374,7 +378,7 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
         ending GPS
     samp_freq : float, optional
         desired sampling frequency for the channels (default : None)
-    kwargs : dict
+    kwargs : dict{bool}
         gwpy.TimeSeriesDict keys
 
     Returns
@@ -386,9 +390,6 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
         common sampling frequency of the channels
         in the matrix
     """
-    if samp_freq is None:
-        samp_freq = np.inf
-
     framelib = False
     try:
         from virgotools.everything import getChannel
@@ -396,11 +397,16 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
     except:
         pass
 
-    channels_list = [target_channel] + channels
+    if not framelib:
+        if samp_freq is None:
+            samp_freq = np.inf
 
+    channels_list = [target_channel] + channels
+    start_gps = start_gps - defines.EXTRA_SECONDS
+    end_gps = end_gps + defines.EXTRA_SECONDS
     gwf_to_read = __get_gwf_files_of_interest(gwf_path, start_gps, end_gps, sep, start_gps_pos, n_gps_pos)
 
-    data = {}
+    data = {}  # dict[list[float]]
     for i, f in enumerate(gwf_to_read):
         flds = os.path.split(f)[1].split(".")[0].split(sep)
         s = max(start_gps, int(flds[start_gps_pos]))
@@ -431,6 +437,10 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
                     data[k] = np.concatenate((data[k], d[k].value), axis=None)
                 else:
                     data[k] = np.concatenate((data[k], d[k]), axis=None)
+
+    if framelib and samp_freq is not None:
+        for k in data.keys():
+            data[k] = data[k][::(len(data[k]) // (samp_freq * (end_gps - start_gps)))]
 
     data_mtx = np.zeros((data[target_channel].shape[0], len(channels_list)), dtype=float)
     data_mtx[:, 0] = data[target_channel]
