@@ -97,7 +97,7 @@ def scattered_light_gwf(gps, seconds, target_channel_name, channels_file, out_pa
                     return None
 
     # build time series matrix
-    data, fs = signal_utils.get_data_from_gwf_files("", "", 0, 0,
+    data, fs = signal_utils.get_data_from_gwf_files("/sps/virgo/BKDB/O3/O3_raw.ffl", "-", 2, 3,
                                                     target_channel_name, channels_list,
                                                     gps_start, gps_end, fs, verbose=True)
 
