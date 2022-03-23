@@ -736,3 +736,35 @@ def seismic_plot_name(ext):
         plot name
     """
     return "seismic.{}".format(ext)
+
+
+def summary_freq_plot_name(ext):
+    """Name of the summary plot by frequency.
+
+        Parameters
+        ----------
+        ext : str
+            plot extension
+
+        Returns
+        -------
+        plot_name : str
+            plot name
+        """
+    return "summary_freq.{}".format(ext)
+
+
+def summary_chamber_plot_name(ext):
+    """Name of the summary plot by chamber.
+
+        Parameters
+        ----------
+        ext : str
+            plot extension
+
+        Returns
+        -------
+        plot_name : str
+            plot name
+        """
+    return "summary_chamber.{}".format(ext)

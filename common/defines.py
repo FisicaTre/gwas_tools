@@ -61,6 +61,11 @@ LOWP_FREQ_OPTS = ["average", "max"]
 LCK_CH_VIRGO = "V1:DQ_META_ITF_Mode"
 LCK_CH_LIGO = "L1:DMT-ANALYSIS_READY:1"
 
+# summary plots
+FREQ_BANDS = [0.03, 0.1, 0.3, 1, 3, 10]
+CHAMBERS = {"BSC5": ["ETMY", "TMSY"], "BSC4": ["ETMX", "TMSX"], "BSC1": ["ITMY"], "BSC3": ["ITMX"], "HAM6": ["OM"],
+            "HAM2": ["-MC", "-PR"], "HAM3": ["MC2", "-PR2"], "HAM5": ["-SR"], "HAM4": ["-SR2"], "HAM1": ["-RM"]}
+
 # html
 INFO_SECTION = "info"
 ENV_NAME = "Environment"

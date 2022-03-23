@@ -14,12 +14,12 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# TODO : plot of summary plots
 
 import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
 from astropy.time import Time
 from gwpy.timeseries import TimeSeries
 from gwpy.segments import Segment
@@ -28,12 +28,17 @@ from ..common import defines
 
 
 def __plot_imfs_arg(arg):
-    if arg == "all":
-        return arg
-    elif isinstance(arg, list):
-        return arg
-    else:
-        return None
+    arg_ok = True
+    if arg is not None:
+        if isinstance(arg, list):
+            for a in arg:
+                if not isinstance(a, int):
+                    arg_ok = False
+                    break
+        else:
+            arg_ok = False
+
+    return arg_ok
 
 
 def __corr_thr(arg):
@@ -297,15 +302,15 @@ def plot_omegagram(pred, pred_name, target, target_name, gps, seconds, fs, plot_
     plt.close("all")
         
 
-def plot_imfs(folders, imfs, imf_thr=-1.0, save_ext="png", figsize=None):
+def plot_imfs(folders, imfs_to_plot=None, imf_thr=-1.0, save_ext="png", figsize=None):
     """Plot imfs in the given folders.
 
     Parameters
     ----------
     folders : list[str]
         paths to the files needed for the plots
-    imfs : str, list[int]
-        imfs to plot, can be "all", or a list of integers
+    imfs_to_plot : list[int]
+        imfs to consider for combos (default : None, i.e. all the imfs)
     imf_thr : float, optional
         correlation value above which to plot imfs (default : -1.0)
     save_ext : str, optional
@@ -313,9 +318,8 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, save_ext="png", figsize=None):
     figsize : tuple[int], optional
         figure size
     """
-    imfs_to_plot = __plot_imfs_arg(imfs)
-    if imfs_to_plot is None:
-        return
+    if not __plot_imfs_arg(imfs_to_plot):
+        raise ValueError("`imfs` parameter must be a list of integers.")
     imf_thr = __corr_thr(imf_thr)
 
     for res_folder in folders:
@@ -328,14 +332,14 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, save_ext="png", figsize=None):
         event_time = yf.get_event_position()
         fs = yf.get_sampling_frequency()
 
-        if imfs_to_plot == "all":
+        if imfs_to_plot is None:
             for n_imf in range(yf.get_imfs_count()):
                 if yf.get_corr_of_imf(n_imf + 1) >= imf_thr:
                     plot_imf(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1), ia[:, n_imf], target_channel,
                              gps_event, fs, "$\\rho$ = {:.2f}".format(yf.get_corr_of_imf(n_imf + 1)),
                              os.path.join(res_folder, file_utils.culprit_plot_name(n_imf + 1, save_ext)),
                              event_time=event_time, figsize=figsize)
-        elif isinstance(imfs_to_plot, list):
+        else:
             for n_imf in range(yf.get_imfs_count()):
                 if n_imf + 1 in imfs_to_plot:
                     if yf.get_corr_of_imf(n_imf + 1) >= imf_thr:
@@ -346,15 +350,15 @@ def plot_imfs(folders, imfs, imf_thr=-1.0, save_ext="png", figsize=None):
                                  event_time=event_time, figsize=figsize)
 
 
-def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None, save_ext="png", figsize=None):
+def plot_omegagrams(folders, imfs_to_plot=None, omegagram_thr=-1.0, harmonics=None, save_ext="png", figsize=None):
     """Plot omegagrams in the given folders.
 
     Parameters
     ----------
     folders : list[str]
         paths to the files needed for the plots
-    imfs : str, list[int]
-        imfs to consider, can be "all", or a list of integers
+    imfs_to_plot : list[int]
+        imfs to consider for combos (default : None, i.e. all the imfs)
     omegagram_thr : float, optional
         correlation value above which to plot omegagrams (default : -1.0)
     harmonics : list[int]
@@ -367,9 +371,8 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None, save_ext=
     if harmonics is None:
         harmonics = [1, 2, 3, 4, 5]
 
-    imfs_to_plot = __plot_imfs_arg(imfs)
-    if imfs_to_plot is None:
-        return
+    if not __plot_imfs_arg(imfs_to_plot):
+        raise ValueError("`imfs` parameter must be a list of integers.")
     omegagram_thr = __corr_thr(omegagram_thr)
 
     for res_folder in folders:
@@ -381,14 +384,14 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None, save_ext=
         seconds = yf.get_seconds()
         event_time = yf.get_event_position()
 
-        if imfs_to_plot == "all":
+        if imfs_to_plot is None:
             for n_imf in range(yf.get_imfs_count()):
                 if yf.get_corr_of_imf(n_imf + 1) >= omegagram_thr:
                     plot_omegagram_download(preds[:, n_imf], yf.get_channel_of_imf(n_imf + 1),
                                             target_channel, gps, seconds,
                                             os.path.join(res_folder, file_utils.omegagram_plot_name(n_imf + 1, save_ext)),
                                             harmonics=harmonics, event_time=event_time, figsize=figsize)
-        elif isinstance(imfs_to_plot, list):
+        else:
             for n_imf in range(yf.get_imfs_count()):
                 if n_imf + 1 in imfs_to_plot:
                     if yf.get_corr_of_imf(n_imf + 1) >= omegagram_thr:
@@ -398,15 +401,15 @@ def plot_omegagrams(folders, imfs, omegagram_thr=-1.0, harmonics=None, save_ext=
                                                 harmonics=harmonics, event_time=event_time, figsize=figsize)
 
 
-def plot_combinations(folders, imfs, save_ext="png", imf_thr=-1.0, figsize=None):
-    """Plot sum of more instantaneous amplitudes and the predictor.
+def plot_combinations(folders, imfs_to_plot=None, save_ext="png", imf_thr=-1.0, figsize=None):
+    """Plot of the sum of more instantaneous amplitudes and the predictor.
 
     Parameters
     ----------
     folders : list[str]
         paths to the files needed for the plots
-    imfs : str, list[int]
-        imfs to consider for combos, can be "all", or a list of integers
+    imfs_to_plot : list[int]
+        imfs to consider for combos (default : None, i.e. all the imfs)
     imf_thr : float, optional
         correlation value above which to plot the combo (default : -1.0)
     save_ext : str, optional
@@ -414,9 +417,8 @@ def plot_combinations(folders, imfs, save_ext="png", imf_thr=-1.0, figsize=None)
     figsize : tuple[int], optional
         figure size
     """
-    imfs_to_plot = __plot_imfs_arg(imfs)
-    if imfs_to_plot is None:
-        return
+    if not __plot_imfs_arg(imfs_to_plot):
+        raise ValueError("`imfs` parameter must be a list of integers.")
     imf_thr = __corr_thr(imf_thr)
 
     for res_folder in folders:
@@ -430,7 +432,7 @@ def plot_combinations(folders, imfs, save_ext="png", imf_thr=-1.0, figsize=None)
         fs = yf.get_sampling_frequency()
         combos = yf.get_combos()
 
-        if imfs_to_plot == "all":
+        if imfs_to_plot is None:
             for i, c in enumerate(combos[defines.CORR_KEY]):
                 if c >= imf_thr:
                     imf_idxs = [j - 1 for j in combos[defines.IMF_KEY][i]]
@@ -439,7 +441,7 @@ def plot_combinations(folders, imfs, save_ext="png", imf_thr=-1.0, figsize=None)
                              target_channel + " (combo)", gps_event, fs, "$\\rho$ = {:.2f}".format(c),
                              os.path.join(res_folder, file_utils.combo_plot_name(combos[defines.IMF_KEY][i], save_ext)),
                              event_time=event_time, figsize=figsize)
-        elif isinstance(imfs_to_plot, list):
+        else:
             imfs_list = [imf for imf in imfs_to_plot if imf <= yf.get_imfs_count()]
             if len(imfs_list) > 0:
                 for i in range(len(combos[defines.IMF_KEY])):
@@ -555,10 +557,76 @@ def plot_seismic_data(folders_path, ifo, save_ext="png"):
                     plt.xticks(np.arange(0, len(seismometers[i][seism_channels[i * seism_group]]), step=60), labels)
                     plt.xlim(0, len(seismometers[i][seism_channels[i * seism_group]]))
                     plt.legend(loc=0)
-                    plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0))
+                    plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
                     plt.ylabel("[$ms^{-1}$]", fontsize=font_size)
                     plt.grid(True)
 
             plt.xlabel("Hours from {} 00:00:00".format(date), fontsize=font_size)
             plt.savefig(os.path.join(out_folder, file_utils.seismic_plot_name(save_ext)), bbox_inches="tight", dpi=300)
             plt.close("all")
+
+
+def plot_summaries(res_table, imf_thr=-1.0, save_ext="png", figsize=None):
+    """Summary plots for the daily analysis.
+
+    Parameters
+    ----------
+    res_table : str
+        path to the summary table
+    imf_thr : float, optional
+        correlation value above which to consider a line in the summary table (default : -1.0)
+    save_ext : str, optional
+        plots extension (default : png)
+    figsize : tuple[int], optional
+        figure size
+    """
+    imf_thr = __corr_thr(imf_thr)
+    table = pd.read_csv(res_table)
+    # add range column
+    table["range"] = "ELSE"
+    freq_bands_names = ["{:f} Hz <= f < {:f} Hz".format(defines.FREQ_BANDS[i], defines.FREQ_BANDS[i + 1])
+                        for i in range(len(defines.FREQ_BANDS) - 1)]
+    for i in range(len(defines.FREQ_BANDS) - 1):
+        table.range[(table.mean_frequency >= defines.FREQ_BANDS[i]) &
+                    (table.mean_frequency < defines.FREQ_BANDS[i + 1])] = freq_bands_names[i]
+    # add location column
+    table["location"] = "OTHER"
+    for k, v in defines.CHAMBERS.items():
+        for vi in v:
+            table.location[table.culprit.str.contains(vi, regex=False, na=False)] = k
+
+    table = table[table.correlation > imf_thr]
+
+    font_size = 16
+    plot_path = os.path.split(res_table)[0]
+    # plot by frequency range
+    freqs = table["range"].value_counts()
+    ranges = list(freqs.index)
+    ranges_vals = freqs.values
+    ranges_i = np.arange(len(ranges_vals))
+    fig, ax = plt.subplots() if figsize is None else plt.subplots(figsize=figsize)
+    plt.bar(ranges_i, ranges_vals, color="darkblue", edgecolor="black", linewidth=1)
+    plt.xlabel("Frequency band", fontsize=font_size)
+    plt.ylabel("Percentage", fontsize=font_size)
+    plt.title("Percentage by frequency band (correlation > {:.2f})".format(imf_thr), fontsize=font_size)
+    plt.xticks(ranges_i, ranges, fontsize=font_size)
+    plt.ylim(0, 1)
+    ax.yaxis.set_major_formatter(mtick.PercentFormatter(xmax=1, decimals=None, symbol="%", is_latex=False))
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_path, file_utils.summary_freq_plot_name(save_ext)), bbox_inches="tight", dpi=300)
+
+    # plot by chamber
+    locs = table["location"].value_counts()
+    chambers = list(locs.index)
+    chambers_vals = locs.values
+    chambers_i = np.arange(len(chambers_vals))
+    plt.subplots() if figsize is None else plt.subplots(figsize=figsize)
+    plt.barh(chambers_i, chambers_vals, height=0.6, color="darkblue", edgecolor="black", linewidth=1)
+    plt.title("Scattering glitches associated to location (correlation > {:.2f})".format(imf_thr), fontsize=font_size)
+    plt.xlabel("Counts", fontsize=font_size)
+    plt.ylabel("Location", fontsize=font_size)
+    plt.yticks(chambers_i, chambers)
+    plt.tight_layout()
+    plt.savefig(os.path.join(plot_path, file_utils.summary_chamber_plot_name(save_ext)), dpi=300, bbox_inches="tight")
+
+    plt.close("all")
