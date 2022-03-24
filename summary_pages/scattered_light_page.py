@@ -19,7 +19,6 @@ import os
 import glob
 import re
 import sys
-from datetime import datetime
 from astropy.time import Time
 from ..html import html_builder as hb
 from ..utils import file_utils, signal_utils
@@ -53,8 +52,7 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
     res_folders = file_utils.get_results_folders(res_path, must_include=["imf_*_culprit.{}".format(PLOT_EXT)])
 
     # title
-    page_date = datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d")
-    title = "Scattered light analysis ({})".format(page_date)
+    title = "Scattered light analysis ({})".format(date)
     page = hb.HtmlBuilder(title=title, style="body { background-color: white; }")
 
     # pipeline code

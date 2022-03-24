@@ -17,13 +17,13 @@
 
 import os
 import sys
-from datetime import datetime
 from astropy.time import Time
 from ..html import html_builder as hb
 from ..utils import file_utils, signal_utils
 from ..common import defines
 
 
+PIPELINE_SCRIPT_NAME = "./gwas_corr"
 SUMMARY_IMFS = 1
 COLOR_THRESHOLD_MIN = 0.5
 COLOR_THRESHOLD = 0.7
@@ -47,8 +47,7 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
     res_folders = file_utils.get_results_folders(res_path, must_include=["*.{}".format(PLOT_EXT)])
 
     # title
-    page_date = datetime.strptime(date, "%Y-%m-%d").strftime("%Y-%m-%d")
-    title = "Scattered light daily analysis ({})".format(page_date)
+    title = "Scattered light daily analysis ({})".format(date)
     page = hb.HtmlBuilder(title=title, style="body { background-color: white; }")
 
     # info
@@ -103,7 +102,7 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
 
     for hh in hour_dict.keys():
         if len(hour_dict[hh]) > 0:
-            date_h = "{} {:02d}:00:00".format(page_date, hh)
+            date_h = "{} {:02d}:00:00".format(date, hh)
 
             # main card
             page.open_card(date_h, "primary", "main-card-{:d}".format(hh))

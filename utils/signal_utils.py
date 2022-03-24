@@ -307,6 +307,22 @@ def get_ifo_of_channel(channel):
     return channel.split(":")[0]
 
 
+def get_channel_wo_ifo(channel):
+    """Get channel name without ifo.
+
+    Parameters
+    ----------
+    channel : str
+        channel name
+
+    Returns
+    -------
+    name : str
+        channel name without ifo
+    """
+    return channel.split(":")[1]
+
+
 def get_instrument_lock_data(lock_channel, gps_start, gps_end):
     """Get data for instrument lock channel.
 

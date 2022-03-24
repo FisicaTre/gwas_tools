@@ -50,8 +50,8 @@ def generate_algo_script(name, env, plots=False, imfs=None,
         python3 environment shebang
     plots : bool, optional
         generate (or not) plots during the analysis (default : False)
-    imfs : str, list[int], optional
-        imfs to plot, can be "all", or list of integers (default : [1])
+    imfs : list[int], optional
+        imfs to plot (default : None, i.e. all the imfs)
     imf_thr : float, optional
         correlation value above which to plot imfs (default : -1.0)
     omg_thr : float, optional
@@ -69,7 +69,58 @@ def generate_algo_script(name, env, plots=False, imfs=None,
     lines += "\n".join(__imports(mode, plots=plots))
     lines += "\n".join(__args(mode))
     lines += "\nscattered_light.scattered_light(args[\"gps\"], args[\"seconds\"], args[\"target_channel\"], " \
-             "args[\"channels_list\"], args[\"opath\"], args[\"lowpass_freq\"], fs=args[\"samp_freq\"])"
+             "args[\"channels_list\"], args[\"opath\"], args[\"lowpass_freq\"], fs=args[\"samp_freq\"], " \
+             "check_lock=True)"
+
+    if plots:
+        if harmonics is None:
+            harmonics = [1, 3, 5]
+        if imfs is None:
+            imfs = [1]
+        lines += "\nfolder_name = [os.path.join(args[\"opath\"], \"{:d}\".format(args[\"gps\"]))]"
+        lines += "\nplot_utils.plot_imfs(folder_name, {}, imf_thr={:f}, " \
+                 "save_ext={}, figsize={})".format(imfs, imf_thr, fig_ext, fig_size)
+        lines += "\nplot_utils.plot_omegagrams(folder_name, {}, omegagram_thr={:f}, harmonics={}, " \
+                 "save_ext={}, figsize={})".format(imfs, omg_thr, harmonics, fig_ext, fig_size)
+
+    f.write(lines)
+    f.close()
+
+
+def generate_algo_corr_script(name, env, plots=False, imfs=None,
+                              imf_thr=-1.0, omg_thr=-1.0, harmonics=None,
+                              fig_ext="png", fig_size=None):
+    """Generate the script for the main correlation algorithm.
+
+    Parameters
+    ----------
+    name : str
+        name of the script
+    env : str
+        python3 environment shebang
+    plots : bool, optional
+        generate (or not) plots during the analysis (default : False)
+    imfs : list[int], optional
+        imfs to plot (default : None, i.e. all the imfs)
+    imf_thr : float, optional
+        correlation value above which to plot imfs (default : -1.0)
+    omg_thr : float, optional
+        correlation value above which to plot omegagrams (default : -1.0)
+    harmonics : list[int]
+        harmonics for the culprit (default : [1, 3, 5])
+    fig_ext: str, optional
+        plots extension (default : png)
+    fig_size : tuple[int], optional
+        figure size
+    """
+    mode = "tool"
+    f = open(name, "w")
+    lines = "{}\n".format(env)
+    lines += "\n".join(__imports(mode, plots=plots))
+    lines += "\n".join(__args(mode))
+    lines += "\nscattered_light.scattered_light(args[\"gps\"], args[\"seconds\"], args[\"target_channel\"], " \
+             "args[\"channels_list\"], args[\"opath\"], args[\"lowpass_freq\"], fs=args[\"samp_freq\"], " \
+             "check_lock=True, combos=True, seismic=True)"
 
     if plots:
         if harmonics is None:
@@ -118,7 +169,55 @@ def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1)
                  "signal_utils.get_ifo_of_channel(args[\"target_channel\"]))"
         lines += "\nscattered_light_page.generate_web_page(args[\"ipath\"], args[\"date\"], " \
                  "args[\"target_channel\"], args[\"channels_list\"], args[\"gps_list\"], " \
-                 "args[\"ipath\"], summary_imfs={:d})".format(summary_imfs)
+                 "summary_imfs={:d})".format(summary_imfs)
 
     f.write(lines)
+    f.close()
+
+
+def generate_comparison_corr_script(name, env, html=False, imfs=None):
+    """Generate the script for the correlation analysis' results comparison.
+
+    Parameters
+    ----------
+    name : str
+        name of the script
+    env : str
+        python3 environment shebang
+    html : bool, optional
+        if True, the summary web page is generated (default : False)
+    imfs : list[int], optional
+        imfs to print in the summary table (default : None)
+    """
+    mode = "comparison"
+    f = open(name, "w")
+    lines = "{}\n".format(env)
+    lines += "\n".join(__imports(mode, html=html))
+    lines += "\n".join(__args(mode))
+    lines += "\nres_folders = file_utils.get_results_folders(args[\"ipath\"])"
+
+    if imfs is None:
+        imfs = [1, 2]
+    lines += "\nfile_utils.summary_table(res_folders, {}, \"summary_table.csv\")".format(imfs)
+
+    if html:
+        lines += "\nplot_utils.plot_seismic_data(args[\"ipath\"], " \
+                 "signal_utils.get_ifo_of_channel(args[\"target_channel\"]))"
+        lines += "\ndaily_correlations_page.generate_web_page(args[\"ipath\"], args[\"date\"], " \
+                 "args[\"target_channel\"], args[\"aux_channel\"]"
+
+    f.write(lines)
+    f.close()
+
+
+def generate_condor_post_script(name):
+    """Generate the condor post script to allow main jobs failure.
+
+    Parameters
+    ----------
+    name : str
+        name of the condor post script
+    """
+    f = open(name, "w")
+    f.write("#!/bin/bash\n\necho \"$1 failed!\"\n\nexit 0")
     f.close()
