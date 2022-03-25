@@ -85,10 +85,14 @@ def scattered_light_raw(gps, seconds, target_channel_name, channels_file, out_pa
             if ifo == "L1":
                 if len(lock_channel_data) != 1 or lock_channel_data[0][0] != gps_start or lock_channel_data[0][-1] != gps_end:
                     return None
+            elif ifo == "V1":
+                if not np.all(lock_channel_data == 1):
+                    return None
 
     # build time series matrix
-    data, fs = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
-                                                           gps_start, gps_end, fs, verbose=True)
+    data, fs = signal_utils.get_data_from_gwf_files("/sps/virgo/BKDB/O3/O3_raw.ffl", "-", 2, 3,
+                                                    target_channel_name, channels_list,
+                                                    gps_start, gps_end, fs, verbose=True)
 
     # predictors
     predictor = signal_utils.get_predictors(data[:, 1:], fs, smooth_win=smooth_win, n_scattering=n_scattering)
