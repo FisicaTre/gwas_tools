@@ -433,32 +433,33 @@ def plot_combinations(folders, imfs_to_plot=None, save_ext="png", imf_thr=-1.0, 
         combos = yf.get_combos()
 
         if imfs_to_plot is None:
-            for i, c in enumerate(combos[defines.CORR_KEY]):
+            for i in range(len(combos)):
+                c = combos[i][defines.CORR_KEY]
                 if c >= imf_thr:
-                    imf_idxs = [j - 1 for j in combos[defines.IMF_KEY][i]]
+                    imf_idxs = [j - 1 for j in combos[i][defines.IMF_KEY]]
                     sum_envelope = np.sum(ia[:, imf_idxs], axis=1)
-                    plot_imf(preds[:, imf_idxs[0]], combos[defines.CHANNEL_KEY][i], sum_envelope,
+                    plot_imf(preds[:, imf_idxs[0]], combos[i][defines.CHANNEL_KEY], sum_envelope,
                              target_channel + " (combo)", gps_event, fs, "$\\rho$ = {:.2f}".format(c),
-                             os.path.join(res_folder, file_utils.combo_plot_name(combos[defines.IMF_KEY][i], save_ext)),
+                             os.path.join(res_folder, file_utils.combo_plot_name(combos[i][defines.IMF_KEY], save_ext)),
                              event_time=event_time, figsize=figsize)
         else:
             imfs_list = [imf for imf in imfs_to_plot if imf <= yf.get_imfs_count()]
             if len(imfs_list) > 0:
-                for i in range(len(combos[defines.IMF_KEY])):
+                for i in range(len(combos)):
                     is_ok = False
-                    for imf_i in combos[defines.IMF_KEY][i]:
+                    for imf_i in combos[i][defines.IMF_KEY]:
                         if imf_i in imfs_list:
                             is_ok = True
                             break
                     if is_ok:
-                        c = combos[defines.CORR_KEY][i]
+                        c = combos[i][defines.CORR_KEY]
                         if c >= imf_thr:
-                            imf_idxs = [j - 1 for j in combos[defines.IMF_KEY][i]]
+                            imf_idxs = [j - 1 for j in combos[i][defines.IMF_KEY]]
                             sum_envelope = np.sum(ia[:, imf_idxs], axis=1)
-                            plot_imf(preds[:, imf_idxs[0]], combos[defines.CHANNEL_KEY][i], sum_envelope,
+                            plot_imf(preds[:, imf_idxs[0]], combos[i][defines.CHANNEL_KEY], sum_envelope,
                                      target_channel + " (combo)", gps_event, fs, "$\\rho$ = {:.2f}".format(c),
                                      os.path.join(res_folder,
-                                                  file_utils.combo_plot_name(combos[defines.IMF_KEY][i], save_ext)),
+                                                  file_utils.combo_plot_name(combos[i][defines.IMF_KEY], save_ext)),
                                      event_time=event_time, figsize=figsize)
 
 
