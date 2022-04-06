@@ -40,7 +40,7 @@ class SubFile(object):
         if description != "":
             self.sub_text.append("#")
             self.sub_text.append("# {}".format(description))
-        self.addBlankLine()
+        self.add_blank_line()
         self.sub_text.append("universe = {}".format(universe))
 
     def add_blank_line(self):
