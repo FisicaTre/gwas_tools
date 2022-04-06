@@ -1,5 +1,5 @@
 def __imports(mode, plots=False, html=False):
-    imports = ["import os",
+    imports = ["\nimport os",
                "import argparse"]
     if mode == "tool":
         imports.append("from gwadaptive_scattering.algorithms import scattered_light")
@@ -9,6 +9,7 @@ def __imports(mode, plots=False, html=False):
         imports.append("from gwadaptive_scattering.utils import file_utils, plot_utils, signal_utils")
         if html:
             imports.append("from gwadaptive_scattering.summary_pages import scattered_light_page")
+    imports.append("\n")
 
     return imports
 
@@ -16,7 +17,7 @@ def __imports(mode, plots=False, html=False):
 def __args(mode):
     args = None
     if mode == "tool":
-        args = ["ap = argparse.ArgumentParser()",
+        args = ["\nap = argparse.ArgumentParser()",
                 "ap.add_argument(\"--gps\", required=True, type=int)",
                 "ap.add_argument(\"--seconds\", required=True, type=int)",
                 "ap.add_argument(\"--target_channel\", required=True)",
@@ -26,13 +27,14 @@ def __args(mode):
                 "ap.add_argument(\"--lowpass_freq\", required=True, type=float)",
                 "args = vars(ap.parse_args())"]
     elif mode == "comparison":
-        args = ["ap = argparse.ArgumentParser()",
+        args = ["\nap = argparse.ArgumentParser()",
                 "ap.add_argument(\"--ipath\", required=True)",
                 "ap.add_argument(\"--date\", required=True)",
                 "ap.add_argument(\"--target_channel\", required=True)",
                 "ap.add_argument(\"--channels_list\", required=True)",
                 "ap.add_argument(\"--gps_list\", required=True)",
                 "args = vars(ap.parse_args())"]
+    args.append("\n")
 
     return args
 
