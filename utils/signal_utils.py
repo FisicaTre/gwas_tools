@@ -493,7 +493,7 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
     from gwpy.io import datafind as io_datafind
 
     frametype_tc = io_datafind.find_frametype(target_channel_name, gpstime=gps_start, allow_tape=True)
-    frametype_cl = io_datafind.find_frametype(channels_list[0], gpstime=gps_start, allow_tape=True)
+    # frametype_cl = io_datafind.find_frametype(channels_list[0], gpstime=gps_start, allow_tape=True)
 
     if frametype_tc is None:
         tc_dict = TimeSeriesDict.get([target_channel_name],
@@ -507,17 +507,17 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
                                      gps_end + defines.EXTRA_SECONDS,
                                      verbose=verbose, frametype=frametype_tc, resample=fs)
 
-    if frametype_cl is None:
-        data_dict = TimeSeriesDict.get(channels_list,
-                                       gps_start - defines.EXTRA_SECONDS,
-                                       gps_end + defines.EXTRA_SECONDS,
-                                       verbose=verbose)
-        data_dict.resample(fs)
-    else:
-        data_dict = TimeSeriesDict.get(channels_list,
-                                       gps_start - defines.EXTRA_SECONDS,
-                                       gps_end + defines.EXTRA_SECONDS,
-                                       verbose=verbose, frametype=frametype_cl, resample=fs)
+    # if frametype_cl is None:
+    data_dict = TimeSeriesDict.get(channels_list,
+                                   gps_start - defines.EXTRA_SECONDS,
+                                   gps_end + defines.EXTRA_SECONDS,
+                                   verbose=verbose)
+    data_dict.resample(fs)
+    # else:
+    #    data_dict = TimeSeriesDict.get(channels_list,
+    #                                   gps_start - defines.EXTRA_SECONDS,
+    #                                   gps_end + defines.EXTRA_SECONDS,
+    #                                   verbose=verbose, frametype=frametype_cl, resample=fs)
 
     data = np.zeros((tc_dict[target_channel_name].value.shape[0], len(channels_list) + 1), dtype=float)
     data[:, 0] = tc_dict[target_channel_name].value
