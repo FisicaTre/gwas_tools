@@ -97,8 +97,8 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
                     return None
 
     # build time series matrix
-    data, fs = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
-                                                           gps_start, gps_end, fs, verbose=True)
+    data = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
+                                                       gps_start, gps_end, fs, verbose=True)
 
     # predictors
     predictor = signal_utils.get_predictors(data[:, 1:], fs, smooth_win=smooth_win, n_scattering=n_scattering)
