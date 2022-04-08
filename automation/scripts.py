@@ -81,9 +81,9 @@ def generate_algo_script(name, env, plots=False, imfs=None,
             imfs = [1]
         lines += "\nfolder_name = [os.path.join(args[\"opath\"], \"{:d}\".format(args[\"gps\"]))]"
         lines += "\nplot_utils.plot_imfs(folder_name, {}, imf_thr={:f}, " \
-                 "save_ext={}, figsize={})".format(imfs, imf_thr, fig_ext, fig_size)
+                 "save_ext=\"{}\", figsize={})".format(imfs, imf_thr, fig_ext, fig_size)
         lines += "\nplot_utils.plot_omegagrams(folder_name, {}, omegagram_thr={:f}, harmonics={}, " \
-                 "save_ext={}, figsize={})".format(imfs, omg_thr, harmonics, fig_ext, fig_size)
+                 "save_ext=\"{}\", figsize={})".format(imfs, omg_thr, harmonics, fig_ext, fig_size)
 
     f.write(lines)
     f.close()
@@ -131,9 +131,9 @@ def generate_algo_corr_script(name, env, plots=False, imfs=None,
             imfs = [1]
         lines += "\nfolder_name = [os.path.join(args[\"opath\"], \"{:d}\".format(args[\"gps\"]))]"
         lines += "\nplot_utils.plot_imfs(folder_name, {}, imf_thr={:f}, " \
-                 "save_ext={}, figsize={})".format(imfs, imf_thr, fig_ext, fig_size)
+                 "save_ext=\"{}\", figsize={})".format(imfs, imf_thr, fig_ext, fig_size)
         lines += "\nplot_utils.plot_omegagrams(folder_name, {}, omegagram_thr={:f}, harmonics={}, " \
-                 "save_ext={}, figsize={})".format(imfs, omg_thr, harmonics, fig_ext, fig_size)
+                 "save_ext=\"{}\", figsize={})".format(imfs, omg_thr, harmonics, fig_ext, fig_size)
 
     f.write(lines)
     f.close()
