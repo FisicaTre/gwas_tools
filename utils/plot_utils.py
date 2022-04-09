@@ -581,6 +581,9 @@ def plot_summaries(res_table, imf_thr=-1.0, save_ext="png", figsize=None):
     figsize : tuple[int], optional
         figure size
     """
+    # ***** NOTE : the plots refers (by now) only to the first IMF ***** #
+    imf_to_plot = 1
+    # ***** ***** #
     imf_thr = __corr_thr(imf_thr)
     table = pd.read_csv(res_table)
     # add range column
@@ -588,15 +591,15 @@ def plot_summaries(res_table, imf_thr=-1.0, save_ext="png", figsize=None):
     freq_bands_names = ["{:f} Hz <= f < {:f} Hz".format(defines.FREQ_BANDS[i], defines.FREQ_BANDS[i + 1])
                         for i in range(len(defines.FREQ_BANDS) - 1)]
     for i in range(len(defines.FREQ_BANDS) - 1):
-        table.range[(table.mean_frequency >= defines.FREQ_BANDS[i]) &
-                    (table.mean_frequency < defines.FREQ_BANDS[i + 1])] = freq_bands_names[i]
+        table.range[(table[defines.summary_table_mean_frequency_column_of_imf(imf_to_plot)] >= defines.FREQ_BANDS[i]) &
+                    (table[defines.summary_table_mean_frequency_column_of_imf(imf_to_plot)] < defines.FREQ_BANDS[i + 1])] = freq_bands_names[i]
     # add location column
     table["location"] = "OTHER"
     for k, v in defines.CHAMBERS.items():
         for vi in v:
-            table.location[table.culprit.str.contains(vi, regex=False, na=False)] = k
+            table.location[table[defines.summary_table_culprit_column_of_imf(imf_to_plot)].str.contains(vi, regex=False, na=False)] = k
 
-    table = table[table.correlation > imf_thr]
+    table = table[table[defines.summary_table_correlation_column_of_imf(imf_to_plot)] > imf_thr]
 
     font_size = 16
     plot_path = os.path.split(res_table)[0]

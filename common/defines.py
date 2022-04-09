@@ -61,6 +61,20 @@ LOWP_FREQ_OPTS = ["average", "max"]
 LCK_CH_VIRGO = "V1:DQ_META_ITF_Mode"
 LCK_CH_LIGO = "L1:DMT-ANALYSIS_READY:1"
 
+
+# summary table
+def summary_table_culprit_column_of_imf(i):
+    return "culprit_{:d}".format(i)
+
+
+def summary_table_correlation_column_of_imf(i):
+    return "corr_{:d}".format(i)
+
+
+def summary_table_mean_frequency_column_of_imf(i):
+    return "mean_freq_{:d}".format(i)
+
+
 # summary plots
 FREQ_BANDS = [0.03, 0.1, 0.3, 1, 3, 10]
 CHAMBERS = {"BSC5": ["ETMY", "TMSY"], "BSC4": ["ETMX", "TMSX"], "BSC1": ["ITMY"], "BSC3": ["ITMX"], "HAM6": ["OM"],

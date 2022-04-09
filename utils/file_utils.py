@@ -661,9 +661,9 @@ def summary_table(folders, comparison, table_name):
 
     df_dict = {"gps": gps}
     for i in comparison:
-        df_dict["culprit_{:d}".format(i)] = culprits[i]
-        df_dict["corr_{:d}".format(i)] = corrs[i]
-        df_dict["mean_freq_{:d}".format(i)] = m_freqs[i]
+        df_dict[defines.summary_table_culprit_column_of_imf(i)] = culprits[i]
+        df_dict[defines.summary_table_correlation_column_of_imf(i)] = corrs[i]
+        df_dict[defines.summary_table_mean_frequency_column_of_imf(i)] = m_freqs[i]
     df = pd.DataFrame(df_dict)
     df.to_csv(os.path.join(cpath, table_name), index=False)
 

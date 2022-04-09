@@ -1,3 +1,6 @@
+from ..common import defines
+
+
 def __imports(mode, plots=False, html=False):
     imports = ["\nimport os",
                "import argparse"]
@@ -139,7 +142,8 @@ def generate_algo_corr_script(name, env, plots=False, imfs=None,
     f.close()
 
 
-def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1):
+def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1,
+                               imf_thr=-1.0, fig_ext="png", fig_size=None):
     """Generate the script for the analysis' results comparison.
 
     Parameters
@@ -154,6 +158,12 @@ def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1)
         imfs to print in the summary table (default : None)
     summary_imfs : int, optional
         imfs to show in the summary web page for each day (default : 1)
+    imf_thr : float, optional
+        correlation value above which to consider a line in the summary table (default : -1.0)
+    fig_ext: str, optional
+        plots extension (default : png)
+    fig_size : tuple[int], optional
+        figure size
     """
     mode = "comparison"
     f = open(name, "w")
@@ -167,8 +177,9 @@ def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1)
     lines += "\nfile_utils.summary_table(res_folders, {}, \"summary_table.csv\")".format(imfs)
 
     if html:
-        lines += "\nplot_utils.plot_seismic_data(args[\"ipath\"], " \
-                 "signal_utils.get_ifo_of_channel(args[\"target_channel\"]))"
+        lines += "\nplot_utils.plot_summaries(os.path.join(args[\"ipath\"], {}, \"summary_table.csv\"), " \
+                 "imf_thr={:f}, save_ext=\"{}\", figsize={})".format(defines.COMPARISON_FOLDER, imf_thr,
+                                                                     fig_ext, fig_size)
         lines += "\nscattered_light_page.generate_web_page(args[\"ipath\"], args[\"date\"], " \
                  "args[\"target_channel\"], args[\"channels_list\"], args[\"gps_list\"], " \
                  "summary_imfs={:d})".format(summary_imfs)
