@@ -153,20 +153,21 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
                 page.add_bullet_list(imfs_data[i])
                 page.close_div()
 
-                imf_plot_name = os.path.join(gps_path, file_utils.culprit_plot_name(i, PLOT_EXT))
+                imf_plot_name = os.path.join(gps_folder, file_utils.culprit_plot_name(i, PLOT_EXT))
                 page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
                 page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
                 page.close_div()
 
                 combo_file = imfs_data[i].pop(defines.COMBO_STR)
                 if combo_file != "":
+                    combo_file = os.path.join(gps_folder, os.path.split(combo_file)[1])
                     page.open_div(id_="combo-{:d}-{}-plot".format(i, res_id))
                     page.add_plot(combo_file, "combo-{:d}-{}".format(i, res_id))
                     page.close_div()
 
                 omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
                 if omegagram:
-                    omegagram_plot_name = os.path.join(gps_path, file_utils.omegagram_plot_name(i, PLOT_EXT))
+                    omegagram_plot_name = os.path.join(gps_folder, file_utils.omegagram_plot_name(i, PLOT_EXT))
                     page.open_div(id_="omegagram-{:d}-{}-plot".format(i, res_id))
                     page.add_plot(omegagram_plot_name, "omegagram-{:d}-{}".format(i, res_id))
                     page.close_div()
