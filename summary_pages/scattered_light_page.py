@@ -75,7 +75,8 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
         defines.GPS_LIST_NAME: page.get_formatted_link(os.path.basename(gps_file),
                                                        href=os.path.basename(gps_file),
                                                        download=os.path.basename(gps_file)),
-        defines.CH_LIST_NAME: page.get_formatted_link(os.path.basename(ch_list_file),
+        # defines.CH_LIST_NAME: page.get_formatted_link(os.path.basename(ch_list_file),
+        defines.CH_LIST_NAME: page.get_formatted_link(ch_list_file,
                                                       href=os.path.basename(ch_list_file),
                                                       download=os.path.basename(ch_list_file))
     }
