@@ -70,7 +70,7 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
     page.open_div(id_="info-list")
 
     # copy channels file to local folder
-    os.system("cp {} .".format(ch_list_file))
+    os.system("cp {} {}".format(ch_list_file, res_path))
     info_dict = {
         defines.ENV_NAME: page.get_formatted_code(sys.prefix),
         defines.TARGET_CH_NAME: tc_name,
