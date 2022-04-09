@@ -67,7 +67,7 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
         page.add_section("Correlation between {} and {}".format(tc_name, aux_ch))
 
         for i in range(1, SUMMARY_IMFS + 1):
-            seismic_plot_name = os.path.join(res_path, defines.COMPARISON_FOLDER, file_utils.seismic_plot_name(PLOT_EXT))
+            seismic_plot_name = os.path.join(defines.COMPARISON_FOLDER, file_utils.seismic_plot_name(PLOT_EXT))
             if os.path.exists(seismic_plot_name):
                 page.open_div(id_="imf-{:d}-summary".format(i))
                 page.add_subsection("Imf {:d}".format(i))
@@ -164,14 +164,14 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
                         page.add_bullet_list(imfs_data[i])
                         page.close_div()
 
-                        imf_plot_name = os.path.join(gps_path, file_utils.culprit_plot_name(i, PLOT_EXT))
+                        imf_plot_name = os.path.join(res_id, file_utils.culprit_plot_name(i, PLOT_EXT))
                         page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
                         page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
                         page.close_div()
 
                         omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
                         if omegagram:
-                            omegagram_plot_name = os.path.join(gps_path, file_utils.omegagram_plot_name(i, PLOT_EXT))
+                            omegagram_plot_name = os.path.join(res_id, file_utils.omegagram_plot_name(i, PLOT_EXT))
                             page.open_div(id_="omegagram-{:d}-{}-plot".format(i, res_id))
                             page.add_plot(omegagram_plot_name, "omegagram-{:d}-{}".format(i, res_id))
                             page.close_div()
