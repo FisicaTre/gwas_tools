@@ -177,7 +177,7 @@ def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1,
     lines += "\nfile_utils.summary_table(res_folders, {}, \"summary_table.csv\")".format(imfs)
 
     if html:
-        lines += "\nplot_utils.plot_summaries(os.path.join(args[\"ipath\"], {}, \"summary_table.csv\"), " \
+        lines += "\nplot_utils.plot_summaries(os.path.join(args[\"ipath\"], \"{}\", \"summary_table.csv\"), " \
                  "imf_thr={:f}, save_ext=\"{}\", figsize={})".format(defines.COMPARISON_FOLDER, imf_thr,
                                                                      fig_ext, fig_size)
         lines += "\nscattered_light_page.generate_web_page(args[\"ipath\"], args[\"date\"], " \
