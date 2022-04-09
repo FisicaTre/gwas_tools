@@ -69,14 +69,15 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
     page.add_section(defines.INFO_SECTION)
     page.open_div(id_="info-list")
 
+    # copy channels file to local folder
+    os.system("cp {} .".format(ch_list_file))
     info_dict = {
         defines.ENV_NAME: page.get_formatted_code(sys.prefix),
         defines.TARGET_CH_NAME: tc_name,
         defines.GPS_LIST_NAME: page.get_formatted_link(os.path.basename(gps_file),
                                                        href=os.path.basename(gps_file),
                                                        download=os.path.basename(gps_file)),
-        # defines.CH_LIST_NAME: page.get_formatted_link(os.path.basename(ch_list_file),
-        defines.CH_LIST_NAME: page.get_formatted_link(ch_list_file,
+        defines.CH_LIST_NAME: page.get_formatted_link(os.path.basename(ch_list_file),
                                                       href=os.path.basename(ch_list_file),
                                                       download=os.path.basename(ch_list_file))
     }
