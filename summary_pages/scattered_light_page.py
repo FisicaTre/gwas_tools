@@ -25,7 +25,7 @@ from ..utils import file_utils, signal_utils
 from ..common import defines
 
 
-PIPELINE_SCRIPT_NAME = "./gwas"
+PIPELINE_SCRIPT_NAME = "./gwas_glitch"
 COLOR_THRESHOLD_MIN = 0.5
 COLOR_THRESHOLD_MAX = 0.7
 PLOT_EXT = "png"

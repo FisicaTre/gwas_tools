@@ -23,7 +23,7 @@ from ..utils import file_utils, signal_utils
 from ..common import defines
 
 
-PIPELINE_SCRIPT_NAME = "./gwas_corr"
+PIPELINE_SCRIPT_NAME = "./gwas"
 SUMMARY_IMFS = 1
 COLOR_THRESHOLD_MIN = 0.5
 COLOR_THRESHOLD = 0.7
