@@ -24,7 +24,7 @@ from gwpy.io import datafind as io_datafind
 
 
 def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
-                    event="center", fs=256, n_scattering=1, smooth_win=50,
+                    event="center", fs=256, n_scattering=1, smooth_win=50, max_imf=1,
                     combos=False, seismic=False, save_data=True, check_lock=False):
     """Analysis for scattered light identification.
     The script outputs a folder named as the input gps,
@@ -56,6 +56,8 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         number of signal bounces (default : 1)
     smooth_win : int, optional
         signals smoothing window (default : 50)
+    max_imf :int, optional
+        maximum number of imfs to extract (default : 1)
     combos : bool, optional
         if True, combos are computed (default : False)
     seismic : bool, optional
@@ -114,7 +116,7 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     target_channel = signal_utils.butter_lowpass_filter(data[:, 0], f_lowpass, fs)
 
     # tvf-emd
-    imfs = signal_utils.get_imfs(target_channel, fs, max_imf=1)
+    imfs = signal_utils.get_imfs(target_channel, fs, max_imf=max_imf)
 
     # correlations
     corrs = np.zeros((imfs.shape[1], predictor.shape[1]), dtype=float)
