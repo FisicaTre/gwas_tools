@@ -463,7 +463,7 @@ def plot_combinations(folders, imfs_to_plot=None, save_ext="png", imf_thr=-1.0, 
                                      event_time=event_time, figsize=figsize)
 
 
-def plot_seismic_data(folders_path, ifo, save_ext="png"):
+def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
     """Plot seismic channels along with the correlations time series.
 
     Parameters
@@ -472,9 +472,15 @@ def plot_seismic_data(folders_path, ifo, save_ext="png"):
         path to the folder containing the analysis folders
     ifo : str
         interferometer id
+    combo : bool, optional
+        if True, plot correlations of the combo,
+        if False plot the correlation of the single imf (default : True)
     save_ext : str, optional
         plots extension (default : png)
     """
+    # ***** NOTE : the plots refers (by now) only to the first IMF ***** #
+    imf_to_plot = 1
+    # ***** ***** #
     if ifo == "L1":
         seism_channels = defines.LIGO_SEISMIC_CHANNELS
     elif ifo == "V1":
@@ -502,7 +508,10 @@ def plot_seismic_data(folders_path, ifo, save_ext="png"):
             if res_folder != out_folder:
                 if file_utils.is_valid_folder(res_folder):
                     yf = file_utils.YmlFile(res_folder)
-                    corrs.append(yf.get_corr_of_imf(1))
+                    if combo:
+                        corrs.append(yf.get_corr_of_combo_with_imf(imf_to_plot))
+                    else:
+                        corrs.append(yf.get_corr_of_imf(imf_to_plot))
                     seis_dict = yf.get_seismic_channels()
                     for k in seismometers.keys():
                         for sk in seis_dict.keys():

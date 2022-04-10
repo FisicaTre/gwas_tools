@@ -84,6 +84,22 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
     page.add_bullet_list(info_dict)
     page.close_div()
 
+    # summary plots
+    if os.path.exists(os.path.join(res_path, defines.COMPARISON_FOLDER)):
+        page.add_section("Summary")
+
+        for i in range(1, summary_imfs + 1):
+            freq_range_plot_name = os.path.join(defines.COMPARISON_FOLDER, file_utils.summary_freq_plot_name(PLOT_EXT))
+            chamber_plot_name = os.path.join(defines.COMPARISON_FOLDER, file_utils.summary_chamber_plot_name(PLOT_EXT))
+            if os.path.exists(freq_range_plot_name) or os.path.exists(chamber_plot_name):
+                page.open_div(id_="imf-{:d}-summary".format(i))
+                page.add_subsection("Imf {:d}".format(i))
+                if os.path.exists(freq_range_plot_name):
+                    page.add_plot(freq_range_plot_name, "imf-{:d}-freq-range".format(i))
+                if os.path.exists(chamber_plot_name):
+                    page.add_plot(chamber_plot_name, "imf-{:d}-chamber".format(i))
+                page.close_div()
+
     # results
     page.add_section(defines.RESULTS_SECTION)
     page.open_div(id_="results")
@@ -112,11 +128,12 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
                 imfs_data[i][defines.MEAN_FREQ_STR] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
                 imfs_data[i][defines.OMEGAGRAM_STR] = os.path.exists(os.path.join(gps_path,
                                                                                   file_utils.omegagram_plot_name(i, PLOT_EXT)))
-                imfs_data[i][defines.COMBO_STR] = ""
-                regex = "[_+]{:d}[_+]".format(i)
-                for cf in glob.glob(os.path.join(gps_path, file_utils.combo_plot_name(["*"], PLOT_EXT))):
-                    if re.search(regex, cf):
-                        imfs_data[i][defines.COMBO_STR] = cf
+                # imfs_data[i][defines.COMBO_STR] = ""
+                # regex = "[_+]{:d}[_+]".format(i)
+                # for cf in glob.glob(os.path.join(gps_path, file_utils.combo_plot_name(["*"], PLOT_EXT))):
+                #    if re.search(regex, cf):
+                #        imfs_data[i][defines.COMBO_STR] = cf
+                #        break
                 imf_i_corr = res_file.get_corr_of_imf(i)
                 if imf_i_corr >= COLOR_THRESHOLD_MAX:
                     above_thr_max = True
@@ -154,16 +171,17 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
                 page.close_div()
 
                 imf_plot_name = os.path.join(res_id, file_utils.culprit_plot_name(i, PLOT_EXT))
-                page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
-                page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
-                page.close_div()
-
-                combo_file = imfs_data[i].pop(defines.COMBO_STR)
-                if combo_file != "":
-                    combo_file = os.path.join(res_id, os.path.split(combo_file)[1])
-                    page.open_div(id_="combo-{:d}-{}-plot".format(i, res_id))
-                    page.add_plot(combo_file, "combo-{:d}-{}".format(i, res_id))
+                if os.path.exists(imf_plot_name):
+                    page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
+                    page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
                     page.close_div()
+
+                # combo_file = imfs_data[i].pop(defines.COMBO_STR)
+                # if combo_file != "":
+                #    combo_file = os.path.join(res_id, os.path.split(combo_file)[1])
+                #    page.open_div(id_="combo-{:d}-{}-plot".format(i, res_id))
+                #    page.add_plot(combo_file, "combo-{:d}-{}".format(i, res_id))
+                #    page.close_div()
 
                 omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
                 if omegagram:

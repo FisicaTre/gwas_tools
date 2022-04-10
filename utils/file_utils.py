@@ -260,6 +260,48 @@ class YmlFile(object):
         except:
             raise ValueError("Value not found.")
 
+    def get_corr_of_combo_with_imf(self, imf):
+        """Correlation of combo with imf `imf`.
+
+        Parameters
+        ----------
+        imf : int
+            imf number to be present in combo
+
+        Returns
+        -------
+        float
+            correlation of combo with imf `imf`
+        """
+        combos = self.content[defines.COMBO_SECT_KEY]
+        for i in range(len(combos)):
+            imfs = [int(imf) for imf in combos[i][defines.IMF_KEY].split(",")]
+            if imf in imfs:
+                return combos[i][defines.CORR_KEY]
+
+        raise ValueError("Value not found.")
+
+    def get_channel_of_combo_with_imf(self, imf):
+        """Most correlated channel with combo with imf `imf`.
+
+        Parameters
+        ----------
+        imf : int
+            imf number to be present in combo
+
+        Returns
+        -------
+        float
+            correlation of combo with imf `imf`
+        """
+        combos = self.content[defines.COMBO_SECT_KEY]
+        for i in range(len(combos)):
+            imfs = [int(imf) for imf in combos[i][defines.IMF_KEY].split(",")]
+            if imf in imfs:
+                return combos[i][defines.CHANNEL_KEY]
+
+        raise ValueError("Value not found.")
+
     def write_parameters(self, gps, seconds, event, target_channel_name, channels_file, out_path,
                          fs, f_lowpass, n_scattering, smooth_win):
         """Write parameters section to file.
