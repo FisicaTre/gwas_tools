@@ -597,7 +597,7 @@ def plot_summaries(res_table, imf_thr=-1.0, save_ext="png", figsize=None):
     table = pd.read_csv(res_table)
     # add range column
     table["range"] = "ELSE"
-    freq_bands_names = ["{:f} Hz <= f < {:f} Hz".format(defines.FREQ_BANDS[i], defines.FREQ_BANDS[i + 1])
+    freq_bands_names = ["{:.2f} Hz <= f < {:.2f} Hz".format(defines.FREQ_BANDS[i], defines.FREQ_BANDS[i + 1])
                         for i in range(len(defines.FREQ_BANDS) - 1)]
     for i in range(len(defines.FREQ_BANDS) - 1):
         table.range[(table[defines.summary_table_mean_frequency_column_of_imf(imf_to_plot)] >= defines.FREQ_BANDS[i]) &
@@ -613,18 +613,19 @@ def plot_summaries(res_table, imf_thr=-1.0, save_ext="png", figsize=None):
     font_size = 16
     plot_path = os.path.split(res_table)[0]
     # plot by frequency range
-    freqs = table["range"].value_counts()
-    ranges = list(freqs.index)
-    ranges_vals = freqs.values
+    freqs = table["range"].value_counts().sort_index()
+    ranges = [">= {}\n{}".format(i.split("f")[0].strip()[:-3], i.split("f")[1].strip()) for i in list(freqs.index)]
+    ranges_vals = freqs.values / len(table["range"])
     ranges_i = np.arange(len(ranges_vals))
     fig, ax = plt.subplots() if figsize is None else plt.subplots(figsize=figsize)
     plt.bar(ranges_i, ranges_vals, color="darkblue", edgecolor="black", linewidth=1)
     plt.xlabel("Frequency band", fontsize=font_size)
     plt.ylabel("Percentage", fontsize=font_size)
     plt.title("Percentage by frequency band (correlation > {:.2f})".format(imf_thr), fontsize=font_size)
-    plt.xticks(ranges_i, ranges, fontsize=font_size)
+    plt.xticks(ranges_i, ranges)
     plt.ylim(0, 1)
     ax.yaxis.set_major_formatter(mtick.PercentFormatter(xmax=1, decimals=None, symbol="%", is_latex=False))
+    plt.grid(False)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_path, file_utils.summary_freq_plot_name(save_ext)), bbox_inches="tight", dpi=300)
 
@@ -639,6 +640,7 @@ def plot_summaries(res_table, imf_thr=-1.0, save_ext="png", figsize=None):
     plt.xlabel("Counts", fontsize=font_size)
     plt.ylabel("Location", fontsize=font_size)
     plt.yticks(chambers_i, chambers)
+    plt.grid(False)
     plt.tight_layout()
     plt.savefig(os.path.join(plot_path, file_utils.summary_chamber_plot_name(save_ext)), dpi=300, bbox_inches="tight")
 
