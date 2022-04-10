@@ -180,7 +180,7 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
                         page.add_bullet_list(imfs_data[i])
                         page.close_div()
 
-                        # if os.path.exists(os.path.join(gps_path, imf_plot_name)):
+                        # if os.path.exists(os.path.join(res_path, imf_plot_name)):
                         #    page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
                         #    page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
                         #    page.close_div()

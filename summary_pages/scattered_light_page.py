@@ -91,7 +91,7 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
         for i in range(1, summary_imfs + 1):
             freq_range_plot_name = os.path.join(defines.COMPARISON_FOLDER, file_utils.summary_freq_plot_name(PLOT_EXT))
             chamber_plot_name = os.path.join(defines.COMPARISON_FOLDER, file_utils.summary_chamber_plot_name(PLOT_EXT))
-            if os.path.exists(freq_range_plot_name) or os.path.exists(chamber_plot_name):
+            if os.path.exists(os.path.join(res_path, freq_range_plot_name)) or os.path.exists(os.path.join(res_path, chamber_plot_name)):
                 page.open_div(id_="imf-{:d}-summary".format(i))
                 page.add_subsection("Imf {:d}".format(i))
                 if os.path.exists(os.path.join(res_path, freq_range_plot_name)):
@@ -174,7 +174,7 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
                 page.add_bullet_list(imfs_data[i])
                 page.close_div()
 
-                if os.path.exists(os.path.join(gps_path, imf_plot_name)):
+                if os.path.exists(os.path.join(res_path, imf_plot_name)):
                     page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
                     page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
                     page.close_div()
