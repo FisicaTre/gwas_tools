@@ -94,9 +94,9 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
             if os.path.exists(freq_range_plot_name) or os.path.exists(chamber_plot_name):
                 page.open_div(id_="imf-{:d}-summary".format(i))
                 page.add_subsection("Imf {:d}".format(i))
-                if os.path.exists(freq_range_plot_name):
+                if os.path.exists(os.path.join(res_path, freq_range_plot_name)):
                     page.add_plot(freq_range_plot_name, "imf-{:d}-freq-range".format(i))
-                if os.path.exists(chamber_plot_name):
+                if os.path.exists(os.path.join(res_path, chamber_plot_name)):
                     page.add_plot(chamber_plot_name, "imf-{:d}-chamber".format(i))
                 page.close_div()
 
@@ -164,26 +164,27 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
         # plots
         for i in range(1, summary_imfs + 1):
             if i in imfs_data.keys():
+                imf_plot_name = os.path.join(res_id, file_utils.culprit_plot_name(i, PLOT_EXT))
+                # combo_file = imfs_data[i].pop(defines.COMBO_STR)
+                omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
+
                 page.open_div(id_="imf-{:d}-{}-sect".format(i, res_id))
                 page.add_subsection("Imf {:d}".format(i))
                 page.open_div(id_="imf-{:d}-{}-info".format(i, res_id))
                 page.add_bullet_list(imfs_data[i])
                 page.close_div()
 
-                imf_plot_name = os.path.join(res_id, file_utils.culprit_plot_name(i, PLOT_EXT))
-                if os.path.exists(imf_plot_name):
+                if os.path.exists(os.path.join(gps_path, imf_plot_name)):
                     page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
                     page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
                     page.close_div()
 
-                # combo_file = imfs_data[i].pop(defines.COMBO_STR)
                 # if combo_file != "":
                 #    combo_file = os.path.join(res_id, os.path.split(combo_file)[1])
                 #    page.open_div(id_="combo-{:d}-{}-plot".format(i, res_id))
                 #    page.add_plot(combo_file, "combo-{:d}-{}".format(i, res_id))
                 #    page.close_div()
 
-                omegagram = imfs_data[i].pop(defines.OMEGAGRAM_STR)
                 if omegagram:
                     omegagram_plot_name = os.path.join(res_id, file_utils.omegagram_plot_name(i, PLOT_EXT))
                     page.open_div(id_="omegagram-{:d}-{}-plot".format(i, res_id))
