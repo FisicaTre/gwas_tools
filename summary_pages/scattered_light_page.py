@@ -108,8 +108,8 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
         res_file = file_utils.YmlFile(gps_path)
         parameters = [
             ("Event {} (UTC)".format(defines.GPS_PARAM),
-             "{:d} (at {}, {:d} seconds total".format(res_file.get_gps(), res_file.get_event_position(),
-                                                      res_file.get_seconds())),
+             "{:d} (at {}, {:d} seconds total)".format(res_file.get_gps(), res_file.get_event_position(),
+                                                       res_file.get_seconds())),
             (defines.SAMP_FREQ_PARAM, "{:.3f} Hz".format(res_file.get_sampling_frequency())),
             (defines.LOWPASS_FREQ_PARAM, "{:.3f} Hz".format(res_file.get_lowpass_frequency())),
             ("Plots and info", res_file.get_output_path())
