@@ -669,7 +669,7 @@ def summary_table(folders, comparison, table_name):
         name of the output csv
     """
     if len(folders) == 0:
-        return
+        return None
 
     folders_path = os.path.sep.join(folders[0].split(os.path.sep)[:-1])
     cpath = os.path.join(folders_path, defines.COMPARISON_FOLDER)

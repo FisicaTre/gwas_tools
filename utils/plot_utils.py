@@ -592,6 +592,9 @@ def plot_summaries(res_table, imf_thr=-1.0, save_ext="png", figsize=None):
     figsize : tuple[int], optional
         figure size
     """
+    if not os.path.exists(res_table):
+        return None
+
     # ***** NOTE : the plots refers (by now) only to the first IMF ***** #
     imf_to_plot = 1
     # ***** ***** #
