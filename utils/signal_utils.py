@@ -339,13 +339,15 @@ def get_instrument_lock_data(lock_channel, gps_start, gps_end):
     -------
     lock_data : gwpy.Segment, numpy ndarray
         for L1 : segments of instrument active periods in [`gps_start`, `gps_end`]
+        for H1 : segments of instrument active periods in [`gps_start`, `gps_end`]
         for V1 : numpy array of lock channel values in [`gps_start`, `gps_end`]
     """
     lock_data = []
-    if get_ifo_of_channel(lock_channel) == "L1":
+    ifo = get_ifo_of_channel(lock_channel)
+    if ifo.startswith("L") or ifo.startswith("H"):
         lock_data = DataQualityFlag.query(lock_channel, gps_start, gps_end)
         lock_data = lock_data.active
-    elif get_ifo_of_channel(lock_channel) == "V1":
+    elif ifo.startswith("V"):
         lock_data = TimeSeriesDict.get([lock_channel], gps_start, gps_end)
         lock_data = lock_data[lock_channel].value
 
@@ -616,5 +618,7 @@ def get_lock_channel_name_for_ifo(ifo):
         return defines.LCK_CH_VIRGO
     elif ifo.startswith("L"):
         return defines.LCK_CH_LIGO
+    elif ifo.startswith("H"):
+        return defines.LCK_CH_HANFORD
     else:
         return None

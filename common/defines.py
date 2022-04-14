@@ -44,6 +44,15 @@ LIGO_SEISMIC_CHANNELS = ["L1:ISI-GND_STS_ETMX_X_BLRMS_100M_300M",
                          "L1:ISI-GND_STS_ETMX_X_DQ",
                          "L1:ISI-GND_STS_ETMX_Y_DQ",
                          "L1:ISI-GND_STS_ETMX_Z_DQ"]
+HANFORD_SEISMIC_CHANNELS = ["H1:ISI-GND_STS_ETMX_X_BLRMS_100M_300M",
+                            "H1:ISI-GND_STS_ETMY_Y_BLRMS_100M_300M",
+                            "H1:ISI-GND_STS_ETMX_Z_BLRMS_100M_300M",
+                            "H1:ISI-GND_STS_ETMX_X_BLRMS_30M_100M",
+                            "H1:ISI-GND_STS_ETMX_Y_BLRMS_30M_100M",
+                            "H1:ISI-GND_STS_ETMX_Z_BLRMS_30M_100M",
+                            "H1:ISI-GND_STS_ETMX_X_DQ",
+                            "H1:ISI-GND_STS_ETMX_Y_DQ",
+                            "H1:ISI-GND_STS_ETMX_Z_DQ"]
 VIRGO_SEISMIC_CHANNELS = ["V1:ENV_WEB_SEIS_N_50Hz_rms_0.1_1Hz",
                           "V1:ENV_WEB_SEIS_W_50Hz_rms_0.1_1Hz",
                           "V1:ENV_WEB_SEIS_V_50Hz_rms_0.1_1Hz",
@@ -60,6 +69,7 @@ LOWP_FREQ_OPTS = ["average", "max"]
 # lock channels
 LCK_CH_VIRGO = "V1:DQ_META_ITF_Mode"
 LCK_CH_LIGO = "L1:DMT-ANALYSIS_READY:1"
+LCK_CH_HANFORD = "H1:DMT-ANALYSIS_READY:1"
 
 
 # summary table

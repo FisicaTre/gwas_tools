@@ -91,10 +91,10 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         lock_channel_name = signal_utils.get_lock_channel_name_for_ifo(ifo)
         if lock_channel_name is not None:
             lock_channel_data = signal_utils.get_instrument_lock_data(lock_channel_name, gps_start, gps_end)
-            if ifo == "L1":
+            if ifo.startswith("L") or ifo.startswith("H"):
                 if len(lock_channel_data) != 1 or lock_channel_data[0][0] != gps_start or lock_channel_data[0][-1] != gps_end:
                     return None
-            elif ifo == "V1":
+            elif ifo.startswith("V"):
                 if not np.all(lock_channel_data == 1):
                     return None
 
@@ -183,7 +183,7 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     #    out_file.write_2nd_best_correlation_section(ch_2_str, ch_2_corr, ch_2_m_fr)
 
     if seismic:
-        if ifo == "L1":
+        if ifo.startswith("L"):
             frametype = io_datafind.find_frametype(defines.LIGO_SEISMIC_CHANNELS[0], gpstime=gps)
             if frametype is not None:
                 seismometers = TimeSeriesDict.get(defines.LIGO_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True,
@@ -195,7 +195,19 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
             for s in defines.LIGO_SEISMIC_CHANNELS:
                 seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
             out_file.write_seismic_channels(seis_dict)
-        elif ifo == "V1":
+        elif ifo.startswith("H"):
+            frametype = io_datafind.find_frametype(defines.HANFORD_SEISMIC_CHANNELS[0], gpstime=gps)
+            if frametype is not None:
+                seismometers = TimeSeriesDict.get(defines.HANFORD_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True,
+                                                  frametype=frametype, resample=3)
+            else:
+                seismometers = TimeSeriesDict.get(defines.HANFORD_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True)
+                seismometers.resample(3)
+            seis_dict = {}
+            for s in defines.HANFORD_SEISMIC_CHANNELS:
+                seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
+            out_file.write_seismic_channels(seis_dict)
+        elif ifo.startswith("V"):
             from gwdama.io import GwDataManager as gwdm
             seismometers = gwdm.read_from_virgo(defines.VIRGO_SEISMIC_CHANNELS, gps_start,
                                                 gps_end, ffl_spec="V1trend100")
