@@ -34,7 +34,7 @@ def __args(mode):
                 "ap.add_argument(\"--ipath\", required=True)",
                 "ap.add_argument(\"--date\", required=True)",
                 "ap.add_argument(\"--target_channel\", required=True)",
-                "ap.add_argument(\"--channels_list\", required=True)",
+                "ap.add_argument(\"--aux_channel\", required=True)",
                 "ap.add_argument(\"--gps_list\", required=True)",
                 "args = vars(ap.parse_args())"]
     args.append("\n")
