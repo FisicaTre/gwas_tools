@@ -27,7 +27,7 @@ def __args(mode):
                 "ap.add_argument(\"--channels_list\", required=True)",
                 "ap.add_argument(\"--opath\", required=True)",
                 "ap.add_argument(\"--samp_freq\", required=True, type=float)",
-                "ap.add_argument(\"--lowpass_freq\", required=True, type=float)",
+                "ap.add_argument(\"--lowpass_freq\", required=True)",
                 "args = vars(ap.parse_args())"]
     elif mode == "comparison":
         args = ["\nap = argparse.ArgumentParser()",
