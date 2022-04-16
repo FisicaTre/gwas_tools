@@ -102,6 +102,16 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
 
     # results
     page.add_section(defines.RESULTS_SECTION)
+
+    page.open_div(id_="info-color")
+    info_color_dict = {
+        defines.SUCCESS_STR: "Correlation below {:.1f}".format(COLOR_THRESHOLD_MIN),
+        defines.WARNING_STR: "Correlation between {:.1f} and {:.1f}".format(COLOR_THRESHOLD_MIN, COLOR_THRESHOLD_MAX),
+        defines.ALERT_STR: "Correlation greater than {:.1f}".format(COLOR_THRESHOLD_MAX)
+    }
+    page.add_bullet_list(info_color_dict)
+    page.close_div()
+
     page.open_div(id_="results")
     for gps_folder in res_folders:
         gps_path = os.path.join(res_path, gps_folder)

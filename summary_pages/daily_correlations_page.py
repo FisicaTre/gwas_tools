@@ -113,16 +113,12 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
             for gps_path in hour_dict[hh]:
                 res_file = file_utils.YmlFile(gps_path)
                 parameters = [
-                    (defines.GPS_PARAM, res_file.get_gps()),
-                    (defines.SECONDS_PARAM, res_file.get_seconds()),
-                    (defines.EVENT_PARAM, res_file.get_event_position()),
-                    (defines.TARGET_CH_PARAM, res_file.get_target_channel()),
-                    (defines.CH_LIST_PARAM, res_file.get_channels_list()),
-                    (defines.OUT_PATH_PARAM, res_file.get_output_path()),
-                    (defines.SAMP_FREQ_PARAM, res_file.get_sampling_frequency()),
-                    (defines.LOWPASS_FREQ_PARAM, res_file.get_lowpass_frequency()),
-                    (defines.SCATTERING_PARAM, res_file.get_scattering_factor()),
-                    (defines.SMOOTH_WIN_PARAM, res_file.get_smoothing_window())
+                    ("Event {} (UTC)".format(defines.GPS_PARAM),
+                     "{:d} (at {}, {:d} seconds total)".format(res_file.get_gps(), res_file.get_event_position(),
+                                                               res_file.get_seconds())),
+                    (defines.SAMP_FREQ_PARAM, "{:.3f} Hz".format(res_file.get_sampling_frequency())),
+                    (defines.LOWPASS_FREQ_PARAM, "{:.3f} Hz".format(res_file.get_lowpass_frequency())),
+                    ("Plots and info", res_file.get_output_path())
                 ]
                 imfs_data = {}
                 above_thr = False
@@ -131,6 +127,7 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
                         # imfs_exists = os.path.exists(os.path.join(gps_path, file_utils.culprit_plot_name(i, PLOT_EXT)))
                         # if imfs_exists:
                         imfs_data[i] = {}
+                        imfs_data[i][defines.TARGET_CH_NAME] = tc_name
                         # imfs_data[i][defines.CULPRIT_STR] = res_file.get_channel_of_imf(i)
                         # imfs_data[i][defines.MEAN_FREQ_STR] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
                         # imfs_data[i][defines.OMEGAGRAM_STR] = os.path.exists(os.path.join(gps_path,

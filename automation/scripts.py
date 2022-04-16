@@ -125,7 +125,7 @@ def generate_algo_corr_script(name, env, plots=False, imfs=None,
     lines += "\n".join(__args(mode))
     lines += "\nscattered_light.scattered_light(args[\"gps\"], args[\"seconds\"], args[\"target_channel\"], " \
              "args[\"channels_list\"], args[\"opath\"], args[\"lowpass_freq\"], fs=args[\"samp_freq\"], " \
-             "check_lock=True, combos=True, seismic=True)"
+             "max_imf=2, check_lock=True, combos=True, seismic=True)"
 
     if plots:
         if harmonics is None:
