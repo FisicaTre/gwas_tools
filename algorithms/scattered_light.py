@@ -69,9 +69,12 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     """
     if event not in defines.EVENT_LOCATION:
         raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
-    if not isinstance(f_lowpass, int) and not isinstance(f_lowpass, float) and f_lowpass not in defines.LOWP_FREQ_OPTS:
-        raise ValueError("Lowpass frequency must be a float or one of these "
-                         "strings : {}".format(", ".join(defines.LOWP_FREQ_OPTS)))
+    if f_lowpass not in defines.LOWP_FREQ_OPTS:
+        try:
+            f_lowpass = float(f_lowpass)
+        except:
+            raise ValueError("Lowpass frequency must be a float or one of these "
+                             "strings : {}".format(", ".join(defines.LOWP_FREQ_OPTS)))
 
     # initialize variables
     ch_f = open(channels_file, "r")
