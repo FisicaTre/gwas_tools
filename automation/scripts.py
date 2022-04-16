@@ -217,7 +217,7 @@ def generate_comparison_corr_script(name, env, html=False, imfs=None):
         lines += "\nplot_utils.plot_seismic_data(args[\"ipath\"], " \
                  "signal_utils.get_ifo_of_channel(args[\"target_channel\"]))"
         lines += "\ndaily_correlations_page.generate_web_page(args[\"ipath\"], args[\"date\"], " \
-                 "args[\"target_channel\"], args[\"aux_channel\"]"
+                 "args[\"target_channel\"], args[\"aux_channel\"])"
 
     f.write(lines)
     f.close()
