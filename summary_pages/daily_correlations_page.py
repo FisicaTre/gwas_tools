@@ -53,6 +53,17 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
     title = "Scattered light daily analysis ({})".format(date)
     page = hb.HtmlBuilder(title=title, style="body { background-color: white; }")
 
+    # pipeline code
+    # code = [
+    #    PIPELINE_SCRIPT_NAME,
+    #    "--target_channel {}".format(tc_name),
+    #    "--channels_file {}".format(ch_list_file),
+    #    "--date {}".format("".join(date.split("-"))),
+    #    "--pf {}"
+    # ]
+    # description = "This page can be reproduced with the following command line:"
+    # page.add_command_line_block(" ".join(code), description, "pipeline-command-line")
+
     # info
     page.add_section(defines.INFO_SECTION)
     page.open_div(id_="info-list")
