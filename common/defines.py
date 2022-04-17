@@ -91,7 +91,7 @@ CHAMBERS = {"BSC5": ["ETMY", "TMSY"], "BSC4": ["ETMX", "TMSX"], "BSC1": ["ITMY"]
             "HAM2": ["-MC", "-PR"], "HAM3": ["MC2", "-PR2"], "HAM5": ["-SR"], "HAM4": ["-SR2"], "HAM1": ["-RM"]}
 
 # html
-INFO_SECTION = "info"
+INFO_SECTION = "Info"
 ENV_NAME = "Environment"
 TARGET_CH_NAME = "Target channel"
 AUXILIARY_CH_NAME = "Auxiliary channel"
