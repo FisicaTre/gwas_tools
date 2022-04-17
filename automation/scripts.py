@@ -1,7 +1,7 @@
 from ..common import defines
 
 
-def __imports(mode, plots=False, html=False):
+def __imports(mode, plots=False, html=False, corr=False):
     imports = ["\nimport os",
                "import argparse"]
     if mode == "tool":
@@ -11,13 +11,16 @@ def __imports(mode, plots=False, html=False):
     elif mode == "comparison":
         imports.append("from gwadaptive_scattering.utils import file_utils, plot_utils, signal_utils")
         if html:
-            imports.append("from gwadaptive_scattering.summary_pages import scattered_light_page")
+            if corr:
+                imports.append("from gwadaptive_scattering.summary_pages import daily_correlations_page")
+            else:
+                imports.append("from gwadaptive_scattering.summary_pages import scattered_light_page")
     imports.append("\n")
 
     return imports
 
 
-def __args(mode):
+def __args(mode, corr=False):
     args = None
     if mode == "tool":
         args = ["\nap = argparse.ArgumentParser()",
@@ -30,13 +33,21 @@ def __args(mode):
                 "ap.add_argument(\"--lowpass_freq\", required=True)",
                 "args = vars(ap.parse_args())"]
     elif mode == "comparison":
-        args = ["\nap = argparse.ArgumentParser()",
-                "ap.add_argument(\"--ipath\", required=True)",
-                "ap.add_argument(\"--date\", required=True)",
-                "ap.add_argument(\"--target_channel\", required=True)",
-                "ap.add_argument(\"--aux_channel\", required=True)",
-                "ap.add_argument(\"--gps_list\", required=True)",
-                "args = vars(ap.parse_args())"]
+        if corr:
+            args = ["\nap = argparse.ArgumentParser()",
+                    "ap.add_argument(\"--ipath\", required=True)",
+                    "ap.add_argument(\"--date\", required=True)",
+                    "ap.add_argument(\"--target_channel\", required=True)",
+                    "ap.add_argument(\"--aux_channel\", required=True)",
+                    "args = vars(ap.parse_args())"]
+        else:
+            args = ["\nap = argparse.ArgumentParser()",
+                    "ap.add_argument(\"--ipath\", required=True)",
+                    "ap.add_argument(\"--date\", required=True)",
+                    "ap.add_argument(\"--target_channel\", required=True)",
+                    "ap.add_argument(\"--channels_list\", required=True)",
+                    "ap.add_argument(\"--gps_list\", required=True)",
+                    "args = vars(ap.parse_args())"]
     args.append("\n")
 
     return args
@@ -83,9 +94,9 @@ def generate_algo_script(name, env, plots=False, imfs=None,
         if imfs is None:
             imfs = [1]
         lines += "\nfolder_name = [os.path.join(args[\"opath\"], \"{:d}\".format(args[\"gps\"]))]"
-        lines += "\nplot_utils.plot_imfs(folder_name, {}, imf_thr={:f}, " \
+        lines += "\nplot_utils.plot_imfs(folder_name, imfs_to_plot={}, imf_thr={:f}, " \
                  "save_ext=\"{}\", figsize={})".format(imfs, imf_thr, fig_ext, fig_size)
-        lines += "\nplot_utils.plot_omegagrams(folder_name, {}, omegagram_thr={:f}, harmonics={}, " \
+        lines += "\nplot_utils.plot_omegagrams(folder_name, imfs_to_plot={}, omegagram_thr={:f}, harmonics={}, " \
                  "save_ext=\"{}\", figsize={})".format(imfs, omg_thr, harmonics, fig_ext, fig_size)
 
     f.write(lines)
@@ -133,9 +144,9 @@ def generate_algo_corr_script(name, env, plots=False, imfs=None,
         if imfs is None:
             imfs = [1]
         lines += "\nfolder_name = [os.path.join(args[\"opath\"], \"{:d}\".format(args[\"gps\"]))]"
-        lines += "\nplot_utils.plot_imfs(folder_name, {}, imf_thr={:f}, " \
+        lines += "\nplot_utils.plot_combinations(folder_name, plot_combinations={}, imf_thr={:f}, " \
                  "save_ext=\"{}\", figsize={})".format(imfs, imf_thr, fig_ext, fig_size)
-        lines += "\nplot_utils.plot_omegagrams(folder_name, {}, omegagram_thr={:f}, harmonics={}, " \
+        lines += "\nplot_utils.plot_omegagrams(folder_name, imfs_to_plot={}, omegagram_thr={:f}, harmonics={}, " \
                  "save_ext=\"{}\", figsize={})".format(imfs, omg_thr, harmonics, fig_ext, fig_size)
 
     f.write(lines)
@@ -205,8 +216,8 @@ def generate_comparison_corr_script(name, env, html=False, imfs=None):
     mode = "comparison"
     f = open(name, "w")
     lines = "{}\n".format(env)
-    lines += "\n".join(__imports(mode, html=html))
-    lines += "\n".join(__args(mode))
+    lines += "\n".join(__imports(mode, html=html, corr=True))
+    lines += "\n".join(__args(mode, corr=True))
     lines += "\nres_folders = file_utils.get_results_folders(args[\"ipath\"])"
 
     if imfs is None:

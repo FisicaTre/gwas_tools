@@ -482,7 +482,7 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
     imf_to_plot = 1
     # ***** ***** #
     if ifo.startswith("L"):
-        seism_channels = defines.LIGO_SEISMIC_CHANNELS
+        seism_channels = [sc.split(":")[1] for sc in defines.LIGO_SEISMIC_CHANNELS]
     elif ifo.startswith("H"):
         seism_channels = defines.HANFORD_SEISMIC_CHANNELS
     elif ifo.startswith("V"):
@@ -495,7 +495,7 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
     for i in range(len(seism_channels) // seism_group):
         seismometers[i] = {}
         for j in range(seism_group):
-            seism_key = seism_channels[i * seism_group + j].split(":")[1]
+            seism_key = seism_channels[i * seism_group + j]
             seismometers[i][seism_key] = []
 
     corrs = []
@@ -548,8 +548,8 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
 
             n_plots = len(seismometers.keys()) + 1
             for i in range(n_plots):
+                plt.subplot(n_plots, 1, i + 1)
                 if i == 0:
-                    plt.subplot(n_plots, 1, i + 1)
                     plt.plot(range(len(corrs)), corrs, "b", label="$\\rho$")
                     plt.plot(range(len(corrs)), mavg, "r", label="moving average", linewidth=2)
                     for j in range(len(lock_periods) - 1):
@@ -562,12 +562,12 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
                     plt.xticks(np.arange(0, len(corrs), step=60), labels)
                     plt.legend(loc=0)
                 else:
-                    plt.subplot(n_plots, 1, i + 1)
-                    for j, ch in enumerate(seismometers[i].keys()):
-                        ts = seismometers[i][ch]
+                    for j, ch in enumerate(seismometers[i - 1].keys()):
+                        ts = seismometers[i - 1][ch]
                         plt.plot(range(len(ts)), ts, colors[j], label="{}:{}".format(ifo, ch))
-                    plt.xticks(np.arange(0, len(seismometers[i][seism_channels[i * seism_group]]), step=60), labels)
-                    plt.xlim(0, len(seismometers[i][seism_channels[i * seism_group]]))
+                    plt.xticks(np.arange(0, len(seismometers[i - 1][seism_channels[(i - 1) * seism_group]]), step=60),
+                               labels)
+                    plt.xlim(0, len(seismometers[i - 1][seism_channels[(i - 1) * seism_group]]))
                     plt.legend(loc=0)
                     plt.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
                     plt.ylabel("[$ms^{-1}$]", fontsize=font_size)
