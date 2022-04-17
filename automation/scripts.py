@@ -104,7 +104,7 @@ def generate_algo_script(name, env, plots=False, imfs=None,
 
 
 def generate_algo_corr_script(name, env, plots=False, imfs=None,
-                              imf_thr=-1.0, omg_thr=-1.0, harmonics=None,
+                              imf_thr=-1.0,  # omg_thr=-1.0, harmonics=None,
                               fig_ext="png", fig_size=None):
     """Generate the script for the main correlation algorithm.
 
@@ -139,15 +139,15 @@ def generate_algo_corr_script(name, env, plots=False, imfs=None,
              "max_imf=2, check_lock=True, combos=True, seismic=True)"
 
     if plots:
-        if harmonics is None:
-            harmonics = [1, 3, 5]
+        # if harmonics is None:
+        #    harmonics = [1, 3, 5]
         if imfs is None:
             imfs = [1]
         lines += "\nfolder_name = [os.path.join(args[\"opath\"], \"{:d}\".format(args[\"gps\"]))]"
-        lines += "\nplot_utils.plot_combinations(folder_name, plot_combinations={}, imf_thr={:f}, " \
+        lines += "\nplot_utils.plot_combinations(folder_name, imfs_to_plot={}, imf_thr={:f}, " \
                  "save_ext=\"{}\", figsize={})".format(imfs, imf_thr, fig_ext, fig_size)
-        lines += "\nplot_utils.plot_omegagrams(folder_name, imfs_to_plot={}, omegagram_thr={:f}, harmonics={}, " \
-                 "save_ext=\"{}\", figsize={})".format(imfs, omg_thr, harmonics, fig_ext, fig_size)
+        # lines += "\nplot_utils.plot_omegagrams(folder_name, imfs_to_plot={}, omegagram_thr={:f}, harmonics={}, " \
+        #         "save_ext=\"{}\", figsize={})".format(imfs, omg_thr, harmonics, fig_ext, fig_size)
 
     f.write(lines)
     f.close()
