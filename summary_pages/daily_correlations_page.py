@@ -153,8 +153,11 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
                                 break
 
                         # if res_file.get_corr_of_imf(i) >= COLOR_THRESHOLD:
-                        if res_file.get_corr_of_combo_with_imf(i) >= COLOR_THRESHOLD:
-                            above_thr = True
+                        try:
+                            if res_file.get_corr_of_combo_with_imf(i) >= COLOR_THRESHOLD:
+                                above_thr = True
+                        except:
+                            pass
 
                 gps_event = res_file.get_gps()
                 res_id = str(gps_event)

@@ -511,7 +511,10 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
                 if file_utils.is_valid_folder(res_folder):
                     yf = file_utils.YmlFile(res_folder)
                     if combo:
-                        corrs.append(yf.get_corr_of_combo_with_imf(imf_to_plot))
+                        try:
+                            corrs.append(yf.get_corr_of_combo_with_imf(imf_to_plot))
+                        except:
+                            corrs.append(np.nan)
                     else:
                         corrs.append(yf.get_corr_of_imf(imf_to_plot))
                     seis_dict = yf.get_seismic_channels()
