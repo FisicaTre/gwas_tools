@@ -559,7 +559,10 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
                         if lock_periods[j] == 1:
                             plt.axvspan(j, j + 1, facecolor="0.2", alpha=0.5)
                     plt.xlim(0, len(corrs))
-                    plt.ylim(np.nanmin(corrs) - 0.05, np.nanmax(corrs) + 0.05)
+                    if np.isnan(corrs).all():
+                        plt.ylim(0, 1)
+                    else:
+                        plt.ylim(np.nanmin(corrs) - 0.05, np.nanmax(corrs) + 0.05)
                     plt.ylabel("$\\rho$", fontsize=font_size)
                     plt.grid(True)
                     plt.xticks(np.arange(0, len(corrs), step=60), labels)
