@@ -484,7 +484,7 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
     if ifo.startswith("L"):
         seism_channels = [sc.split(":")[1] for sc in defines.LIGO_SEISMIC_CHANNELS]
     elif ifo.startswith("H"):
-        seism_channels = defines.HANFORD_SEISMIC_CHANNELS
+        seism_channels = [sc.split(":")[1] for sc in defines.HANFORD_SEISMIC_CHANNELS]
     elif ifo.startswith("V"):
         seism_channels = defines.VIRGO_SEISMIC_CHANNELS
     else:
