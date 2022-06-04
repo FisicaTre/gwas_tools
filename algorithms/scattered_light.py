@@ -214,7 +214,7 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
             from gwdama.io import GwDataManager as gwdm
             seismometers = gwdm.read_from_virgo(defines.VIRGO_SEISMIC_CHANNELS, gps_start,
                                                 gps_end, ffl_spec="V1trend100")
-            seismometers.resample(3)
+            # seismometers.resample(3)
             seis_dict = {}
             for s in defines.VIRGO_SEISMIC_CHANNELS:
                 seis_dict[s.split(":")[1]] = seismometers[s].value.mean()

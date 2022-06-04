@@ -486,7 +486,7 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
     elif ifo.startswith("H"):
         seism_channels = [sc.split(":")[1] for sc in defines.HANFORD_SEISMIC_CHANNELS]
     elif ifo.startswith("V"):
-        seism_channels = defines.VIRGO_SEISMIC_CHANNELS
+        seism_channels = [sc.split(":")[1] for sc in defines.VIRGO_SEISMIC_CHANNELS]
     else:
         raise ValueError("No seismic data for the current interferometer.")
 
