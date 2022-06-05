@@ -70,10 +70,10 @@ def scattered_light_raw(gps, seconds, target_channel_name, channels_file, out_pa
     ch_f.close()
 
     # create folder for results if it does not exist
-    odir_name = "{:d}".format(gps)
-    out_path = os.path.join(out_path, odir_name)
-    if not os.path.isdir(out_path):
-        os.makedirs(out_path, exist_ok=True)
+    # odir_name = "{:d}".format(gps)
+    # out_path = os.path.join(out_path, odir_name)
+    # if not os.path.isdir(out_path):
+    #    os.makedirs(out_path, exist_ok=True)
 
     gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps, seconds, event)
     ifo = signal_utils.get_ifo_of_channel(target_channel_name)
