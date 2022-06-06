@@ -15,5 +15,5 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
-__version__ = "0.12.2"
+__version__ = "0.12.3"
 __author__ = "Stefano Bianchi"
