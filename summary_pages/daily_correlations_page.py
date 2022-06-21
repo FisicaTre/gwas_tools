@@ -14,7 +14,6 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# TODO : command line at the top of the page
 
 import os
 import sys
@@ -33,7 +32,7 @@ COLOR_THRESHOLD = 0.7
 PLOT_EXT = "png"
 
 
-def generate_web_page(res_path, date, tc_name, aux_ch):
+def generate_web_page(res_path, date, tc_name, aux_ch, prepend_path=""):
     """Output page for daily correlations analysis.
 
     Parameters
@@ -46,32 +45,29 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
         target channel name
     aux_ch : str
         auxiliary channel name
+    prepend_path : str, optional
+        path to be prepended to the relative path of images and
+        files in the current page (default : "")
     """
     res_folders = file_utils.get_results_folders(res_path, must_include=["*.{}".format(PLOT_EXT)])
-
-    # title
-    title = "Scattered light daily analysis ({})".format(date)
-    page = hb.HtmlBuilder(title=title, style="body { background-color: white; }")
-
-    # pipeline code
-    # code = [
-    #    PIPELINE_SCRIPT_NAME,
-    #    "--target_channel {}".format(tc_name),
-    #    "--channels_file {}".format(ch_list_file),
-    #    "--date {}".format("".join(date.split("-"))),
-    #    "--pf {}"
-    # ]
-    # description = "This page can be reproduced with the following command line:"
-    # page.add_command_line_block(" ".join(code), description, "pipeline-command-line")
+    page = hb.HtmlBuilder(style="body { background-color: white; }")
 
     # info
     page.add_section(defines.INFO_SECTION)
     page.open_div(id_="info-list")
 
     info_dict = {
-        defines.ENV_NAME: page.get_formatted_code(sys.prefix),
+        defines.PAGE_DAY: date,
         defines.TARGET_CH_NAME: tc_name,
-        defines.AUXILIARY_CH_NAME: aux_ch
+        defines.AUXILIARY_CH_NAME: aux_ch,
+        defines.RES_TABLE: page.get_formatted_link(defines.SUMMARY_NAME,
+                                                   href=os.path.join(prepend_path,
+                                                                     defines.COMPARISON_FOLDER,
+                                                                     defines.SUMMARY_NAME),
+                                                   download=os.path.join(prepend_path,
+                                                                         defines.COMPARISON_FOLDER,
+                                                                         defines.SUMMARY_NAME)),
+        defines.ENV_NAME: page.get_formatted_code(sys.prefix)
     }
     page.add_bullet_list(info_dict)
     page.close_div()
@@ -85,7 +81,7 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
             if os.path.exists(os.path.join(res_path, seismic_plot_name)):
                 page.open_div(id_="imf-{:d}-summary".format(i))
                 page.add_subsection("Imf {:d}".format(i))
-                page.add_plot(seismic_plot_name, "imf-{:d}-seismic".format(i))
+                page.add_plot(os.path.join(prepend_path, seismic_plot_name), "imf-{:d}-seismic".format(i))
                 page.close_div()
 
     hour_dict = {}
@@ -193,19 +189,20 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
 
                         # if os.path.exists(os.path.join(res_path, imf_plot_name)):
                         #    page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
-                        #    page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
+                        #    page.add_plot(os.path.join(prepend_path, imf_plot_name), "imf-{:d}-{}".format(i, res_id))
                         #    page.close_div()
 
                         # if omegagram:
                         #    omegagram_plot_name = os.path.join(res_id, file_utils.omegagram_plot_name(i, PLOT_EXT))
                         #    page.open_div(id_="omegagram-{:d}-{}-plot".format(i, res_id))
-                        #    page.add_plot(omegagram_plot_name, "omegagram-{:d}-{}".format(i, res_id))
+                        #    page.add_plot(os.path.join(prepend_path, omegagram_plot_name),
+                        #    "omegagram-{:d}-{}".format(i, res_id))
                         #    page.close_div()
 
                         if combo_file != "":
                             combo_file = os.path.join(res_id, os.path.split(combo_file)[1])
                             page.open_div(id_="combo-{:d}-{}-plot".format(i, res_id))
-                            page.add_plot(combo_file, "combo-{:d}-{}".format(i, res_id))
+                            page.add_plot(os.path.join(prepend_path, combo_file), "combo-{:d}-{}".format(i, res_id))
                             page.close_div()
 
                         page.close_div()
@@ -217,4 +214,4 @@ def generate_web_page(res_path, date, tc_name, aux_ch):
     page.close_div()
 
     html_file = os.path.join(res_path, defines.PAGE_NAME)
-    page.save_page(html_file)
+    page.save_page(html_file, add_footer=False)

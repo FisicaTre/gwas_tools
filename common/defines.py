@@ -65,6 +65,7 @@ COMPARISON_FOLDER = "comparison"
 EXTRA_SECONDS = 1
 EVENT_LOCATION = ["start", "center", "end"]
 LOWP_FREQ_OPTS = ["average", "max"]
+SUMMARY_NAME = "summary_table.csv"
 
 # lock channels
 LCK_CH_VIRGO = "V1:DQ_META_ITF_Mode"
@@ -92,11 +93,13 @@ CHAMBERS = {"BSC5": ["ETMY", "TMSY"], "BSC4": ["ETMX", "TMSX"], "BSC1": ["ITMY"]
 
 # html
 INFO_SECTION = "Info"
+PAGE_DAY = "Page day"
 ENV_NAME = "Environment"
 TARGET_CH_NAME = "Target channel"
 AUXILIARY_CH_NAME = "Auxiliary channel"
 GPS_LIST_NAME = "GPS list"
 CH_LIST_NAME = "Channels list"
+RES_TABLE = "Results table"
 SINGLE_GPS_SECTION = "Single GPS results"
 RESULTS_SECTION = "Results"
 SUCCESS_STR = "Green"

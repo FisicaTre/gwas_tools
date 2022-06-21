@@ -147,7 +147,7 @@ def generate_algo_corr_script(name, env, plots=False, imfs=None,
 
 
 def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1,
-                               imf_thr=-1.0, fig_ext="png", fig_size=None):
+                               imf_thr=-1.0, fig_ext="png", fig_size=None, html_abs_path=""):
     """Generate the script for the analysis' results comparison.
 
     Parameters
@@ -168,6 +168,8 @@ def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1,
         plots extension (default : png)
     fig_size : tuple[int], optional
         figure size
+    html_abs_path : str, optional
+        absolute path for files and images in the html page (default : "")
     """
     mode = "comparison"
     f = open(name, "w")
@@ -178,21 +180,22 @@ def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1,
 
     if imfs is None:
         imfs = [1, 2]
-    lines += "\nfile_utils.summary_table(res_folders, {}, \"summary_table.csv\")".format(imfs)
+    lines += "\nfile_utils.summary_table(res_folders, {}, \"{}\")".format(imfs, defines.SUMMARY_NAME)
 
     if html:
-        lines += "\nplot_utils.plot_summaries(os.path.join(args[\"ipath\"], \"{}\", \"summary_table.csv\"), " \
-                 "imf_thr={:f}, save_ext=\"{}\", figsize={})".format(defines.COMPARISON_FOLDER, imf_thr,
-                                                                     fig_ext, fig_size)
+        lines += "\nplot_utils.plot_summaries(os.path.join(args[\"ipath\"], \"{}\", \"{}\"), " \
+                 "imf_thr={:f}, save_ext=\"{}\", figsize={})".format(defines.COMPARISON_FOLDER,
+                                                                     defines.SUMMARY_NAME,
+                                                                     imf_thr, fig_ext, fig_size)
         lines += "\nscattered_light_page.generate_web_page(args[\"ipath\"], args[\"date\"], " \
                  "args[\"target_channel\"], args[\"channels_list\"], args[\"gps_list\"], " \
-                 "summary_imfs={:d})".format(summary_imfs)
+                 "summary_imfs={:d}, prepend_path=\"{}\")".format(summary_imfs, html_abs_path)
 
     f.write(lines)
     f.close()
 
 
-def generate_comparison_corr_script(name, env, html=False, imfs=None):
+def generate_comparison_corr_script(name, env, html=False, imfs=None, html_abs_path=""):
     """Generate the script for the correlation analysis' results comparison.
 
     Parameters
@@ -205,6 +208,8 @@ def generate_comparison_corr_script(name, env, html=False, imfs=None):
         if True, the summary web page is generated (default : False)
     imfs : list[int], optional
         imfs to print in the summary table (default : None)
+    html_abs_path : str, optional
+        absolute path for files and images in the html page (default : "")
     """
     mode = "comparison"
     f = open(name, "w")
@@ -215,13 +220,13 @@ def generate_comparison_corr_script(name, env, html=False, imfs=None):
 
     if imfs is None:
         imfs = [1, 2]
-    lines += "\nfile_utils.summary_table(res_folders, {}, \"summary_table.csv\")".format(imfs)
+    lines += "\nfile_utils.summary_table(res_folders, {}, \"{}\")".format(imfs, defines.SUMMARY_NAME)
 
     if html:
         lines += "\nplot_utils.plot_seismic_data(args[\"ipath\"], " \
                  "signal_utils.get_ifo_of_channel(args[\"target_channel\"]))"
         lines += "\ndaily_correlations_page.generate_web_page(args[\"ipath\"], args[\"date\"], " \
-                 "args[\"target_channel\"], args[\"aux_channel\"])"
+                 "args[\"target_channel\"], args[\"aux_channel\"], prepend_path=\"{}\")".format(html_abs_path)
 
     f.write(lines)
     f.close()

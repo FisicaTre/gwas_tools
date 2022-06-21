@@ -31,7 +31,8 @@ COLOR_THRESHOLD_MAX = 0.7
 PLOT_EXT = "png"
 
 
-def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_imfs=2):
+def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file,
+                      summary_imfs=2, prepend_path=""):
     """Output page for scattered light analysis.
 
     Parameters
@@ -48,22 +49,12 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
         gps glitches list
     summary_imfs : int, optional
         imfs to show in the page
+    prepend_path : str, optional
+        path to be prepended to the relative path of images and
+        files in the current page (default : "")
     """
     res_folders = file_utils.get_results_folders(res_path, must_include=["imf_*_culprit.{}".format(PLOT_EXT)])
-
-    # title
-    title = "Scattered light analysis ({})".format(date)
-    page = hb.HtmlBuilder(title=title, style="body { background-color: white; }")
-
-    # pipeline code
-    code = [
-        PIPELINE_SCRIPT_NAME,
-        "--target_channel {}".format(tc_name),
-        "--channels_list {}".format(ch_list_file),
-        "--date {}".format("".join(date.split("-")))
-    ]
-    description = "This page can be reproduced with the following command line:"
-    page.add_command_line_block(" ".join(code), description, "pipeline-command-line")
+    page = hb.HtmlBuilder(style="body { background-color: white; }")
 
     # info
     page.add_section(defines.INFO_SECTION)
@@ -72,14 +63,26 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
     # copy channels file to local folder
     os.system("cp {} {}".format(ch_list_file, res_path))
     info_dict = {
-        defines.ENV_NAME: page.get_formatted_code(sys.prefix),
+        defines.PAGE_DAY: date,
         defines.TARGET_CH_NAME: tc_name,
         defines.GPS_LIST_NAME: page.get_formatted_link(os.path.basename(gps_file),
-                                                       href=os.path.basename(gps_file),
-                                                       download=os.path.basename(gps_file)),
+                                                       href=os.path.join(prepend_path,
+                                                                         os.path.basename(gps_file)),
+                                                       download=os.path.join(prepend_path,
+                                                                             os.path.basename(gps_file))),
         defines.CH_LIST_NAME: page.get_formatted_link(os.path.basename(ch_list_file),
-                                                      href=os.path.basename(ch_list_file),
-                                                      download=os.path.basename(ch_list_file))
+                                                      href=os.path.join(prepend_path,
+                                                                        os.path.basename(ch_list_file)),
+                                                      download=os.path.join(prepend_path,
+                                                                            os.path.basename(ch_list_file))),
+        defines.RES_TABLE: page.get_formatted_link(defines.SUMMARY_NAME,
+                                                   href=os.path.join(prepend_path,
+                                                                     defines.COMPARISON_FOLDER,
+                                                                     defines.SUMMARY_NAME),
+                                                   download=os.path.join(prepend_path,
+                                                                         defines.COMPARISON_FOLDER,
+                                                                         defines.SUMMARY_NAME)),
+        defines.ENV_NAME: page.get_formatted_code(sys.prefix)
     }
     page.add_bullet_list(info_dict)
     page.close_div()
@@ -95,9 +98,9 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
                 page.open_div(id_="imf-{:d}-summary".format(i))
                 page.add_subsection("Imf {:d}".format(i))
                 if os.path.exists(os.path.join(res_path, freq_range_plot_name)):
-                    page.add_plot(freq_range_plot_name, "imf-{:d}-freq-range".format(i))
+                    page.add_plot(os.path.join(prepend_path, freq_range_plot_name), "imf-{:d}-freq-range".format(i))
                 if os.path.exists(os.path.join(res_path, chamber_plot_name)):
-                    page.add_plot(chamber_plot_name, "imf-{:d}-chamber".format(i))
+                    page.add_plot(os.path.join(prepend_path, chamber_plot_name), "imf-{:d}-chamber".format(i))
                 page.close_div()
 
     # results
@@ -183,19 +186,19 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
 
                 if os.path.exists(os.path.join(res_path, imf_plot_name)):
                     page.open_div(id_="imf-{:d}-{}-plot".format(i, res_id))
-                    page.add_plot(imf_plot_name, "imf-{:d}-{}".format(i, res_id))
+                    page.add_plot(os.path.join(prepend_path, imf_plot_name), "imf-{:d}-{}".format(i, res_id))
                     page.close_div()
 
                 # if combo_file != "":
                 #    combo_file = os.path.join(res_id, os.path.split(combo_file)[1])
                 #    page.open_div(id_="combo-{:d}-{}-plot".format(i, res_id))
-                #    page.add_plot(combo_file, "combo-{:d}-{}".format(i, res_id))
+                #    page.add_plot(os.path.join(prepend_path, combo_file), "combo-{:d}-{}".format(i, res_id))
                 #    page.close_div()
 
                 if omegagram:
                     omegagram_plot_name = os.path.join(res_id, file_utils.omegagram_plot_name(i, PLOT_EXT))
                     page.open_div(id_="omegagram-{:d}-{}-plot".format(i, res_id))
-                    page.add_plot(omegagram_plot_name, "omegagram-{:d}-{}".format(i, res_id))
+                    page.add_plot(os.path.join(prepend_path, omegagram_plot_name), "omegagram-{:d}-{}".format(i, res_id))
                     page.close_div()
 
                 page.close_div()
@@ -205,4 +208,4 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file, summary_i
     page.close_div()
 
     html_file = os.path.join(res_path, defines.PAGE_NAME)
-    page.save_page(html_file)
+    page.save_page(html_file, add_footer=False)
