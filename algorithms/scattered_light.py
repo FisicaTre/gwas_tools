@@ -96,10 +96,10 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
             lock_channel_data = signal_utils.get_instrument_lock_data(lock_channel_name, gps_start, gps_end)
             if ifo.startswith("L") or ifo.startswith("H"):
                 if len(lock_channel_data) != 1 or lock_channel_data[0][0] != gps_start or lock_channel_data[0][-1] != gps_end:
-                    return None
+                    raise ValueError("Channel not locked during the period of interest.")
             elif ifo.startswith("V"):
                 if not np.all(lock_channel_data == 1):
-                    return None
+                    raise ValueError("Channel not locked during the period of interest.")
 
     # build time series matrix
     data = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
