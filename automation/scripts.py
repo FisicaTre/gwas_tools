@@ -177,6 +177,7 @@ def generate_comparison_script(name, env, html=False, imfs=None, summary_imfs=1,
     lines += "\n".join(__imports(mode, html=html))
     lines += "\n".join(__args(mode))
     lines += "\nres_folders = file_utils.get_results_folders(args[\"ipath\"])"
+    lines += "\nfile_utils.create_comparison_folder(args[\"ipath\"])"
 
     if imfs is None:
         imfs = [1, 2]
@@ -217,6 +218,7 @@ def generate_comparison_corr_script(name, env, html=False, imfs=None, html_abs_p
     lines += "\n".join(__imports(mode, html=html, corr=True))
     lines += "\n".join(__args(mode, corr=True))
     lines += "\nres_folders = file_utils.get_results_folders(args[\"ipath\"])"
+    lines += "\nfile_utils.create_comparison_folder(args[\"ipath\"])"
 
     if imfs is None:
         imfs = [1, 2]

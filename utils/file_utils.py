@@ -810,3 +810,17 @@ def summary_chamber_plot_name(ext):
             plot name
         """
     return "summary_chamber.{}".format(ext)
+
+def create_comparison_folder(where):
+    """Create folder for comparison files.
+
+        Parameters
+        ----------
+        where : str
+            where to create the folder
+    """
+    cfold = os.path.join(where, defines.COMPARISON_FOLDER)
+    if os.path.exists(cfold):
+        os.system("rm -rf {}".format(cfold))
+    os.system("mkdir {}".format(cfold))
+
