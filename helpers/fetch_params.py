@@ -52,22 +52,26 @@ def get_gps_and_freq(glitch_type, gps1, gps2, ifo, ml_confidence=(0.9, 1.0),
     ml_high = str(ml_confidence[1])
     snr_low = str(snr[0])
     snr_high = str(snr[1])
-    glitches_list = EventTable.fetch("gravityspy", "glitches_v2d0",
-                                     selection=["ml_label={}".format(glitch_type),
-                                                "{}<=ml_confidence<={}".format(ml_low, ml_high),
-                                                "{}<=snr<={}".format(snr_low, snr_high),
-                                                "ifo={}".format(ifo),
-                                                "{}<event_time<{}".format(gps1, gps2)],
-                                     #host="gravityspyplus.ciera.northwestern.edu",
-                                     user="mla", passwd="gl1tch35Rb4d!")
-    
-    glitches_list = glitches_list.to_pandas()
-    glitches_list.drop_duplicates("peak_time", keep=False, inplace=True)
-    peak_freqs = np.array(glitches_list.peak_frequency.values, dtype=float)
-    start_times = np.array(glitches_list.peak_time.values, dtype=float)
+    try:
+        glitches_list = EventTable.fetch("gravityspy", "glitches_v2d0",
+                                         selection=["ml_label={}".format(glitch_type),
+                                                    "{}<=ml_confidence<={}".format(ml_low, ml_high),
+                                                    "{}<=snr<={}".format(snr_low, snr_high),
+                                                    "ifo={}".format(ifo),
+                                                    "{}<event_time<{}".format(gps1, gps2)],
+                                         host="gravityspyplus.ciera.northwestern.edu",
+                                         user="mla", passwd="gl1tch35Rb4d!")
 
-    if save_path is not None:
-        glitches_list.to_csv(save_path, index=False)
+        glitches_list = glitches_list.to_pandas()
+        glitches_list.drop_duplicates("peak_time", keep=False, inplace=True)
+        peak_freqs = np.array(glitches_list.peak_frequency.values, dtype=float)
+        start_times = np.array(glitches_list.peak_time.values, dtype=float)
+
+        if save_path is not None:
+            glitches_list.to_csv(save_path, index=False)
+    except:
+        start_times = []
+        peak_freqs = []
 
     return start_times, peak_freqs
 
