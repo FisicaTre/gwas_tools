@@ -1,5 +1,5 @@
 gwas_tools (v0.12.6)
-******************************
+********************
 
 Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.
 
@@ -19,6 +19,9 @@ Documentation for the Code
 .. toctree::
    :maxdepth: 1
 
+   fun_class/gwas_tools.algorithms
+   fun_class/gwas_tools.automation
    fun_class/gwas_tools.helpers
    fun_class/gwas_tools.html
+   fun_class/gwas_tools.summary_pages
    fun_class/gwas_tools.utils

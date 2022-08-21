@@ -1,9 +1,7 @@
 sub_file
 ========
 
-.. currentmodule:: gwadaptive_scattering.helpers
+.. currentmodule:: gwas_tools.helpers.sub_file
 
-.. toctree::
-   :maxdepth: 1
-
-   sub_package_fun/sub_file.SubFile
+.. automodule:: gwas_tools.helpers.sub_file
+   :members:

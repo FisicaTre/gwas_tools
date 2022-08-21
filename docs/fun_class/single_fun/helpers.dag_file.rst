@@ -1,9 +1,7 @@
 dag_file
 ========
 
-.. currentmodule:: gwadaptive_scattering.helpers
+.. currentmodule:: gwas_tools.helpers.dag_file
 
-.. toctree::
-   :maxdepth: 1
-
-   sub_package_fun/dag_file.DagFile
+.. automodule:: gwas_tools.helpers.dag_file
+   :members:

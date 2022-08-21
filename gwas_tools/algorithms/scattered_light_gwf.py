@@ -28,8 +28,8 @@ def scattered_light_gwf(gps, seconds, target_channel_name, channels_file, out_pa
     """Analysis for scattered light identification.
     The script outputs a folder named as the input gps,
     with inside three files:
-        - target channel instantaneous amplitudes (*.imf, optional)
-        - most correlated predictor for each imf (*.predictors, optional)
+        - target channel instantaneous amplitudes (.imf, optional)
+        - most correlated predictor for each imf (.predictors, optional)
         - output.yml, a summary of the analysis' results
 
     Parameters

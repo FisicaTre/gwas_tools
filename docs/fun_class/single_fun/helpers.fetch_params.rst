@@ -1,10 +1,7 @@
 fetch_params
 ============
 
-.. currentmodule:: gwadaptive_scattering.helpers
+.. currentmodule:: gwas_tools.helpers.fetch_params
 
-.. toctree::
-   :maxdepth: 1
-
-   sub_package_fun/fetch_params.get_gps_and_freq
-   sub_package_fun/fetch_params.get_gps_sequence
+.. automodule:: gwas_tools.helpers.fetch_params
+   :members:

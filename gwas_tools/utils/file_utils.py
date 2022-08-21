@@ -811,6 +811,7 @@ def summary_chamber_plot_name(ext):
         """
     return "summary_chamber.{}".format(ext)
 
+
 def create_comparison_folder(where):
     """Create folder for comparison files.
 
