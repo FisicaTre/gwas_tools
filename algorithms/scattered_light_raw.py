@@ -15,7 +15,6 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
-import os
 import numpy as np
 from ..utils import signal_utils, file_utils
 from ..common import defines
@@ -69,12 +68,6 @@ def scattered_light_raw(gps, seconds, target_channel_name, channels_file, out_pa
     channels_list = [ch.rstrip() for ch in ch_f.readlines() if ch.strip()]
     ch_f.close()
 
-    # create folder for results if it does not exist
-    # odir_name = "{:d}".format(gps)
-    # out_path = os.path.join(out_path, odir_name)
-    # if not os.path.isdir(out_path):
-    #    os.makedirs(out_path, exist_ok=True)
-
     gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps, seconds, event)
     ifo = signal_utils.get_ifo_of_channel(target_channel_name)
 
@@ -127,4 +120,5 @@ def scattered_light_raw(gps, seconds, target_channel_name, channels_file, out_pa
     if save_data:
         # save predictors
         selected_predictors = predictor[:, max_channel]
+        selected_predictors = selected_predictors.reshape((1, len(selected_predictors)))
         file_utils.save_predictors(selected_predictors, "_".join(target_channel_name.split(":")), out_path)

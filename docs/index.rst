@@ -1,4 +1,4 @@
-gwadaptive_scattering (v0.6.4)
+gwadaptive_scattering (v0.12.5)
 ******************************
 
 Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.
@@ -6,7 +6,7 @@ Utils functions to build a pipeline for scattered light noise hunting in gravita
 Requirements
 ============
 
-- Python 3.6+
+- Python 3.7+
 - [requirements.txt](requirements.txt)
 
 Installation

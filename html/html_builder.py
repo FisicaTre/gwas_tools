@@ -310,7 +310,7 @@ class HtmlBuilder(object):
         self.close_div()
         markup.element("footer", case=self.page.case, parent=self.page).close()
 
-    def save_page(self, path, add_footer=True):
+    def save_page(self, path, add_footer=False):
         """Save page.
         
         Parameters
@@ -318,7 +318,7 @@ class HtmlBuilder(object):
         path : str
             save path
         add_footer : bool, optional
-            add footer (default : True)
+            add footer (default : False)
         """
         self.close_div()
         if add_footer:

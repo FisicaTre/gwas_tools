@@ -93,7 +93,6 @@ def generate_algo_script(name, env, plots=False, imfs=None,
             harmonics = [1, 3, 5]
         if imfs is None:
             imfs = [1]
-        # lines += "\nfolder_name = [os.path.join(args[\"opath\"], \"{:d}\".format(args[\"gps\"]))]"
         lines += "\nfolder_name = [args[\"opath\"]]"
         lines += "\nplot_utils.plot_imfs(folder_name, imfs_to_plot={}, imf_thr={:f}, " \
                  "save_ext=\"{}\", figsize={})".format(imfs, imf_thr, fig_ext, fig_size)
@@ -137,7 +136,6 @@ def generate_algo_corr_script(name, env, plots=False, imfs=None,
     if plots:
         if imfs is None:
             imfs = [1]
-        # lines += "\nfolder_name = [os.path.join(args[\"opath\"], \"{:d}\".format(args[\"gps\"]))]"
         lines += "\nfolder_name = [args[\"opath\"]]"
         lines += "\nplot_utils.plot_combinations(folder_name, imfs_to_plot={}, imf_thr={:f}, " \
                  "save_ext=\"{}\", figsize={})".format(imfs, imf_thr, fig_ext, fig_size)

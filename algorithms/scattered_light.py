@@ -15,7 +15,6 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
-import os
 import numpy as np
 from ..utils import signal_utils, file_utils
 from ..common import defines
@@ -80,12 +79,6 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     ch_f = open(channels_file, "r")
     channels_list = [ch.rstrip() for ch in ch_f.readlines() if ch.strip()]
     ch_f.close()
-
-    # create folder for results if it does not exist
-    # odir_name = "{:d}".format(gps)
-    # out_path = os.path.join(out_path, odir_name)
-    # if not os.path.isdir(out_path):
-    #    os.makedirs(out_path, exist_ok=True)
 
     gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps, seconds, event)
     ifo = signal_utils.get_ifo_of_channel(target_channel_name)

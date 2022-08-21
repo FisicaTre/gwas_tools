@@ -12,11 +12,12 @@
 #
 import os
 import sys
+import sphinx_rtd_theme
 sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'gwasr'
+project = 'gwas'
 copyright = '2020-, Stefano Bianchi'
 author = 'Stefano Bianchi'
 
@@ -28,8 +29,9 @@ source_suffix = '.rst'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'numpydoc', 'sphinx.ext.todo', 'sphinx.ext.githubpages']
-numpydoc_show_class_members = False
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx_rtd_theme']
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -47,7 +49,7 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'nature'
+html_theme = 'sphinx_rtd_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

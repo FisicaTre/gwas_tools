@@ -1,6 +1,10 @@
+.DS_Store
 __pycache__/
+algorithms/__pycache__/
+automation/__pycache__/
 common/__pycache__/
 helpers/__pycache__/
 html/__pycache__/
+summary_pages/__pycache__/
 utils/__pycache__/
 .idea/
