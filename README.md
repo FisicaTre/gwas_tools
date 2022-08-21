@@ -1,4 +1,4 @@
-## gwadaptive_scattering (gwas)
+## gwas_tools
 Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.
 
 #### Version

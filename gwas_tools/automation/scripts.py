@@ -5,16 +5,16 @@ def __imports(mode, plots=False, html=False, corr=False):
     imports = ["\nimport os",
                "import argparse"]
     if mode == "tool":
-        imports.append("from gwadaptive_scattering.algorithms import scattered_light")
+        imports.append("from gwas_tools.algorithms import scattered_light")
         if plots:
-            imports.append("from gwadaptive_scattering.utils import plot_utils")
+            imports.append("from gwas_tools.utils import plot_utils")
     elif mode == "comparison":
-        imports.append("from gwadaptive_scattering.utils import file_utils, plot_utils, signal_utils")
+        imports.append("from gwas_tools.utils import file_utils, plot_utils, signal_utils")
         if html:
             if corr:
-                imports.append("from gwadaptive_scattering.summary_pages import daily_correlations_page")
+                imports.append("from gwas_tools.summary_pages import daily_correlations_page")
             else:
-                imports.append("from gwadaptive_scattering.summary_pages import scattered_light_page")
+                imports.append("from gwas_tools.summary_pages import scattered_light_page")
     imports.append("\n")
 
     return imports
