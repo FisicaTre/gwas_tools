@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'gwas'
+project = 'gwas_tools'
 copyright = '2020-, Stefano Bianchi'
 author = 'Stefano Bianchi'
 

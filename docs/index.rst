@@ -1,4 +1,4 @@
-gwas_tools (v0.12.6)
+gwas_tools (v0.12.10)
 ********************
 
 Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.
@@ -7,7 +7,7 @@ Requirements
 ============
 
 - Python 3.7+
-- [requirements.txt](requirements.txt)
+- `requirements.txt <https://github.com/stfbnc/gwas_tools/blob/master/requirements.txt>`_
 
 Installation
 ============

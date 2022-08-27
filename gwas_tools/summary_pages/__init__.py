@@ -13,7 +13,3 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-
-__version__ = "0.12.10"
-__authors__ = "Stefano Bianchi, Alessandro Longo, Guillermo Valdes"

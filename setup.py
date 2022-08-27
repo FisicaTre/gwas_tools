@@ -1,0 +1,35 @@
+from setuptools import find_packages
+from distutils.core import setup
+
+setup(name="gwas_tools",
+      version="0.12.10",
+      author="Stefano Bianchi, Alessandro Longo, Guillermo Valdes",
+      author_email="stefanobianchi9@gmail.com",
+      url="https://github.com/stfbnc/gwas_tools.git",
+      license="GPLv3.0",
+      description="Utils functions to build a pipeline for scattered light noise "
+                  "hunting in gravitational waves detectors.",
+      long_description_content_type="text/markdown",
+      long_description=open("README.md").read(),
+      packages=find_packages(),
+      classifiers=["License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+                   "Operating System :: OS Independent",
+                   "Programming Language :: Python :: 3",
+                   "Topic :: Scientific/Engineering"],
+      python_requires=">=3.7",
+      install_requires=["numpy>=1.15",
+                        "gwpy",
+                        "gwdetchar",
+                        "MarkupPy",
+                        "pytz",
+                        "pandas",
+                        "scipy",
+                        "pyYAML",
+                        "matplotlib",
+                        "astropy",
+                        "pytvfemd>=0.3.12"],
+      project_urls={"Bug Reports": "https://github.com/stfbnc/gwas_tools/issues",
+                    "Source": "https://github.com/stfbnc/gwas_tools"},
+      package_data={"gwas_tools": ["LICENSE"]},
+      include_package_data=True
+      )

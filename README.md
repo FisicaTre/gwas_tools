@@ -3,7 +3,7 @@ Utils functions to build a pipeline for scattered light noise hunting in gravita
 
 #### Version
 
-v0.12.6
+v0.12.10
 
 ####  Requirements
 
@@ -11,18 +11,18 @@ v0.12.6
 - [requirements.txt](requirements.txt)
 
 #### Description
-- `helpers`
-  - functions to get inputs for the pipeline, and classes to build a `.sub` and a `.dag` file to submit the pipeline.
-- `html`
-  - class to build a html page to summarize the output of the pipeline.
-- `utils`
-  - utils functions to process signals, manage output files, and plot pipeline's results.
-- `summary_pages`
-  - functions to create the summary pages of the currently used pipelines.
 - `algorithms`
   - main algorithms of the currently used pipelines.
 - `automation`
   - functions to create the main scripts to be executed on distributed computing systems.
+- `helpers`
+  - functions to get inputs for the pipeline, and classes to build a `.sub` and a `.dag` file to submit the pipeline.
+- `html`
+  - class to build a html page to summarize the output of the pipeline.
+- `summary_pages`
+  - functions to create the summary pages of the currently used pipelines.
+- `utils`
+  - utils functions to process signals, manage output files, and plot pipeline's results.
 
 #### References
 - [Application to LIGO data](https://iopscience.iop.org/article/10.1088/1361-6382/aa8e6b/meta) 

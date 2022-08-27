@@ -9,3 +9,7 @@ gwas_tools/html/__pycache__/
 gwas_tools/summary_pages/__pycache__/
 gwas_tools/utils/__pycache__/
 .idea/
+docs/_build
+build/
+dist/
+gwas_tools.egg-info/
