@@ -1,16 +1,16 @@
-## gwas_tools
+# gwas_tools [![PyPI version](https://badge.fury.io/py/gwas-tools.svg)](https://badge.fury.io/py/gwas-tools)
 Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.
 
-#### Version
+## Docs [![Documentation Status](https://readthedocs.org/projects/gwas-tools/badge/?version=latest)](https://gwas-tools.readthedocs.io/en/latest/?badge=latest)
 
-v0.12.10
+[Code Documentation](https://gwas-tools.readthedocs.io/en/latest/)
 
-####  Requirements
+##  Requirements
 
 - Python 3.7+
 - [requirements.txt](requirements.txt)
 
-#### Description
+## Description
 - `algorithms`
   - main algorithms of the currently used pipelines.
 - `automation`
@@ -24,7 +24,7 @@ v0.12.10
 - `utils`
   - utils functions to process signals, manage output files, and plot pipeline's results.
 
-#### References
+## References
 - [Application to LIGO data](https://iopscience.iop.org/article/10.1088/1361-6382/aa8e6b/meta) 
 - [Application to Virgo data](https://iopscience.iop.org/article/10.1088/1361-6382/ab9719/meta) 
 - [Omega algorithm](https://dspace.mit.edu/handle/1721.1/34388)
