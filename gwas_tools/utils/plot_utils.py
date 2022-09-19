@@ -554,7 +554,7 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
                 plt.subplot(n_plots, 1, i + 1)
                 if i == 0:
                     plt.plot(range(len(corrs)), corrs, "b", label="$\\rho$")
-                    plt.plot(range(len(corrs)), mavg, "r", label="moving average", linewidth=2)
+                    plt.plot(range(len(corrs)), mavg.values, "r", label="moving average", linewidth=2)
                     for j in range(len(lock_periods) - 1):
                         if lock_periods[j] == 1:
                             plt.axvspan(j, j + 1, facecolor="0.2", alpha=0.5)
