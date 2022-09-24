@@ -27,6 +27,7 @@ SAMP_FREQ_KEY = "samp_freq"
 LOWPASS_FREQ_KEY = "lowpass_freq"
 SCATTERING_KEY = "scattering"
 SMOOTH_WIN_KEY = "smooth_win"
+LOCK_INFO_KEY = "locked"
 CORR_SECT_KEY = "correlations"
 CORR_2_SECT_KEY = "correlations_2nd_best"
 IMF_KEY = "imf"
@@ -68,7 +69,8 @@ LOWP_FREQ_OPTS = ["average", "max"]
 SUMMARY_NAME = "summary_table.csv"
 
 # lock channels
-LCK_CH_VIRGO = "V1:DQ_META_ITF_Mode"
+LCK_CH_VIRGO = "V1:META_ITF_LOCK_index"  # "V1:DQ_META_ITF_Mode"
+VIRGO_SCIENCE_MODE_THR = 170
 LCK_CH_LIGO = "L1:DMT-ANALYSIS_READY:1"
 LCK_CH_HANFORD = "H1:DMT-ANALYSIS_READY:1"
 

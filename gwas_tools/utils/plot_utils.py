@@ -522,7 +522,11 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
                         for sk in seis_dict.keys():
                             if sk in seismometers[k].keys():
                                 seismometers[k][sk].append(seis_dict[sk])
-                    lock_periods.append(np.nan)
+                    lck = yf.is_locked()
+                    if lck:
+                        lock_periods.append(np.nan)
+                    else:
+                        lock_periods.append(1)
                 else:
                     corrs.append(np.nan)
                     if file_utils.yml_exists(res_folder):
@@ -532,7 +536,11 @@ def plot_seismic_data(folders_path, ifo, combo=True, save_ext="png"):
                             for sk in seis_dict.keys():
                                 if sk in seismometers[k].keys():
                                     seismometers[k][sk].append(seis_dict[sk])
-                        lock_periods.append(np.nan)
+                        lck = yf.is_locked()
+                        if lck:
+                            lock_periods.append(np.nan)
+                        else:
+                            lock_periods.append(1)
                     else:
                         for k in seismometers.keys():
                             for sk in seismometers[k].keys():

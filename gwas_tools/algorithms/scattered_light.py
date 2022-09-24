@@ -83,16 +83,25 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps, seconds, event)
     ifo = signal_utils.get_ifo_of_channel(target_channel_name)
 
+    # output file
+    out_file = file_utils.YmlFile()
+    out_file.write_parameters(gps, seconds, event, target_channel_name, channels_file,
+                              out_path, fs, f_lowpass, n_scattering, smooth_win)
+
     if check_lock:
         lock_channel_name = signal_utils.get_lock_channel_name_for_ifo(ifo)
         if lock_channel_name is not None:
             lock_channel_data = signal_utils.get_instrument_lock_data(lock_channel_name, gps_start, gps_end)
             if ifo.startswith("L") or ifo.startswith("H"):
                 if len(lock_channel_data) != 1 or lock_channel_data[0][0] != gps_start or lock_channel_data[0][-1] != gps_end:
-                    raise ValueError("Channel not locked during the period of interest.")
+                    out_file.write_lock_info(False)
+                else:
+                    out_file.write_lock_info(True)
             elif ifo.startswith("V"):
-                if not np.all(lock_channel_data == 1):
-                    raise ValueError("Channel not locked during the period of interest.")
+                if not np.all(lock_channel_data >= defines.VIRGO_SCIENCE_MODE_THR):
+                    out_file.write_lock_info(False)
+                else:
+                    out_file.write_lock_info(True)
 
     # build time series matrix
     data = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
@@ -135,10 +144,6 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     #    max_vals_2 = [np.max([n for n in corrs[i, :] if n != np.max(corrs[i, :])]) for i in range(corrs.shape[0])]
     #    max_channels_2 = [np.where(corrs[i, :] == max_vals_2[i])[0][0] for i in range(corrs.shape[0])]
 
-    # output file
-    out_file = file_utils.YmlFile()
-    out_file.write_parameters(gps, seconds, event, target_channel_name, channels_file,
-                              out_path, fs, f_lowpass, n_scattering, smooth_win)
     ch_str = []
     ch_corr = []
     ch_m_fr = []

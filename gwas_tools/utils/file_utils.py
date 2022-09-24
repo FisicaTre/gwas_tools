@@ -175,6 +175,25 @@ class YmlFile(object):
         except:
             raise ValueError("Value not found.")
 
+    def is_locked(self):
+        """Lock info.
+
+        Returns
+        -------
+        bool
+            lock info
+        """
+        try:
+            lck = self.content[defines.LOCK_INFO_KEY]
+            if lck == "yes":
+                return True
+            elif lck == "no":
+                return False
+            else:
+                return None
+        except:
+            return None
+
     def get_imfs_count(self):
         """Get number of found imfs.
 
@@ -340,6 +359,16 @@ class YmlFile(object):
         self.content[defines.PARAMS_SECT_KEY][defines.LOWPASS_FREQ_KEY] = float(f_lowpass)
         self.content[defines.PARAMS_SECT_KEY][defines.SCATTERING_KEY] = int(n_scattering)
         self.content[defines.PARAMS_SECT_KEY][defines.SMOOTH_WIN_KEY] = int(smooth_win)
+
+    def write_lock_info(self, locked):
+        """Write lock info to file.
+
+        Parameters
+        ----------
+        locked : bool
+            if interferometers is locked
+        """
+        self.content[defines.LOCK_INFO_KEY] = "yes" if locked else "no"
 
     def write_correlation_section(self, channels, corrs, mean_freqs):
         """Write correlation section to file.
