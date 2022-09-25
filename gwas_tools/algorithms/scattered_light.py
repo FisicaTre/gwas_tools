@@ -85,8 +85,6 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
 
     # output file
     out_file = file_utils.YmlFile()
-    out_file.write_parameters(gps, seconds, event, target_channel_name, channels_file,
-                              out_path, fs, f_lowpass, n_scattering, smooth_win)
 
     if check_lock:
         lock_channel_name = signal_utils.get_lock_channel_name_for_ifo(ifo)
@@ -143,6 +141,9 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     # if len(channels_list) > 1:
     #    max_vals_2 = [np.max([n for n in corrs[i, :] if n != np.max(corrs[i, :])]) for i in range(corrs.shape[0])]
     #    max_channels_2 = [np.where(corrs[i, :] == max_vals_2[i])[0][0] for i in range(corrs.shape[0])]
+
+    out_file.write_parameters(gps, seconds, event, target_channel_name, channels_file,
+                              out_path, fs, f_lowpass, n_scattering, smooth_win)
 
     ch_str = []
     ch_corr = []

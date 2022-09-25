@@ -2,7 +2,7 @@ from setuptools import find_packages
 from distutils.core import setup
 
 setup(name="gwas_tools",
-      version="0.13.0",
+      version="0.13.1",
       author="Stefano Bianchi, Alessandro Longo, Guillermo Valdes",
       author_email="stefanobianchi9@gmail.com",
       url="https://github.com/stfbnc/gwas_tools.git",
