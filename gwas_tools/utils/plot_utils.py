@@ -310,7 +310,7 @@ def plot_imfs(folders, imfs_to_plot=None, imf_thr=-1.0, save_ext="png", figsize=
     folders : list[str]
         paths to the files needed for the plots
     imfs_to_plot : list[int]
-        imfs to consider for combos (default : None, i.e. all the imfs)
+        imfs to plot (default : None, i.e. all the imfs)
     imf_thr : float, optional
         correlation value above which to plot imfs (default : -1.0)
     save_ext : str, optional
