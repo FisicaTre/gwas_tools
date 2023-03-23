@@ -9,6 +9,8 @@ Utils functions to build a pipeline for scattered light noise hunting in gravita
 
 - Python 3.7+
 - [requirements.txt](requirements.txt)
+- Optional requirements
+  - `gwdama`
 
 ## Description
 - `algorithms`

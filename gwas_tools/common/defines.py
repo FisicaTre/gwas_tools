@@ -60,6 +60,7 @@ VIRGO_SEISMIC_CHANNELS = ["V1:ENV_WEB_SEIS_N_50Hz_rms_0.1_1Hz",
                           "V1:ENV_WEB_SEIS_N_50Hz_rms_0.03_0.1Hz",
                           "V1:ENV_WEB_SEIS_W_50Hz_rms_0.03_0.1Hz",
                           "V1:ENV_WEB_SEIS_V_50Hz_rms_0.03_0.1Hz"]
+VIRGO_SEISMIC_FFL = "V1trend"
 
 # common parameters
 COMPARISON_FOLDER = "comparison"
