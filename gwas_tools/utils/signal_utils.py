@@ -345,8 +345,11 @@ def get_instrument_lock_data(lock_channel, gps_start, gps_end):
     lock_data = []
     ifo = get_ifo_of_channel(lock_channel)
     if ifo.startswith("L") or ifo.startswith("H"):
-        lock_data = DataQualityFlag.query(lock_channel, gps_start, gps_end)
-        lock_data = lock_data.active
+        try:
+            lock_data = DataQualityFlag.query(lock_channel, gps_start, gps_end)
+            lock_data = lock_data.active
+        except:
+            lock_data = []
     elif ifo.startswith("V"):
         lock_data = TimeSeriesDict.get([lock_channel], gps_start, gps_end)
         lock_data = lock_data[lock_channel].value
@@ -494,7 +497,10 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
     """
     from gwpy.io import datafind as io_datafind
 
-    frametype_tc = io_datafind.find_frametype(target_channel_name, gpstime=gps_start, allow_tape=True)
+    try:
+        frametype_tc = io_datafind.find_frametype(target_channel_name, gpstime=gps_start, allow_tape=True)
+    except:
+        frametype_tc = None
 
     if frametype_tc is None:
         tc_dict = TimeSeriesDict.get([target_channel_name],

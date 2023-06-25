@@ -186,7 +186,10 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
 
     if seismic:
         if ifo.startswith("L"):
-            frametype = io_datafind.find_frametype(defines.LIGO_SEISMIC_CHANNELS[0], gpstime=gps)
+            try:
+                frametype = io_datafind.find_frametype(defines.LIGO_SEISMIC_CHANNELS[0], gpstime=gps)
+            except:
+                frametype = None
             if frametype is not None:
                 seismometers = TimeSeriesDict.get(defines.LIGO_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True,
                                                   frametype=frametype, resample=3)
@@ -198,7 +201,10 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
                 seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
             out_file.write_seismic_channels(seis_dict)
         elif ifo.startswith("H"):
-            frametype = io_datafind.find_frametype(defines.HANFORD_SEISMIC_CHANNELS[0], gpstime=gps)
+            try:
+                frametype = io_datafind.find_frametype(defines.HANFORD_SEISMIC_CHANNELS[0], gpstime=gps)
+            except:
+                frametype = None
             if frametype is not None:
                 seismometers = TimeSeriesDict.get(defines.HANFORD_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True,
                                                   frametype=frametype, resample=3)
