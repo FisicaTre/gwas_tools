@@ -139,8 +139,9 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file,
                 imf_i_corr = res_file.get_corr_of_imf(i)
                 if imf_i_corr >= COLOR_THRESHOLD_MAX:
                     above_thr_max = True
-                elif COLOR_THRESHOLD_MIN <= imf_i_corr < COLOR_THRESHOLD_MAX:
-                    above_thr_min = True
+                if not above_thr_max:
+                    if COLOR_THRESHOLD_MIN <= imf_i_corr < COLOR_THRESHOLD_MAX:
+                        above_thr_min = True
 
         gps_event = res_file.get_gps()
         res_id = "{:d}".format(gps_event)

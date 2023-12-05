@@ -192,7 +192,8 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
                 frametype = None
             if frametype is not None:
                 seismometers = TimeSeriesDict.get(defines.LIGO_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True,
-                                                  frametype=frametype, resample=3)
+                                                  frametype=frametype)
+                seismometers.resample(3)
             else:
                 seismometers = TimeSeriesDict.get(defines.LIGO_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True)
                 seismometers.resample(3)
@@ -207,7 +208,8 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
                 frametype = None
             if frametype is not None:
                 seismometers = TimeSeriesDict.get(defines.HANFORD_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True,
-                                                  frametype=frametype, resample=3)
+                                                  frametype=frametype)
+                seismometers.resample(3)
             else:
                 seismometers = TimeSeriesDict.get(defines.HANFORD_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True)
                 seismometers.resample(3)

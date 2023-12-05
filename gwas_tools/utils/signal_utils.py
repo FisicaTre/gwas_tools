@@ -512,7 +512,8 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
         tc_dict = TimeSeriesDict.get([target_channel_name],
                                      gps_start - defines.EXTRA_SECONDS,
                                      gps_end + defines.EXTRA_SECONDS,
-                                     verbose=verbose, frametype=frametype_tc, resample=fs)
+                                     verbose=verbose, frametype=frametype_tc)
+        tc_dict.resample(fs)
 
     data_dict = TimeSeriesDict.get(channels_list,
                                    gps_start - defines.EXTRA_SECONDS,

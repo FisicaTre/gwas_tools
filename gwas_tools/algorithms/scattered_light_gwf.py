@@ -179,7 +179,8 @@ def scattered_light_gwf(gps, seconds, target_channel_name, channels_file, out_pa
             frametype = io_datafind.find_frametype(defines.LIGO_SEISMIC_CHANNELS[0], gpstime=gps)
             if frametype is not None:
                 seismometers = TimeSeriesDict.get(defines.LIGO_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True,
-                                                  frametype=frametype, resample=3)
+                                                  frametype=frametype)
+                seismometers.resample(3)
             else:
                 seismometers = TimeSeriesDict.get(defines.LIGO_SEISMIC_CHANNELS, gps_start, gps_end, verbose=True)
                 seismometers.resample(3)
