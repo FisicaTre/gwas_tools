@@ -2,10 +2,10 @@ from setuptools import find_packages
 from distutils.core import setup
 
 setup(name="gwas_tools",
-      version="0.13.4",
+      version="0.13.5",
       author="Stefano Bianchi, Alessandro Longo, Guillermo Valdes",
       author_email="stefanobianchi9@gmail.com",
-      url="https://github.com/stfbnc/gwas_tools.git",
+      url="https://github.com/FisicaTre/gwas_tools",
       license="GPLv3.0",
       description="Utils functions to build a pipeline for scattered light noise "
                   "hunting in gravitational waves detectors.",
@@ -28,8 +28,8 @@ setup(name="gwas_tools",
                         "matplotlib",
                         "astropy",
                         "pytvfemd>=0.3.12"],
-      project_urls={"Bug Reports": "https://github.com/stfbnc/gwas_tools/issues",
-                    "Source": "https://github.com/stfbnc/gwas_tools"},
+      project_urls={"Bug Reports": "https://github.com/FisicaTre/gwas_tools/issues",
+                    "Source": "https://github.com/FisicaTre/gwas_tools"},
       package_data={"gwas_tools": ["LICENSE"]},
       include_package_data=True
       )

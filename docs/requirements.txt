@@ -1,0 +1,12 @@
+numpy>=1.15
+gwpy
+gwdetchar
+MarkupPy
+pytz
+pandas
+scipy
+pyYAML
+matplotlib
+astropy
+pytvfemd>=0.3.12
+sphinx_rtd_theme

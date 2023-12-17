@@ -142,7 +142,9 @@ def generate_web_page(res_path, date, tc_name, aux_ch, prepend_path=""):
                                 break
 
                         try:
-                            if res_file.get_corr_of_combo_with_imf(i) >= COLOR_THRESHOLD:
+                            imf_combo_corr = res_file.get_corr_of_combo_with_imf(i)
+                            imfs_data[i][defines.CORRELATION_STR] = "{:.4f}".format(imf_combo_corr)
+                            if imf_combo_corr >= COLOR_THRESHOLD:
                                 above_thr = True
                         except:
                             pass
