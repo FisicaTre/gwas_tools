@@ -685,7 +685,7 @@ def save_envelopes(envelopes, file_name, out_path):
     f_imfs.close()
 
 
-def summary_table(folders, comparison, table_name):
+def summary_table(folders, comparison, table_name, second_best=False):
     """Comparison plots of results.
 
     Parameters
@@ -696,6 +696,9 @@ def summary_table(folders, comparison, table_name):
         imfs for comparison
     table_name : str
         name of the output csv
+    second_best : bool
+        if True, writes the values from the section for
+        the second best culprit
     """
     if len(folders) == 0:
         return None
@@ -715,6 +718,10 @@ def summary_table(folders, comparison, table_name):
         corrs[i] = []
         m_freqs[i] = []
 
+    culprits_2 = []
+    corrs_2 = []
+    m_freqs_2 = []
+
     for folder in folders:
         if is_valid_folder(folder):
             yf = YmlFile(folder)
@@ -730,11 +737,25 @@ def summary_table(folders, comparison, table_name):
                     corrs[i].append(np.nan)
                     m_freqs[i].append(np.nan)
 
+            if second_best and 1 in comparison:
+                try:
+                    culprits_2.append(yf.get_channel_of_imf(1, second_best=True))
+                    corrs_2.append(yf.get_corr_of_imf(1, second_best=True))
+                    m_freqs_2.append(yf.get_mean_freq_of_imf(1, second_best=True))
+                except:
+                    culprits_2.append(np.nan)
+                    corrs_2.append(np.nan)
+                    m_freqs_2.append(np.nan)
+
     df_dict = {"gps": gps}
     for i in comparison:
         df_dict[defines.summary_table_culprit_column_of_imf(i)] = culprits[i]
         df_dict[defines.summary_table_correlation_column_of_imf(i)] = corrs[i]
         df_dict[defines.summary_table_mean_frequency_column_of_imf(i)] = m_freqs[i]
+    if second_best and len(culprits_2) > 0 and len(corrs_2) > 0 and len(m_freqs_2) > 0:
+        df_dict[defines.summary_table_culprit_column_of_imf(1, second_best=True)] = culprits_2
+        df_dict[defines.summary_table_correlation_column_of_imf(1, second_best=True)] = corrs_2
+        df_dict[defines.summary_table_mean_frequency_column_of_imf(1, second_best=True)] = m_freqs_2
     df = pd.DataFrame(df_dict)
     df.to_csv(os.path.join(cpath, table_name), index=False)
 

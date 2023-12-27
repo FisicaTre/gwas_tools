@@ -132,17 +132,21 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file,
             if res_file.get_imfs_count() >= i:
                 imfs_data[i] = {}
                 imfs_data[i][defines.TARGET_CH_NAME] = tc_name
-                imfs_data[i][defines.CULPRIT_STR] = res_file.get_channel_of_imf(i)
-                imfs_data[i][defines.MEAN_FREQ_STR] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
+                imfs_data[i][defines.CULPRIT_STR + " (1)"] = res_file.get_channel_of_imf(i)
+                imfs_data[i][defines.MEAN_FREQ_STR + " (1)"] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i))
                 imfs_data[i][defines.OMEGAGRAM_STR] = os.path.exists(os.path.join(gps_path,
                                                                                   file_utils.omegagram_plot_name(i, PLOT_EXT)))
                 imf_i_corr = res_file.get_corr_of_imf(i)
-                imfs_data[i][defines.CORRELATION_STR] = "{:.4f}".format(imf_i_corr)
+                imfs_data[i][defines.CORRELATION_STR + " (1)"] = "{:.4f}".format(imf_i_corr)
                 if imf_i_corr >= COLOR_THRESHOLD_MAX:
                     above_thr_max = True
                 if not above_thr_max:
                     if COLOR_THRESHOLD_MIN <= imf_i_corr < COLOR_THRESHOLD_MAX:
                         above_thr_min = True
+
+                imfs_data[i][defines.CULPRIT_STR + " (2)"] = res_file.get_channel_of_imf(i, second_best=True)
+                imfs_data[i][defines.MEAN_FREQ_STR + " (2)"] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i, second_best=True))
+                imfs_data[i][defines.CORRELATION_STR + " (2)"] = "{:.4f}".format(res_file.get_corr_of_imf(i, second_best=True))
 
         gps_event = res_file.get_gps()
         res_id = "{:d}".format(gps_event)

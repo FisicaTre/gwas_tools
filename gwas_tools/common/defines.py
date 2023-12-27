@@ -77,16 +77,25 @@ LCK_CH_HANFORD = "H1:DMT-ANALYSIS_READY:1"
 
 
 # summary table
-def summary_table_culprit_column_of_imf(i):
-    return "culprit_{:d}".format(i)
+def summary_table_culprit_column_of_imf(i, second_best=False):
+    if second_best:
+        return "culprit_{:d}_2".format(i)
+    else:
+        return "culprit_{:d}".format(i)
 
 
-def summary_table_correlation_column_of_imf(i):
-    return "corr_{:d}".format(i)
+def summary_table_correlation_column_of_imf(i, second_best=False):
+    if second_best:
+        return "corr_{:d}_2".format(i)
+    else:
+        return "corr_{:d}".format(i)
 
 
-def summary_table_mean_frequency_column_of_imf(i):
-    return "mean_freq_{:d}".format(i)
+def summary_table_mean_frequency_column_of_imf(i, second_best=False):
+    if second_best:
+        return "mean_freq_{:d}_2".format(i)
+    else:
+        return "mean_freq_{:d}".format(i)
 
 
 # summary plots
