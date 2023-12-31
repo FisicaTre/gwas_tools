@@ -16,6 +16,7 @@
 
 
 import numpy as np
+import copy
 from ..utils import signal_utils, file_utils
 from ..common import defines
 from gwpy.timeseries import TimeSeriesDict
@@ -102,11 +103,11 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
                     out_file.write_lock_info(True)
 
     # build time series matrix
-    data = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
-                                                       gps_start, gps_end, fs, verbose=True)
+    tc_data, aux_data = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
+                                                                    gps_start, gps_end, fs, verbose=True)
 
     # predictors
-    predictor = signal_utils.get_predictors(data[:, 1:], fs, smooth_win=smooth_win, n_scattering=n_scattering)
+    predictor = signal_utils.get_predictors(aux_data, fs, smooth_win=smooth_win, n_scattering=n_scattering)
 
     # compute lowpass frequency in case it is a string
     if isinstance(f_lowpass, str):
@@ -116,7 +117,7 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
             f_lowpass = np.max([np.max(predictor[:, i]) for i in range(predictor.shape[1])])
 
     # target channel
-    target_channel = signal_utils.butter_lowpass_filter(data[:, 0], f_lowpass, fs)
+    target_channel = signal_utils.butter_lowpass_filter(tc_data, f_lowpass, fs)
 
     # tvf-emd
     imfs = signal_utils.get_imfs(target_channel, fs, max_imf=max_imf)
@@ -136,32 +137,17 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         file_utils.save_envelopes(envelopes, "_".join(target_channel_name.split(":")), out_path)
 
     # max correlations
-    max_vals = np.max(corrs, axis=1)
-    max_channels = np.argmax(corrs, axis=1)
-    if len(channels_list) > 1:
-        max_vals_2 = [np.max([n for n in corrs[i, :] if n != np.max(corrs[i, :])]) for i in range(corrs.shape[0])]
-        max_channels_2 = [np.where(corrs[i, :] == max_vals_2[i])[0][0] for i in range(corrs.shape[0])]
+    corrs_orig = copy.deepcopy(corrs)
+    corrs.sort(axis=1)
+    max_channels = np.array([[np.where(corrs_orig[i, :] == corrs[i, k])[0][0] for k in range(predictor.shape[1])]
+                             for i in range(imfs.shape[1])])
 
     out_file.write_parameters(gps, seconds, event, target_channel_name, channels_file,
                               out_path, fs, f_lowpass, n_scattering, smooth_win)
 
-    ch_str = []
-    ch_corr = []
-    ch_m_fr = []
-    for n_imf in range(len(max_vals)):
-        try:
-            ch_str.append(channels_list[max_channels[n_imf]])
-        except:
-            ch_str.append("Not found")
-        try:
-            ch_corr.append(max_vals[n_imf])
-        except:
-            ch_corr.append(-999.0)
-        try:
-            ch_m_fr.append(signal_utils.mean_frequency(channels_list[max_channels[n_imf]], gps_start,
-                                                       gps_end, bandpass_limits=(0.03, 10)))
-        except:
-            ch_m_fr.append(0.0)
+    ch_str = [channels_list[i] for i in max_channels[:, 0]]
+    ch_corr = list(corrs[:, 0])
+    ch_m_fr = [signal_utils.mean_frequency(ci, gps_start, gps_end, bandpass_limits=(0.03, 10)) for ci in ch_str]
     out_file.write_correlation_section(ch_str, ch_corr, ch_m_fr)
 
     selected_predictors = predictor[:, max_channels]
@@ -170,19 +156,9 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         out_file.write_combo_section(combos_imfs, combos_channels, combos_corrs)
 
     if len(channels_list) > 1:
-        ch_2_str = []
-        ch_2_corr = []
-        ch_2_m_fr = []
-        for n_imf in range(len(max_vals_2)):
-            try:
-                ch_2_str.append(channels_list[max_channels_2[n_imf]])
-                ch_2_corr.append(max_vals_2[n_imf])
-                ch_2_m_fr.append(signal_utils.mean_frequency(data[:, max_channels_2[n_imf] + 1], gps_start,
-                                                             gps_end, bandpass_limits=(0.03, 10)))
-            except:
-                ch_2_str.append("Not found")
-                ch_2_corr.append(-999.0)
-                ch_2_m_fr.append(0.0)
+        ch_2_str = [channels_list[i] for i in max_channels[:, 1]]
+        ch_2_corr = list(corrs[:, 1])
+        ch_2_m_fr = [signal_utils.mean_frequency(ci, gps_start, gps_end, bandpass_limits=(0.03, 10)) for ci in ch_2_str]
         out_file.write_2nd_best_correlation_section(ch_2_str, ch_2_corr, ch_2_m_fr)
 
     if seismic:

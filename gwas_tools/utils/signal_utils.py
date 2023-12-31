@@ -234,7 +234,7 @@ def get_imfs(target_channel, fs, norm=True, max_imf=None):
     Returns
     -------
     numpy ndarray
-        `target_channel` imfs matrix
+        `target_channel` imfs matrix (imf_len, n_imfs)
     """
     is_max_imf_none = max_imf is None
     if is_max_imf_none:
@@ -491,9 +491,10 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
 
     Returns
     -------
-    data : numpy ndarray
-        matrix with channels values, first column
-        corresponds to the target channel
+    tc_data : numpy ndarray
+        target channel data
+    aux_data : numpy ndarray
+        auxiliary channels data
     """
     from gwpy.io import datafind as io_datafind
 
@@ -521,12 +522,12 @@ def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start
                                    verbose=verbose)
     data_dict.resample(fs)
 
-    data = np.zeros((tc_dict[target_channel_name].value.shape[0], len(channels_list) + 1), dtype=float)
-    data[:, 0] = tc_dict[target_channel_name].value
-    for i in range(1, len(channels_list) + 1):
-        data[:, i] = data_dict[channels_list[i - 1]].value
+    max_len = np.max([data_dict[k].value.shape[0] for k in channels_list])
+    aux_data = np.zeros((max_len, len(channels_list)), dtype=float)
+    for i, k in enumerate(channels_list):
+        aux_data[:, i] = data_dict[k].value
 
-    return data
+    return tc_dict[target_channel_name].value, aux_data
 
 
 def upper_envelope(ts):
