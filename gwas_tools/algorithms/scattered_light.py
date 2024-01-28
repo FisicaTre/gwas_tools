@@ -169,21 +169,21 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         combos_imfs, combos_channels, combos_corrs = signal_utils.get_combos(ch_str, envelopes, selected_predictors)
         out_file.write_combo_section(combos_imfs, combos_channels, combos_corrs)
 
-    if len(channels_list) > 1:
-        ch_2_str = []
-        ch_2_corr = []
-        ch_2_m_fr = []
-        for n_imf in range(len(max_vals_2)):
-            try:
-                ch_2_str.append(channels_list[max_channels_2[n_imf]])
-                ch_2_corr.append(max_vals_2[n_imf])
-                ch_2_m_fr.append(signal_utils.mean_frequency(data[:, max_channels_2[n_imf] + 1], gps_start,
-                                                             gps_end, bandpass_limits=(0.03, 10)))
-            except:
-                ch_2_str.append("Not found")
-                ch_2_corr.append(-999.0)
-                ch_2_m_fr.append(0.0)
-        out_file.write_2nd_best_correlation_section(ch_2_str, ch_2_corr, ch_2_m_fr)
+    #if len(channels_list) > 1:
+    #    ch_2_str = []
+    #    ch_2_corr = []
+    #    ch_2_m_fr = []
+    #    for n_imf in range(len(max_vals_2)):
+    #        try:
+    #            ch_2_str.append(channels_list[max_channels_2[n_imf]])
+    #            ch_2_corr.append(max_vals_2[n_imf])
+    #            ch_2_m_fr.append(signal_utils.mean_frequency(data[:, max_channels_2[n_imf] + 1], gps_start,
+    #                                                         gps_end, bandpass_limits=(0.03, 10)))
+    #        except:
+    #            ch_2_str.append("Not found")
+    #            ch_2_corr.append(-999.0)
+    #            ch_2_m_fr.append(0.0)
+    #    out_file.write_2nd_best_correlation_section(ch_2_str, ch_2_corr, ch_2_m_fr)
 
     if seismic:
         if ifo.startswith("L"):

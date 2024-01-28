@@ -144,9 +144,9 @@ def generate_web_page(res_path, date, tc_name, ch_list_file, gps_file,
                     if COLOR_THRESHOLD_MIN <= imf_i_corr < COLOR_THRESHOLD_MAX:
                         above_thr_min = True
 
-                imfs_data[i][defines.CULPRIT_STR + " (2)"] = res_file.get_channel_of_imf(i, second_best=True)
-                imfs_data[i][defines.MEAN_FREQ_STR + " (2)"] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i, second_best=True))
-                imfs_data[i][defines.CORRELATION_STR + " (2)"] = "{:.4f}".format(res_file.get_corr_of_imf(i, second_best=True))
+                #imfs_data[i][defines.CULPRIT_STR + " (2)"] = res_file.get_channel_of_imf(i, second_best=True)
+                #imfs_data[i][defines.MEAN_FREQ_STR + " (2)"] = "{:.4f} Hz".format(res_file.get_mean_freq_of_imf(i, second_best=True))
+                #imfs_data[i][defines.CORRELATION_STR + " (2)"] = "{:.4f}".format(res_file.get_corr_of_imf(i, second_best=True))
 
         gps_event = res_file.get_gps()
         res_id = "{:d}".format(gps_event)

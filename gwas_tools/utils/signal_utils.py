@@ -471,6 +471,31 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
     return data_mtx, samp_freq
 
 
+def get_data_from_virgotools(target_channel, channels, start_gps, end_gps, samp_freq=None):
+    from virgotools.everything import FrameFile
+
+    channels_list = [target_channel.split(":")[1]] + [c.split(":")[1] for c in channels]
+    start_gps = start_gps - defines.EXTRA_SECONDS
+    end_gps = end_gps + defines.EXTRA_SECONDS
+
+    data = {}  # dict[list[float]]
+    with FrameFile('raw') as ffl:
+        for ch in channels_list:
+            ts = ffl.getChannel(ch, start_gps, end_gps, mask=False, fill_value=np.nan)
+            data[ch] = ts.data
+
+    if samp_freq is not None:
+        for k in data.keys():
+            data[k] = data[k][::(len(data[k]) // (samp_freq * (end_gps - start_gps)))]
+
+    data_mtx = np.zeros((data[target_channel].shape[0], len(channels_list)), dtype=float)
+    data_mtx[:, 0] = data[target_channel]
+    for i in range(1, len(channels_list)):
+        data_mtx[:, i] = data[channels_list[i]]
+
+    return data_mtx, samp_freq
+
+
 def get_data_from_time_series_dict(target_channel_name, channels_list, gps_start, gps_end, fs, verbose=False):
     """Get data from `gwpy` function `TimeSeriesDict.get`.
 
