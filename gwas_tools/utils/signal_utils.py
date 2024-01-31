@@ -351,8 +351,13 @@ def get_instrument_lock_data(lock_channel, gps_start, gps_end):
         except:
             lock_data = []
     elif ifo.startswith("V"):
-        lock_data = TimeSeriesDict.get([lock_channel], gps_start, gps_end)
-        lock_data = lock_data[lock_channel].value
+        from virgotools.everything import FrameFile
+        try:
+            with FrameFile("raw") as ffl:
+                ts = ffl.getChannel(lock_channel, gps_start, gps_end, mask=False, fill_value=np.nan)
+            lock_data = ts.data
+        except:
+            lock_data = []
 
     return lock_data
 
@@ -474,24 +479,32 @@ def get_data_from_gwf_files(gwf_path, sep, start_gps_pos, n_gps_pos,
 def get_data_from_virgotools(target_channel, channels, start_gps, end_gps, samp_freq=None):
     from virgotools.everything import FrameFile
 
-    channels_list = [target_channel.split(":")[1]] + [c.split(":")[1] for c in channels]
+    channels_list = [target_channel] + channels
     start_gps = start_gps - defines.EXTRA_SECONDS
     end_gps = end_gps + defines.EXTRA_SECONDS
 
     data = {}  # dict[list[float]]
-    with FrameFile('raw') as ffl:
+    min_fs = None
+    with FrameFile("raw") as ffl:
         for ch in channels_list:
             ts = ffl.getChannel(ch, start_gps, end_gps, mask=False, fill_value=np.nan)
-            data[ch] = ts.data
+            data[ch] = TimeSeries(ts.data, sample_rate=ts.fsample, channel=ch)
+            if min_fs is None:
+                min_fs = ts.fsample
+            else:
+                if ts.fsample < min_fs:
+                    min_fs = ts.fsample
 
-    if samp_freq is not None:
-        for k in data.keys():
-            data[k] = data[k][::(len(data[k]) // (samp_freq * (end_gps - start_gps)))]
+    if samp_freq is None or min_fs < samp_freq:
+        samp_freq = min_fs
 
-    data_mtx = np.zeros((data[target_channel].shape[0], len(channels_list)), dtype=float)
-    data_mtx[:, 0] = data[target_channel]
+    for k in data.keys():
+        data[k] = data[k].resample(samp_freq)
+
+    data_mtx = np.zeros((data[target_channel].value.shape[0], len(channels_list)), dtype=float)
+    data_mtx[:, 0] = data[target_channel].value
     for i in range(1, len(channels_list)):
-        data_mtx[:, i] = data[channels_list[i]]
+        data_mtx[:, i] = data[channels_list[i]].value
 
     return data_mtx, samp_freq
 

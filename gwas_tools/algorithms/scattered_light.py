@@ -18,7 +18,7 @@
 import numpy as np
 from ..utils import signal_utils, file_utils
 from ..common import defines
-from gwpy.timeseries import TimeSeriesDict
+from gwpy.timeseries import TimeSeriesDict, TimeSeries
 from gwpy.io import datafind as io_datafind
 
 
@@ -96,14 +96,18 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
                 else:
                     out_file.write_lock_info(True)
             elif ifo.startswith("V"):
-                if not np.all(lock_channel_data >= defines.VIRGO_SCIENCE_MODE_THR):
+                if not np.all(lock_channel_data >= defines.VIRGO_SCIENCE_MODE_THR) or len(lock_channel_data) == 0:
                     out_file.write_lock_info(False)
                 else:
                     out_file.write_lock_info(True)
 
     # build time series matrix
-    data = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
-                                                       gps_start, gps_end, fs, verbose=True)
+    if ifo.startswith("V"):
+        data, fs = signal_utils.get_data_from_virgotools(target_channel_name, channels_list, gps_start,
+                                                         gps_end, samp_freq=fs)
+    else:
+        data = signal_utils.get_data_from_time_series_dict(target_channel_name, channels_list,
+                                                           gps_start, gps_end, fs, verbose=True)
 
     # predictors
     predictor = signal_utils.get_predictors(data[:, 1:], fs, smooth_win=smooth_win, n_scattering=n_scattering)
@@ -219,12 +223,18 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
                 seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
             out_file.write_seismic_channels(seis_dict)
         elif ifo.startswith("V"):
-            from gwdama.io import GwDataManager as gwdm
-            seismometers = gwdm.read_from_virgo(defines.VIRGO_SEISMIC_CHANNELS, gps_start,
-                                                gps_end, ffl_spec=defines.VIRGO_SEISMIC_FFL)
-            # seismometers.resample(3)
+            from virgotools.everything import FrameFile
+            seismometers = {}
+            try:
+                with FrameFile("trend") as ffl:
+                    for sch in defines.VIRGO_SEISMIC_CHANNELS:
+                        ts = ffl.getChannel(sch, gps_start, gps_end, mask=False, fill_value=np.nan)
+                        seismometers[sch] = TimeSeries(ts.data, sample_rate=ts.fsample, channel=sch)
+            except:
+                seismometers = {}
+
             seis_dict = {}
-            for s in defines.VIRGO_SEISMIC_CHANNELS:
+            for s in seismometers.keys():
                 seis_dict[s.split(":")[1]] = seismometers[s].value.mean()
             out_file.write_seismic_channels(seis_dict)
 
