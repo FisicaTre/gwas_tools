@@ -146,16 +146,30 @@ def mean_frequency(channel_name, start, end, bandpass_limits=None, verbose=False
     float
         mean frequency of the signal
     """
-    ts = TimeSeries.get(channel_name, start, end, verbose=verbose)
-    if bandpass_limits is not None:
-        bp_start = bandpass_limits[0]
-        bp_end = bandpass_limits[1]
-        ts = ts.bandpass(bp_start, bp_end)
-    asd = ts.asd()
-    mf_idx = asd == asd.max()
-    mf = asd.frequencies[mf_idx]
+    if get_ifo_of_channel(channel_name).startswith("V"):
+        from virgotools.everything import FrameFile
+        try:
+            with FrameFile("raw") as ffl:
+                ts_data = ffl.getChannel(channel_name, start, end, mask=False, fill_value=np.nan)
+            ts = ts_data.data
+        except:
+            ts = []
+    else:
+        ts = TimeSeries.get(channel_name, start, end, verbose=verbose)
 
-    return mf.value[0]
+    if len(ts) == 0:
+        frq = 0.0
+    else:
+        if bandpass_limits is not None:
+            bp_start = bandpass_limits[0]
+            bp_end = bandpass_limits[1]
+            ts = ts.bandpass(bp_start, bp_end)
+        asd = ts.asd()
+        mf_idx = asd == asd.max()
+        mf = asd.frequencies[mf_idx]
+        frq = mf.value[0]
+
+    return frq
 
 
 def get_predictor(time, ts, N=1, smooth_win=None):

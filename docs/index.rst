@@ -1,4 +1,4 @@
-gwas_tools (v0.14.0.rc1)
+gwas_tools (v0.14.0rc2)
 ********************
 
 Utils functions to build a pipeline for scattered light noise hunting in gravitational waves detectors.

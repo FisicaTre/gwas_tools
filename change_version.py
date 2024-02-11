@@ -4,7 +4,6 @@ import re
 
 INIT_FILE = os.path.join("gwas_tools", "__init__.py")
 DOCS_MAIN = os.path.join("docs", "index.rst")
-README_FILE = os.path.join(".", "README.md")
 SETUP_FILE = os.path.join(".", "setup.py")
 
 
@@ -25,5 +24,4 @@ if __name__ == "__main__":
     new_version = sys.argv[1]
     replace_version(INIT_FILE, new_version)
     replace_version(DOCS_MAIN, new_version)
-    replace_version(README_FILE, new_version)
     replace_version(SETUP_FILE, new_version)

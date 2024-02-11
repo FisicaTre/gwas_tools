@@ -15,5 +15,5 @@
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
-__version__ = "0.14.0.rc1"
+__version__ = "0.14.0rc2"
 __authors__ = "Stefano Bianchi, Alessandro Longo, Guillermo Valdes"
