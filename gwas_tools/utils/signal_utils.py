@@ -151,23 +151,20 @@ def mean_frequency(channel_name, start, end, bandpass_limits=None, verbose=False
         try:
             with FrameFile("raw") as ffl:
                 ts_data = ffl.getChannel(channel_name, start, end, mask=False, fill_value=np.nan)
-            ts = ts_data.data
+            ts = TimeSeries(ts_data.data, sample_rate=ts_data.fsample, channel=channel_name)
         except:
-            ts = []
+            return 0.0
     else:
         ts = TimeSeries.get(channel_name, start, end, verbose=verbose)
 
-    if len(ts) == 0:
-        frq = 0.0
-    else:
-        if bandpass_limits is not None:
-            bp_start = bandpass_limits[0]
-            bp_end = bandpass_limits[1]
-            ts = ts.bandpass(bp_start, bp_end)
-        asd = ts.asd()
-        mf_idx = asd == asd.max()
-        mf = asd.frequencies[mf_idx]
-        frq = mf.value[0]
+    if bandpass_limits is not None:
+        bp_start = bandpass_limits[0]
+        bp_end = bandpass_limits[1]
+        ts = ts.bandpass(bp_start, bp_end)
+    asd = ts.asd()
+    mf_idx = asd == asd.max()
+    mf = asd.frequencies[mf_idx]
+    frq = mf.value[0]
 
     return frq
 
@@ -371,7 +368,7 @@ def get_instrument_lock_data(lock_channel, gps_start, gps_end):
                 ts = ffl.getChannel(lock_channel, gps_start, gps_end, mask=False, fill_value=np.nan)
             lock_data = ts.data
         except:
-            lock_data = []
+            lock_data = np.array([])
 
     return lock_data
 
