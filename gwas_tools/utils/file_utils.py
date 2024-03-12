@@ -547,14 +547,35 @@ def predictors_exists(predictors_path):
     return True
 
 
+def load_ias(ia_path):
+    """Load imfs' instantaneous amplitudes file.
+    
+    Parameters
+    ----------
+    ia_path : str
+        path to imfs' instantaneous amplitudes file
+        
+    Returns
+    -------
+    numpy ndarray
+        imfs' instantaneous amplitudes file
+    """
+    imfs_file = glob.glob(os.path.join(ia_path, "*.ia"))
+    f = open(imfs_file[0], "rb")
+    imfs = pickle.load(f)
+    f.close()
+
+    return imfs
+
+
 def load_imfs(imfs_path):
     """Load imfs file.
-    
+
     Parameters
     ----------
     imfs_path : str
         path to imfs file
-        
+
     Returns
     -------
     numpy ndarray
@@ -680,8 +701,25 @@ def save_envelopes(envelopes, file_name, out_path):
     out_path : str
         where to save the file
     """
-    f_imfs = open(os.path.join(out_path, "{}.imf".format(file_name)), "wb")
+    f_imfs = open(os.path.join(out_path, "{}.ia".format(file_name)), "wb")
     pickle.dump(envelopes, f_imfs)
+    f_imfs.close()
+
+
+def save_imfs(imfs, file_name, out_path):
+    """Save imfs to binary file.
+
+    Parameters
+    ----------
+    imfs : numpy ndarray
+        imfs
+    file_name : str
+        name of the file
+    out_path : str
+        where to save the file
+    """
+    f_imfs = open(os.path.join(out_path, "{}.imf".format(file_name)), "wb")
+    pickle.dump(imfs, f_imfs)
     f_imfs.close()
 
 

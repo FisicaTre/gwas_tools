@@ -13,7 +13,7 @@
 #
 #  You should have received a copy of the GNU General Public License
 #  along with this program. If not, see <https://www.gnu.org/licenses/>.
-
+import os.path
 
 import numpy as np
 from ..utils import signal_utils, file_utils
@@ -24,6 +24,7 @@ from gwpy.io import datafind as io_datafind
 
 def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
                     event="center", fs=256, n_scattering=1, smooth_win=50, max_imf=1,
+                    bwr=0.1, bsp=26, norm_imfs=True,
                     combos=False, seismic=False, save_data=True, check_lock=False):
     """Analysis for scattered light identification.
     The script outputs a folder named as the input gps,
@@ -41,7 +42,7 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     target_channel_name : str
         target channel name
     channels_file : str
-        channels list
+        channels list or single channel name
     out_path : str
         output path where to save results
     f_lowpass : float or str
@@ -57,6 +58,12 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         signals smoothing window (default : 50)
     max_imf :int, optional
         maximum number of imfs to extract (default : 1)
+    bwr : float
+        instantaneous bandwidth threshold for imfs extraction (default : 0.1)
+    bsp : int
+        b-spline order for imfs extraction (default : 26)
+    norm_imfs : bool
+        if to normalize imfs (default : True)
     combos : bool, optional
         if True, combos are computed (default : False)
     seismic : bool, optional
@@ -76,9 +83,12 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
                              "strings : {}".format(", ".join(defines.LOWP_FREQ_OPTS)))
 
     # initialize variables
-    ch_f = open(channels_file, "r")
-    channels_list = [ch.rstrip() for ch in ch_f.readlines() if ch.strip()]
-    ch_f.close()
+    if os.path.exists(channels_file):
+        ch_f = open(channels_file, "r")
+        channels_list = [ch.rstrip() for ch in ch_f.readlines() if ch.strip()]
+        ch_f.close()
+    else:
+        channels_list = [channels_file]
 
     gps_start, gps_end = signal_utils.get_gps_interval_extremes(gps, seconds, event)
     ifo = signal_utils.get_ifo_of_channel(target_channel_name)
@@ -123,7 +133,7 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
     target_channel = signal_utils.butter_lowpass_filter(data[:, 0], f_lowpass, fs)
 
     # tvf-emd
-    imfs = signal_utils.get_imfs(target_channel, fs, max_imf=max_imf)
+    imfs = signal_utils.get_imfs(target_channel, fs, max_imf=max_imf, norm=norm_imfs, bwr=bwr, bsp=bsp)
 
     # correlations
     corrs = np.zeros((imfs.shape[1], predictor.shape[1]), dtype=float)
@@ -136,8 +146,9 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
             corrs[k, l] = signal_utils.get_correlation_between(predictor[:, l], upper_env)
 
     if save_data:
-        # save instantaneous amplitudes
+        # save instantaneous amplitudes and imfs
         file_utils.save_envelopes(envelopes, "_".join(target_channel_name.split(":")), out_path)
+        file_utils.save_imfs(imfs, "_".join(target_channel_name.split(":")), out_path)
 
     # max correlations
     max_vals = np.max(corrs, axis=1)

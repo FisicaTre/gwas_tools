@@ -228,7 +228,7 @@ def get_predictors(channels, fs, smooth_win=None, n_scattering=1):
     return predictors
 
 
-def get_imfs(target_channel, fs, norm=True, max_imf=None):
+def get_imfs(target_channel, fs, norm=True, max_imf=None, bwr=0.1, bsp=26):
     """Get imfs with pytvfemd.
 
     Parameters
@@ -241,6 +241,10 @@ def get_imfs(target_channel, fs, norm=True, max_imf=None):
         normalize imfs (default : True)
     max_imf : int
         maximum number of imfs to be extracted (default : None)
+    bwr : float
+        instantaneous bandwidth threshold (default : 0.1)
+    bsp : int
+        b-spline order (default : 26)
 
     Returns
     -------
@@ -251,7 +255,7 @@ def get_imfs(target_channel, fs, norm=True, max_imf=None):
     if is_max_imf_none:
         max_imf = 1000
 
-    imfs = pytvfemd.tvfemd(target_channel, max_imf=max_imf + 1)
+    imfs = pytvfemd.tvfemd(target_channel, max_imf=max_imf + 1, thresh_bwr=bwr, bsp_order=bsp)
     fs_int = int(fs)
     imfs = imfs[(defines.EXTRA_SECONDS * fs_int):-(defines.EXTRA_SECONDS * fs_int), :]
     if norm:

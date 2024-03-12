@@ -324,7 +324,7 @@ def plot_imfs(folders, imfs_to_plot=None, imf_thr=-1.0, save_ext="png", figsize=
 
     for res_folder in folders:
         yf = file_utils.YmlFile(res_folder)
-        ia = file_utils.load_imfs(res_folder)
+        ia = file_utils.load_ias(res_folder)
         preds = file_utils.load_predictors(res_folder)
 
         target_channel = yf.get_target_channel()
@@ -423,7 +423,7 @@ def plot_combinations(folders, imfs_to_plot=None, save_ext="png", imf_thr=-1.0, 
 
     for res_folder in folders:
         yf = file_utils.YmlFile(res_folder)
-        ia = file_utils.load_imfs(res_folder)
+        ia = file_utils.load_ias(res_folder)
         preds = file_utils.load_predictors(res_folder)
 
         target_channel = yf.get_target_channel()
