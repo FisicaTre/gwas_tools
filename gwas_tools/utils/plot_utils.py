@@ -23,7 +23,7 @@ import matplotlib.ticker as mtick
 from astropy.time import Time
 from gwpy.timeseries import TimeSeries
 from gwpy.segments import Segment
-from ..utils import file_utils
+from ..utils import file_utils, signal_utils
 from ..common import defines
 
 
@@ -181,7 +181,17 @@ def plot_omegagram_download(pred, pred_name, target_name, gps, seconds, plot_nam
     gps_date = "Time [seconds] from {} UTC ({:.1f})\n".format(t2.value.split(".")[0], t1.value)
 
     ts_l2 = pred * correction_factor
-    ts = TimeSeries.get(target_name, gps1, gps2).astype("float64")
+    if signal_utils.get_ifo_of_channel(target_name).startswith("V"):
+        from virgotools.everything import FrameFile
+        try:
+            with FrameFile("raw") as ffl:
+                ts_data = ffl.getChannel(target_name, gps1, gps2, mask=False, fill_value=np.nan)
+            ts = TimeSeries(ts_data.data, sample_rate=ts_data.fsample, channel=target_name)
+        except:
+            return
+    else:
+        ts = TimeSeries.get(target_name, gps1, gps2).astype("float64")
+
     if ":" in target_name and target_name.split(":")[0][0] == "V":
         ts = TimeSeries(ts.value, times=np.arange(gps1, gps2 + ts.dt.value, ts.dt.value, dtype=float), dtype=float)
     ts.times = ts.times.value - gps
