@@ -25,7 +25,8 @@ from gwpy.io import datafind as io_datafind
 def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, f_lowpass,
                     event="center", fs=256, n_scattering=1, smooth_win=50, max_imf=1,
                     bwr=0.1, bsp=26, norm_imfs=True,
-                    combos=False, seismic=False, save_data=True, check_lock=False):
+                    combos=False, seismic=False, save_data=True, check_lock=False,
+                    inj_file=""):
     """Analysis for scattered light identification.
     The script outputs a folder named as the input gps,
     with inside three files:
@@ -72,6 +73,8 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         if True, instantaneous amplitudes and predictors are saved to file (defaults : True)
     check_lock : bool, optional
         if True, lock channel status is checked, and if it is not always locked, the analysis is not performed (default : False)
+    inj_file : str, optional
+        injection data file to superimpose to the target channel
     """
     if event not in defines.EVENT_LOCATION:
         raise ValueError("Event time can only be: {}".format(", ".join(defines.EVENT_LOCATION)))
@@ -131,6 +134,9 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
 
     # target channel
     target_channel = signal_utils.butter_lowpass_filter(data[:, 0], f_lowpass, fs)
+
+    if inj_file != "" and os.path.exists(inj_file):
+        pass
 
     # tvf-emd
     imfs = signal_utils.get_imfs(target_channel, fs, max_imf=max_imf, norm=norm_imfs, bwr=bwr, bsp=bsp)
