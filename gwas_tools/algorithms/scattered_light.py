@@ -145,6 +145,15 @@ def scattered_light(gps, seconds, target_channel_name, channels_file, out_path, 
         for l in range(predictor.shape[1]):
             corrs[k, l] = signal_utils.get_correlation_between(predictor[:, l], upper_env)
 
+    # print list of imfs and corrs
+    max_corrs_to_print = 10
+    corrs_ord_idx = np.argsort(corrs, axis=1)
+    for k in range(imfs.shape[1]):
+        print("IMF {}".format(k + 1))
+        imf_corrs = corrs_ord_idx[k, :][::-1]
+        for i in range(min(max_corrs_to_print, len(imf_corrs))):
+            print("  - Predictor: {} - Rho: {:.3f}".format(channels_list[imf_corrs[i]], corrs[k, imf_corrs[i]]))
+
     if save_data:
         # save instantaneous amplitudes and imfs
         file_utils.save_envelopes(envelopes, "_".join(target_channel_name.split(":")), out_path)
